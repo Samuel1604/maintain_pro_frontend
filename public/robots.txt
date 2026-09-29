@@ -1,0 +1,5 @@
+# TODO(launch): confirm this domain matches production before deploy.
+User-agent: *
+Allow: /
+
+Sitemap: https://maintainpro.com/sitemap.xml

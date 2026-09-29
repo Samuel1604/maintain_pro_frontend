@@ -1,0 +1,3 @@
+/* Tailwind entry point — import order matters */
+@import './globals.css';
+@import './variables.css';

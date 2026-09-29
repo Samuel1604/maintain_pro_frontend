@@ -1,0 +1,110 @@
+/* Stitch utility classes — scoped to .public-site to avoid conflicting with app theme */
+
+/* Background colors */
+.public-site .bg-background { background-color: var(--mp-background); }
+.public-site .bg-primary { background-color: var(--mp-primary); }
+.public-site .bg-secondary { background-color: var(--mp-secondary); }
+.public-site .bg-surface-bright { background-color: var(--mp-surface-bright); }
+.public-site .bg-surface-subtle { background-color: var(--mp-surface-subtle); }
+.public-site .bg-surface-bg { background-color: var(--mp-surface-bg); }
+.public-site .bg-surface-container { background-color: var(--mp-surface-container); }
+.public-site .bg-surface-container-low { background-color: var(--mp-surface-container-low); }
+.public-site .bg-surface-container-high { background-color: var(--mp-surface-container-high); }
+.public-site .bg-surface-container-highest { background-color: var(--mp-surface-container-highest); }
+.public-site .bg-surface-container-lowest { background-color: var(--mp-surface-container-lowest); }
+.public-site .bg-primary-container { background-color: var(--mp-primary-container); }
+.public-site .bg-primary-fixed { background-color: var(--mp-primary-fixed); }
+.public-site .bg-secondary-container { background-color: var(--mp-secondary-container); }
+.public-site .bg-secondary-fixed { background-color: var(--mp-secondary-fixed); }
+.public-site .bg-white { background-color: var(--mp-surface-bg); }
+
+/* Stitch dark: header/footer surfaces */
+[data-theme='dark'] .public-site .bg-inverse-surface,
+.dark .public-site .bg-inverse-surface,
+html.dark .public-site .bg-inverse-surface { background-color: var(--mp-inverse-surface); }
+
+[data-theme='dark'] .public-site .bg-on-tertiary-fixed,
+.dark .public-site .bg-on-tertiary-fixed,
+html.dark .public-site .bg-on-tertiary-fixed { background-color: var(--mp-on-tertiary-fixed); }
+
+[data-theme='dark'] .public-site .text-primary-fixed-dim,
+.dark .public-site .text-primary-fixed-dim,
+html.dark .public-site .text-primary-fixed-dim { color: var(--mp-primary-fixed-dim); }
+
+/* Text colors */
+.public-site .text-primary { color: var(--mp-primary-text); }
+.public-site .text-secondary { color: var(--mp-secondary); }
+.public-site .text-on-primary { color: var(--mp-on-primary); }
+.public-site .text-on-secondary { color: var(--mp-on-secondary); }
+.public-site .text-on-surface { color: var(--mp-on-surface); }
+.public-site .text-on-surface-variant { color: var(--mp-on-surface-variant); }
+.public-site .text-on-primary-container { color: var(--mp-on-primary-container); }
+.public-site .text-on-primary-fixed { color: var(--mp-on-primary-fixed); }
+.public-site .text-on-primary-fixed-variant { color: var(--mp-on-primary-fixed-variant); }
+.public-site .text-on-secondary-container { color: var(--mp-on-secondary-container); }
+.public-site .text-primary-fixed { color: var(--mp-primary-fixed); }
+.public-site .text-primary-container { color: var(--mp-primary-container); }
+.public-site .text-outline { color: var(--mp-outline); }
+.public-site .text-status-success { color: var(--mp-status-success); }
+.public-site .text-status-danger { color: var(--mp-status-danger); }
+.public-site .text-status-warning { color: var(--mp-status-warning); }
+.public-site .text-white { color: #ffffff; }
+
+/* Border colors */
+.public-site .border-border-subtle { border-color: var(--mp-border-subtle); }
+.public-site .border-outline { border-color: var(--mp-outline); }
+.public-site .border-outline-variant { border-color: var(--mp-outline-variant); }
+.public-site .border-primary { border-color: var(--mp-primary); }
+.public-site .border-secondary { border-color: var(--mp-secondary); }
+.public-site .border-status-success { border-color: var(--mp-status-success); }
+.public-site .border-status-danger { border-color: var(--mp-status-danger); }
+.public-site .border-on-primary\/20 { border-color: rgb(255 255 255 / 0.2); }
+.public-site .border-white\/20 { border-color: rgb(255 255 255 / 0.2); }
+
+/* Layout spacing */
+.public-site .px-gutter-desktop { padding-left: var(--mp-gutter-desktop); padding-right: var(--mp-gutter-desktop); }
+.public-site .px-gutter-mobile { padding-left: var(--mp-gutter-mobile); padding-right: var(--mp-gutter-mobile); }
+.public-site .max-w-max-width { max-width: var(--mp-max-width); }
+
+/* Typography — font families */
+.public-site .font-headline-xl,
+.public-site .font-headline-lg,
+.public-site .font-headline-md,
+.public-site .font-label-md,
+.public-site .font-label-sm {
+  font-family: Geist, Inter, system-ui, sans-serif;
+}
+
+.public-site .font-body-lg,
+.public-site .font-body-md {
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* Typography — sizes */
+.public-site .text-headline-xl { font-size: 36px; line-height: 44px; letter-spacing: -0.02em; font-weight: 600; }
+.public-site .text-headline-lg { font-size: 24px; line-height: 32px; letter-spacing: -0.01em; font-weight: 600; }
+.public-site .text-headline-md { font-size: 20px; line-height: 28px; font-weight: 500; }
+.public-site .text-body-lg { font-size: 16px; line-height: 24px; letter-spacing: 0.01em; font-weight: 400; }
+.public-site .text-body-md { font-size: 14px; line-height: 20px; letter-spacing: 0.01em; font-weight: 400; }
+.public-site .text-label-md { font-size: 13px; line-height: 18px; letter-spacing: 0.03em; font-weight: 500; }
+.public-site .text-label-sm { font-size: 11px; line-height: 16px; letter-spacing: 0.05em; font-weight: 600; }
+
+/* Status background opacity variants used in Stitch */
+.public-site .bg-status-success\/10 { background-color: rgb(16 185 129 / 0.1); }
+.public-site .bg-status-success\/20 { background-color: rgb(16 185 129 / 0.2); }
+.public-site .bg-status-danger\/20 { background-color: rgb(239 68 68 / 0.2); }
+.public-site .bg-status-warning\/20 { background-color: rgb(245 158 11 / 0.2); }
+.public-site .bg-primary\/10 { background-color: rgb(0 15 119 / 0.1); }
+.public-site .bg-primary\/20 { background-color: rgb(0 15 119 / 0.2); }
+.public-site .bg-secondary\/5 { background-color: rgb(68 66 227 / 0.05); }
+.public-site .bg-white\/10 { background-color: rgb(255 255 255 / 0.1); }
+.public-site .bg-white\/20 { background-color: rgb(255 255 255 / 0.2); }
+.public-site .bg-white\/90 { background-color: rgb(255 255 255 / 0.9); }
+.public-site .bg-primary-container\/20 { background-color: rgb(30 43 143 / 0.2); }
+
+/* Shadow helpers from Stitch */
+.public-site .bg-secondary-fixed { background-color: var(--mp-secondary-fixed); }
+.public-site .text-surface { color: var(--mp-background); }
+.public-site .bg-on-surface { background-color: var(--mp-on-surface); }
+.public-site .border-primary\/30 { border-color: rgb(0 15 119 / 0.3); }
+.public-site .hover\:border-primary\/30:hover { border-color: rgb(0 15 119 / 0.3); }
