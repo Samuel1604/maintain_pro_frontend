@@ -81,13 +81,13 @@ export function SupportChat({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="m-2 flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] flex-col gap-0 overflow-hidden border-[#cbd5e1] bg-white p-0 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.18),0_8px_10px_-6px_rgba(15,23,42,0.12)] sm:m-0 sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto sm:h-[min(640px,calc(100dvh-7rem))] sm:max-h-[min(640px,calc(100dvh-7rem))] sm:w-[420px] sm:max-w-[calc(100vw-2rem)] sm:translate-x-0 sm:translate-y-0">
-        <DialogHeader className="shrink-0 rounded-none border-b border-[#e2e8f0] bg-white px-5 py-4 pr-12 before:hidden">
+      <DialogContent className="m-2 flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] flex-col gap-0 overflow-hidden border-border bg-card p-0 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.18),0_8px_10px_-6px_rgba(15,23,42,0.12)] sm:m-0 sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto sm:h-[min(640px,calc(100dvh-7rem))] sm:max-h-[min(640px,calc(100dvh-7rem))] sm:w-[420px] sm:max-w-[calc(100vw-2rem)] sm:translate-x-0 sm:translate-y-0">
+        <DialogHeader className="shrink-0 rounded-none border-b border-border bg-card px-5 py-4 pr-12 before:hidden">
           <DialogTitle className="flex items-center gap-3 text-base">
             <BrandMark size={36} className="rounded-md" />
             <span>
               <span className="block">MaintainPro Assistant</span>
-              <span className="mt-1 flex items-center gap-1.5 text-xs font-normal text-[#475569]">
+              <span className="mt-1 flex items-center gap-1.5 text-xs font-normal text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Ready to help
               </span>
             </span>
@@ -96,7 +96,7 @@ export function SupportChat({
             Get quick guidance without leaving your workspace.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden bg-[#f8fafc] p-3 sm:p-4">
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden bg-muted/20 p-3 sm:p-4">
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain pr-1">
             {messages.map((message) => (
               <div
