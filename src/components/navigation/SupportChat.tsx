@@ -80,15 +80,20 @@ export function SupportChat({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 overflow-hidden p-0 sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto sm:h-[min(680px,calc(100dvh-3rem))] sm:w-[410px] sm:max-w-[calc(100vw-2rem)] sm:translate-x-0 sm:translate-y-0">
-        <DialogHeader className="shrink-0 rounded-none px-5 py-4 pr-12 before:hidden">
+      <DialogContent className="gap-0 overflow-hidden border-[#cbd5e1] bg-white p-0 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.18),0_8px_10px_-6px_rgba(15,23,42,0.12)] sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto sm:h-[min(640px,calc(100dvh-7rem))] sm:w-[420px] sm:max-w-[calc(100vw-2rem)] sm:translate-x-0 sm:translate-y-0">
+        <DialogHeader className="shrink-0 rounded-none border-b border-[#e2e8f0] bg-white px-5 py-4 pr-12 before:hidden">
           <DialogTitle className="flex items-center gap-3 text-base">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[#0f172a] text-white">
               <Bot className="h-5 w-5" />
             </span>
             <span>
-              <span className="block">MaintainPro Assistant</span>
-              <span className="mt-0.5 flex items-center gap-1.5 text-xs font-normal text-muted-foreground">
+              <span className="flex items-center gap-2">
+                MaintainPro Assistant{" "}
+                <span className="rounded bg-[#f1f5f9] px-1.5 py-0.5 text-[10px] font-medium text-[#475569]">
+                  V2.4
+                </span>
+              </span>
+              <span className="mt-1 flex items-center gap-1.5 text-xs font-normal text-[#475569]">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Ready to help
               </span>
             </span>
@@ -97,7 +102,7 @@ export function SupportChat({
             Get quick guidance without leaving your workspace.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex min-h-0 flex-1 flex-col gap-3 bg-muted/20 p-4">
+        <div className="flex min-h-0 flex-1 flex-col gap-3 bg-[#f8fafc] p-4">
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
             {messages.map((message) => (
               <div
