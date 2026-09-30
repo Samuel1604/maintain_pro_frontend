@@ -24,6 +24,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { cn } from "@/utils/helpers";
 import { MarqueeText } from "@/components/ui/MarqueeText";
 import { PORTAL_NAV } from "@/app/navigation/portalNav.config";
+import { SupportChat } from "@/components/navigation/SupportChat";
 
 interface AppHeaderProps {
   title: string;
@@ -47,6 +48,7 @@ export function AppHeader({
   const navigate = useNavigate();
   const [navOpen, setNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [supportChatOpen, setSupportChatOpen] = useState(false);
 
   const isDashboard = /\/dashboard\/?$/.test(pathname);
   const routeParts = pathname.split("/").filter(Boolean);
@@ -188,10 +190,12 @@ export function AppHeader({
               size="icon"
               className="hidden h-8 w-8 rounded-lg border border-border text-muted-foreground hover:bg-muted/60 lg:inline-flex"
               aria-label="Help & Support"
-              onClick={() => window.open("https://docs.maintainpro.com", "_blank")}
+              onClick={() => setSupportChatOpen(true)}
             >
               <CircleHelp className="h-4 w-4" />
             </Button>
+
+            <SupportChat open={supportChatOpen} onOpenChange={setSupportChatOpen} />
 
             {actions ? (
               <div className="hidden max-w-[min(50vw,28rem)] items-center justify-end gap-2 lg:flex">
