@@ -80,39 +80,54 @@ export function SupportChat({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Bot className="h-5 w-5 text-primary" />
-            MaintainPro Assistant
+      <DialogContent className="gap-0 overflow-hidden p-0 sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto sm:h-[min(680px,calc(100dvh-3rem))] sm:w-[410px] sm:max-w-[calc(100vw-2rem)] sm:translate-x-0 sm:translate-y-0">
+        <DialogHeader className="shrink-0 rounded-none px-5 py-4 pr-12 before:hidden">
+          <DialogTitle className="flex items-center gap-3 text-base">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Bot className="h-5 w-5" />
+            </span>
+            <span>
+              <span className="block">MaintainPro Assistant</span>
+              <span className="mt-0.5 flex items-center gap-1.5 text-xs font-normal text-muted-foreground">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Ready to help
+              </span>
+            </span>
           </DialogTitle>
-          <DialogDescription>Get quick guidance without leaving your workspace.</DialogDescription>
+          <DialogDescription className="sr-only">
+            Get quick guidance without leaving your workspace.
+          </DialogDescription>
         </DialogHeader>
-        <div className="flex h-[28rem] flex-col gap-4">
-          <div className="flex-1 space-y-3 overflow-y-auto rounded-xl border border-border bg-muted/20 p-3">
+        <div className="flex min-h-0 flex-1 flex-col gap-3 bg-muted/20 p-4">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${message.role === "user" ? "bg-primary text-primary-foreground" : "bg-card text-foreground shadow-sm"}`}
+                  className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${message.role === "user" ? "rounded-br-md bg-primary text-primary-foreground" : "rounded-bl-md border border-border bg-card text-foreground shadow-sm"}`}
                 >
                   {message.text}
                 </div>
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1">
             {(publicMode ? publicSuggestions : portalSuggestions).map((suggestion) => (
-              <Button key={suggestion} variant="outline" size="sm" onClick={() => send(suggestion)}>
-                <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+              <Button
+                key={suggestion}
+                variant="outline"
+                size="sm"
+                className="shrink-0 rounded-full bg-card text-xs"
+                onClick={() => send(suggestion)}
+              >
+                <Sparkles className="mr-1.5 h-3.5 w-3.5 text-primary" />
                 {suggestion}
               </Button>
             ))}
           </div>
           <form
-            className="flex gap-2"
+            className="flex items-center gap-2 rounded-xl border border-border bg-card p-1.5 shadow-sm"
             onSubmit={(event) => {
               event.preventDefault();
               send();
@@ -121,14 +136,20 @@ export function SupportChat({
             <Input
               value={input}
               onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask about MaintainPro..."
+              placeholder="Ask anything about MaintainPro..."
               aria-label="Ask MaintainPro Assistant"
+              className="border-0 shadow-none focus-visible:ring-0"
             />
-            <Button type="submit" size="icon" aria-label="Send message">
+            <Button
+              type="submit"
+              size="icon"
+              className="shrink-0 rounded-lg"
+              aria-label="Send message"
+            >
               <Send className="h-4 w-4" />
             </Button>
           </form>
-          <p className="flex items-center gap-1 text-xs text-muted-foreground">
+          <p className="flex items-center justify-center gap-1 text-[11px] text-muted-foreground">
             <MessageCircle className="h-3.5 w-3.5" />
             For account or technical issues, contact your organization administrator.
           </p>
