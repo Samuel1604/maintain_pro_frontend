@@ -80,7 +80,7 @@ export function SupportChat({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 overflow-hidden border-[#cbd5e1] bg-white p-0 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.18),0_8px_10px_-6px_rgba(15,23,42,0.12)] sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto sm:h-[min(640px,calc(100dvh-7rem))] sm:w-[420px] sm:max-w-[calc(100vw-2rem)] sm:translate-x-0 sm:translate-y-0">
+      <DialogContent className="m-2 flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] flex-col gap-0 overflow-hidden border-[#cbd5e1] bg-white p-0 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.18),0_8px_10px_-6px_rgba(15,23,42,0.12)] sm:m-0 sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto sm:h-[min(640px,calc(100dvh-7rem))] sm:max-h-[min(640px,calc(100dvh-7rem))] sm:w-[420px] sm:max-w-[calc(100vw-2rem)] sm:translate-x-0 sm:translate-y-0">
         <DialogHeader className="shrink-0 rounded-none border-b border-[#e2e8f0] bg-white px-5 py-4 pr-12 before:hidden">
           <DialogTitle className="flex items-center gap-3 text-base">
             <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[#0f172a] text-white">
@@ -102,8 +102,8 @@ export function SupportChat({
             Get quick guidance without leaving your workspace.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex min-h-0 flex-1 flex-col gap-3 bg-[#f8fafc] p-4">
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden bg-[#f8fafc] p-3 sm:p-4">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain pr-1">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -117,7 +117,7 @@ export function SupportChat({
               </div>
             ))}
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex max-h-16 gap-2 overflow-x-auto pb-1">
             {(publicMode ? publicSuggestions : portalSuggestions).map((suggestion) => (
               <Button
                 key={suggestion}
