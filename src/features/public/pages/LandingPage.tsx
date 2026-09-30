@@ -445,7 +445,7 @@ export function LandingPage() {
         aria-label="AI Assistant & Support"
       >
         <MaterialIcon name="smart_toy" className="text-3xl" />
-        <span className="absolute right-full mr-4 whitespace-nowrap rounded bg-on-surface px-3.5 py-1.5 text-xs text-surface-bright shadow-md opacity-0 transition-opacity group-hover:opacity-100 font-label-sm">
+        <span className="absolute right-full mr-4 whitespace-nowrap rounded border border-border bg-popover px-3.5 py-1.5 text-xs text-popover-foreground shadow-md opacity-0 transition-opacity group-hover:opacity-100 font-label-sm">
           AI Assistant &amp; Support
         </span>
       </button>
