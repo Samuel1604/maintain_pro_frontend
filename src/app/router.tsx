@@ -55,29 +55,14 @@ const VerifyEmailPage = lazyNamed(() => import("@/features/auth/pages/VerifyEmai
 const OAuthSuccess = lazyNamed(() => import("@/features/auth/pages/OAuthSuccess"), "OAuthSuccess");
 const UnauthorizedPage = lazy(() => import("@/features/auth/pages/UnauthorizedPage"));
 
-const AboutPage = lazyNamed(() => import("@/features/public/pages/AboutPage"), "AboutPage");
-const ContactPage = lazyNamed(() => import("@/features/public/pages/ContactPage"), "ContactPage");
-const FeaturesPage = lazyNamed(
-  () => import("@/features/public/pages/FeaturesPage"),
-  "FeaturesPage",
-);
-const PricingPage = lazyNamed(() => import("@/features/public/pages/PricingPage"), "PricingPage");
-const CheckoutPage = lazyNamed(
-  () => import("@/features/public/pages/CheckoutPage"),
-  "CheckoutPage",
-);
-const PrivacyPolicyPage = lazyNamed(
-  () => import("@/features/public/pages/PrivacyPolicyPage"),
-  "PrivacyPolicyPage",
-);
-const PublicHomeRoute = lazyNamed(
-  () => import("@/features/public/pages/LandingPage"),
-  "LandingPage",
-);
-const TermsOfServicePage = lazyNamed(
-  () => import("@/features/public/pages/TermsOfServicePage"),
-  "TermsOfServicePage",
-);
+import { AboutPage } from "@/features/public/pages/AboutPage";
+import { ContactPage } from "@/features/public/pages/ContactPage";
+import { FeaturesPage } from "@/features/public/pages/FeaturesPage";
+import { PricingPage } from "@/features/public/pages/PricingPage";
+import { CheckoutPage } from "@/features/public/pages/CheckoutPage";
+import { PrivacyPolicyPage } from "@/features/public/pages/PrivacyPolicyPage";
+import { LandingPage } from "@/features/public/pages/LandingPage";
+import { TermsOfServicePage } from "@/features/public/pages/TermsOfServicePage";
 
 /** Legacy segments that used to be bare /dashboard etc. */
 const LEGACY_SEGMENTS = [
@@ -128,16 +113,16 @@ export const router = createBrowserRouter([
       {
         element: <PublicLayout />,
         children: [
-          { path: "/", element: lazyPage(<PublicHomeRoute />) },
-          { path: "/features", element: lazyPage(<FeaturesPage />) },
-          { path: "/pricing", element: lazyPage(<PricingPage />) },
-          { path: "/checkout", element: lazyPage(<CheckoutPage />) },
-          { path: "/about", element: lazyPage(<AboutPage />) },
-          { path: "/contact", element: lazyPage(<ContactPage />) },
-          { path: "/privacy-policy", element: lazyPage(<PrivacyPolicyPage />) },
+          { path: "/", element: <LandingPage /> },
+          { path: "/features", element: <FeaturesPage /> },
+          { path: "/pricing", element: <PricingPage /> },
+          { path: "/checkout", element: <CheckoutPage /> },
+          { path: "/about", element: <AboutPage /> },
+          { path: "/contact", element: <ContactPage /> },
+          { path: "/privacy-policy", element: <PrivacyPolicyPage /> },
           {
             path: "/terms-of-service",
-            element: lazyPage(<TermsOfServicePage />),
+            element: <TermsOfServicePage />,
           },
         ],
       },
