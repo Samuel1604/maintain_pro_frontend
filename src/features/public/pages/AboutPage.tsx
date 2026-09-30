@@ -289,7 +289,7 @@ export function AboutPage() {
         </section>
 
       </main>
-      <PublicFooter variant="about" />
+      <PublicFooter />
     </>
   );
 }

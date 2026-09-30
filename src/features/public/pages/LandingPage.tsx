@@ -435,7 +435,7 @@ export function LandingPage() {
           </div>
         </section>
       </main>
-      <PublicFooter variant="landing" />
+      <PublicFooter />
 
       {/* Floating AI Assistant / Support FAB */}
       <button

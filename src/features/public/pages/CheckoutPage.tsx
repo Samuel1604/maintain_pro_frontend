@@ -160,7 +160,7 @@ export function CheckoutPage() {
             </div>
           </div>
         </main>
-        <PublicFooter variant="pricing" />
+        <PublicFooter />
       </>
     );
   }
@@ -360,7 +360,7 @@ export function CheckoutPage() {
         </div>
         </div>
       </main>
-      <PublicFooter variant="pricing" />
+      <PublicFooter />
     </>
   );
 }

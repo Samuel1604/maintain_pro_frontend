@@ -4,16 +4,7 @@ import { Link } from "react-router-dom";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { PUBLIC_ROUTES } from "@/features/public/constants/routes";
 
-type FooterVariant = "landing" | "features" | "about" | "contact" | "pricing";
-
-interface PublicFooterProps {
-  variant?: FooterVariant;
-}
-
-export function PublicFooter({ variant = "landing" }: PublicFooterProps) {
-  // Keep the public experience consistent across every marketing page.
-  // `variant` remains accepted for existing call sites and future active-state needs.
-  void variant;
+export function PublicFooter() {
   const showNewsletter = true;
   const [newsletterState, setNewsletterState] = useState<"idle" | "success">(
     "idle",
@@ -90,11 +81,7 @@ export function PublicFooter({ variant = "landing" }: PublicFooterProps) {
             <li>
               <Link
                 to={PUBLIC_ROUTES.ABOUT}
-                className={
-                  variant === "about"
-                    ? "font-body-md text-body-md font-bold text-primary"
-                    : "text-on-surface-variant transition-colors hover:text-primary"
-                }
+                className="text-on-surface-variant transition-colors hover:text-primary"
               >
                 About
               </Link>

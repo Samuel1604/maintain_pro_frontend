@@ -188,7 +188,7 @@ export function ContactPage() {
           </div>
         </div>
       </main>
-      <PublicFooter variant="contact" />
+      <PublicFooter />
     </>
   )
 }

@@ -439,7 +439,7 @@ export function FeaturesPage() {
         </section>
 
       </main>
-      <PublicFooter variant="features" />
+      <PublicFooter />
     </>
   );
 }

@@ -30,7 +30,7 @@ export function TermsOfServicePage() {
           </div>
         </section>
       </main>
-      <PublicFooter variant="contact" />
+      <PublicFooter />
     </>
   )
 }

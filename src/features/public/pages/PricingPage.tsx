@@ -316,7 +316,7 @@ export function PricingPage() {
           </div>
         </section>
       </main>
-      <PublicFooter variant="pricing" />
+      <PublicFooter />
     </>
   );
 }
