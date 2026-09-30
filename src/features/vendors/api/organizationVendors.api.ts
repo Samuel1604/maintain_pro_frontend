@@ -21,7 +21,9 @@ export const organizationVendorsApi = {
   list: (params?: OrganizationVendorListParams) =>
     apiClient.get<OrganizationVendorListResponse>("/organizations/me/vendors", { params }),
   marketplace: (params?: Omit<OrganizationVendorListParams, "status">) =>
-    apiClient.get("/organizations/me/vendors/marketplace", { params }),
+    apiClient.get<OrganizationVendorListResponse>("/organizations/me/vendors/marketplace", {
+      params,
+    }),
   get: (vendorId: string) =>
     apiClient.get<OrganizationVendor>(`/organizations/me/vendors/${vendorId}`),
   requestRelationship: (vendorId: string) =>

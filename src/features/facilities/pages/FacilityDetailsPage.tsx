@@ -147,9 +147,9 @@ export function FacilityDetailsPage() {
           state: form.state.trim(),
           country: form.country.trim() || facility.address.country,
         },
-        description: form.description.trim() || null,
-        primaryPhone: form.primaryPhone.trim() || null,
-        emergencyContact: form.emergencyContact.trim() || null,
+        description: form.description.trim() || undefined,
+        primaryPhone: form.primaryPhone.trim() || undefined,
+        emergencyContact: form.emergencyContact.trim() || undefined,
       });
       toast.success("Facility updated");
       setEditOpen(false);

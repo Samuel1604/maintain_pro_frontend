@@ -16,7 +16,7 @@ export const facilityKeys = {
 export function useFacilities() {
   return useQuery<FacilitiesResponse>({
     queryKey: facilityKeys.all,
-    queryFn: facilitiesApi.list,
+    queryFn: () => facilitiesApi.list(),
     ...queryTiming.reference,
     retry: false,
   });
@@ -49,7 +49,8 @@ export function useFacilityMutations() {
     update: useMutation({
       mutationFn: (input: { id: string; payload: FacilityUpdatePayload }) =>
         facilitiesApi.update(input.id, input.payload),
-      onSuccess: (_data: Facility, variables: { id: string }) => refreshDetail(variables.id),
+      onSuccess: (_data: Facility, variables: { id: string; payload: FacilityUpdatePayload }) =>
+        refreshDetail(variables.id),
     }),
     deactivate: useMutation({
       mutationFn: (id: string) => facilitiesApi.deactivate(id),

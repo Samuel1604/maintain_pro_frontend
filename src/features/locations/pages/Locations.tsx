@@ -79,6 +79,8 @@ export function Locations() {
   }));
   const editableLocations: CommonLocation[] = apiLocations.map((location) => ({
     ...location,
+    createdAt: new Date(location.createdAt),
+    updatedAt: new Date(location.updatedAt),
     type:
       location.type.toLowerCase() === "area" || location.type.toLowerCase() === "zone"
         ? "zone"

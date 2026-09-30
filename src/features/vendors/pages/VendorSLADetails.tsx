@@ -229,7 +229,7 @@ export function VendorSLADetails() {
                       <div className="mt-5 border-t border-border pt-4">
                         <p className={label}>Explicit SLA exclusions</p>
                         <p className="text-sm text-muted-foreground">
-                          {sla.notes ??
+                          {sla?.notes ??
                             "Full unit replacement requests, duct modifications exceeding 10 meters, and works subcontracted out to third parties without prior authorization."}
                         </p>
                       </div>
