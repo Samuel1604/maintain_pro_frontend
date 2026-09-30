@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bot, MessageCircle, Send, Sparkles } from "lucide-react";
+import { MessageCircle, Send, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { BrandMark } from "@/components/brand/BrandMark";
 
 type ChatMessage = { id: number; role: "assistant" | "user"; text: string };
 
@@ -83,16 +84,9 @@ export function SupportChat({
       <DialogContent className="m-2 flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] flex-col gap-0 overflow-hidden border-[#cbd5e1] bg-white p-0 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.18),0_8px_10px_-6px_rgba(15,23,42,0.12)] sm:m-0 sm:bottom-6 sm:right-6 sm:top-auto sm:left-auto sm:h-[min(640px,calc(100dvh-7rem))] sm:max-h-[min(640px,calc(100dvh-7rem))] sm:w-[420px] sm:max-w-[calc(100vw-2rem)] sm:translate-x-0 sm:translate-y-0">
         <DialogHeader className="shrink-0 rounded-none border-b border-[#e2e8f0] bg-white px-5 py-4 pr-12 before:hidden">
           <DialogTitle className="flex items-center gap-3 text-base">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[#0f172a] text-white">
-              <Bot className="h-5 w-5" />
-            </span>
+            <BrandMark size={36} className="rounded-md" />
             <span>
-              <span className="flex items-center gap-2">
-                MaintainPro Assistant{" "}
-                <span className="rounded bg-[#f1f5f9] px-1.5 py-0.5 text-[10px] font-medium text-[#475569]">
-                  V2.4
-                </span>
-              </span>
+              <span className="block">MaintainPro Assistant</span>
               <span className="mt-1 flex items-center gap-1.5 text-xs font-normal text-[#475569]">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Ready to help
               </span>
