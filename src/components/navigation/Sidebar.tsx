@@ -1,11 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 
-import {
-  buildPortalPath,
-  buildUserPortalPath,
-  PORTALS,
-  type Portal,
-} from "@/app/portal.config";
+import { buildPortalPath, buildUserPortalPath, PORTALS, type Portal } from "@/app/portal.config";
 import { PORTAL_NAV } from "@/app/navigation/portalNav.config";
 import { filterNavItemsByRole } from "@/app/navigation/routeAccess";
 import { cn } from "@/utils/helpers";
@@ -29,10 +24,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
   const organizationFromStore = useAuthStore((state) => state.organization);
 
   const isVendorRole = Boolean(
-    user?.role &&
-      ["vendor_lead", "vendor_manager", "vendor_technician"].includes(
-        user.role,
-      ),
+    user?.role && ["vendor_lead", "vendor_manager", "vendor_technician"].includes(user.role),
   );
   // Fetch only the profile relevant to this portal; previously every portal
   // issued a second, unauthorized branding request during navigation.
@@ -43,17 +35,16 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
   const { unreadCount } = useUserNotifications();
 
   // Derive vendor / organization branding dynamically from backend data
-  const vendorName = vendorData?.name || (user as typeof user & { vendorName?: string })?.vendorName || "";
-  const brandingReady = isVendorRole ? Boolean(vendorName) : Boolean(orgData?.name || organizationFromStore?.name);
+  const vendorName =
+    vendorData?.name || (user as typeof user & { vendorName?: string })?.vendorName || "";
+  const brandingReady = isVendorRole
+    ? Boolean(vendorName)
+    : Boolean(orgData?.name || organizationFromStore?.name);
   const brandingLoading = !brandingReady;
-  const orgName = isVendorRole
-    ? vendorName
-    : orgData?.name || organizationFromStore?.name || "";
+  const orgName = isVendorRole ? vendorName : orgData?.name || organizationFromStore?.name || "";
 
   // Branding is strictly tenant-scoped. A user's avatar must never be a logo fallback.
-  const orgLogo = isVendorRole
-    ? vendorData?.logo
-    : orgData?.logo || organizationFromStore?.logo;
+  const orgLogo = isVendorRole ? vendorData?.logo : orgData?.logo || organizationFromStore?.logo;
 
   const orgInitials =
     orgName
@@ -114,12 +105,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
     },
     {
       label: "Marketplace",
-      segments: [
-        "vendors",
-        "vendors/marketplace",
-        "vendors/quotations",
-        "vendors/contracts",
-      ],
+      segments: ["vendors", "vendors/marketplace", "vendors/quotations", "vendors/contracts"],
     },
     { label: "Finance", segments: ["approvals", "invoices", "billing"] },
     { label: "Admin", segments: ["reports", "settings", "notifications"] },
@@ -130,9 +116,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
           .map((group) => ({
             ...group,
             items: group.segments
-              .map((segment) =>
-                displayItems.find((item) => item.segment === segment),
-              )
+              .map((segment) => displayItems.find((item) => item.segment === segment))
               .filter(Boolean) as typeof displayItems,
           }))
           .filter((group) => group.items.length > 0)
@@ -153,9 +137,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
     .filter((group) => group.items.length > 0);
 
   const hrefFor = (segment: string) =>
-    user
-      ? buildUserPortalPath(user, `/${segment}`)
-      : buildPortalPath(portal, `/${segment}`);
+    user ? buildUserPortalPath(user, `/${segment}`) : buildPortalPath(portal, `/${segment}`);
 
   const profilePath = hrefFor("profile");
 
@@ -174,27 +156,17 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
     // that page or a direct child — not when a deeper multi-segment sibling is active.
     const isMultiSegment = item.segment.includes("/");
     const multiSegmentPrefixes = displayItems
-      .filter(
-        (i) =>
-          i.segment.includes("/") && i.segment.startsWith(item.segment + "/"),
-      )
+      .filter((i) => i.segment.includes("/") && i.segment.startsWith(item.segment + "/"))
       .map((i) => hrefFor(i.segment));
     const isActive = isMultiSegment
       ? pathname === href || pathname.startsWith(`${href}/`)
       : (pathname === href || pathname.startsWith(`${href}/`)) &&
-        !multiSegmentPrefixes.some(
-          (p) => pathname === p || pathname.startsWith(`${p}/`),
-        );
+        !multiSegmentPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
     const badge = item.badge ?? badgeForSegment(item.segment);
     const isInventoryAlert = item.segment === "inventory" && badge && badge > 0;
 
     return (
-      <Link
-        key={item.name}
-        to={href}
-        onClick={onNavigate}
-        className={navItemClass(isActive)}
-      >
+      <Link key={item.name} to={href} onClick={onNavigate} className={navItemClass(isActive)}>
         {/* Active indicator bar */}
         <span
           className={cn(
@@ -203,9 +175,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
           )}
           aria-hidden
         />
-        <item.icon
-          className={cn("h-4 w-4 shrink-0", isActive && "text-primary")}
-        />
+        <item.icon className={cn("h-4 w-4 shrink-0", isActive && "text-primary")} />
         <MarqueeText className="flex-1 text-[13px]">{item.name}</MarqueeText>
         {badge ? (
           <Badge
@@ -226,19 +196,26 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
     <aside className="flex h-full min-h-0 w-full lg:w-(--sidebar-width-compact) xl:w-(--sidebar-width) flex-col border-r border-sidebar-border bg-gradient-to-b from-sidebar-accent/10 via-sidebar/95 to-sidebar px-3 py-5 transition-all duration-200">
       {/* Organization Logo Avatar + Name */}
       <div className="mb-2 flex items-center gap-2.5 rounded-2xl border border-sidebar-border/70 bg-sidebar-accent/30 px-2.5 py-3.5">
-        {brandingLoading ? <><div className="h-8 w-8 shrink-0 animate-pulse rounded-xl bg-sidebar-foreground/10" /><div className="h-4 w-32 animate-pulse rounded bg-sidebar-foreground/10" /></> : <>
-        <Avatar className="h-8 w-8 shrink-0 rounded-xl">
-          <AvatarImage src={orgLogo} alt={orgName} />
-          <AvatarFallback className="rounded-xl bg-sidebar-primary text-sidebar-primary-foreground text-[12px] font-bold">
-            {orgInitials}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <MarqueeText className="text-[15px] font-bold leading-tight text-sidebar-foreground">
-            {orgName}
-          </MarqueeText>
-        </div>
-        </>}
+        {brandingLoading ? (
+          <>
+            <div className="h-8 w-8 shrink-0 animate-pulse rounded-xl bg-sidebar-foreground/10" />
+            <div className="h-4 w-32 animate-pulse rounded bg-sidebar-foreground/10" />
+          </>
+        ) : (
+          <>
+            <Avatar className="h-8 w-8 shrink-0 rounded-xl">
+              <AvatarImage src={orgLogo} alt={orgName} />
+              <AvatarFallback className="rounded-xl bg-sidebar-primary text-sidebar-primary-foreground text-[12px] font-bold">
+                {orgInitials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 flex-1">
+              <MarqueeText className="text-[15px] font-bold leading-tight text-sidebar-foreground">
+                {orgName}
+              </MarqueeText>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Nav items container with hidden scrollbar */}
@@ -247,9 +224,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
           <div className="space-y-4">
             {displayItems.some((item) => item.segment === "dashboard") ? (
               <nav className="space-y-0.5">
-                {displayItems
-                  .filter((item) => item.segment === "dashboard")
-                  .map(renderNavItem)}
+                {displayItems.filter((item) => item.segment === "dashboard").map(renderNavItem)}
               </nav>
             ) : null}
             {groupedItems.map((group) => (
@@ -257,9 +232,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
                 <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-sidebar-foreground/40">
                   {group.label}
                 </p>
-                <nav className="space-y-0.5">
-                  {group.items.map(renderNavItem)}
-                </nav>
+                <nav className="space-y-0.5">{group.items.map(renderNavItem)}</nav>
               </section>
             ))}
           </div>
@@ -267,9 +240,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
           <div className="space-y-4">
             {displayItems.some((item) => item.segment === "dashboard") ? (
               <nav className="space-y-0.5">
-                {displayItems
-                  .filter((item) => item.segment === "dashboard")
-                  .map(renderNavItem)}
+                {displayItems.filter((item) => item.segment === "dashboard").map(renderNavItem)}
               </nav>
             ) : null}
             {vendorGroups.map((group) => (
@@ -277,9 +248,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
                 <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-sidebar-foreground/40">
                   {group.label}
                 </p>
-                <nav className="space-y-0.5">
-                  {group.items.map(renderNavItem)}
-                </nav>
+                <nav className="space-y-0.5">{group.items.map(renderNavItem)}</nav>
               </section>
             ))}
           </div>
@@ -290,8 +259,7 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
             <nav className="space-y-0.5">
               {secondaryItems.map((item) => {
                 const href = hrefFor(item.segment);
-                const isActive =
-                  pathname === href || pathname.startsWith(`${href}/`);
+                const isActive = pathname === href || pathname.startsWith(`${href}/`);
                 return (
                   <Link
                     key={item.name}
@@ -306,15 +274,8 @@ export function AppSidebar({ portal, onNavigate }: AppSidebarProps) {
                       )}
                       aria-hidden
                     />
-                    <item.icon
-                      className={cn(
-                        "h-4 w-4 shrink-0",
-                        isActive && "text-primary",
-                      )}
-                    />
-                    <MarqueeText className="flex-1 text-[13px]">
-                      {item.name}
-                    </MarqueeText>
+                    <item.icon className={cn("h-4 w-4 shrink-0", isActive && "text-primary")} />
+                    <MarqueeText className="flex-1 text-[13px]">{item.name}</MarqueeText>
                   </Link>
                 );
               })}

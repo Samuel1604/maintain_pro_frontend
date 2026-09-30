@@ -10,7 +10,12 @@ interface InviteUserModalProps {
   facilityName?: string;
 }
 
-export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: InviteUserModalProps) {
+export function InviteUserModal({
+  isOpen,
+  onClose,
+  facilityId,
+  facilityName,
+}: InviteUserModalProps) {
   const actorRole = useAuthStore((s) => s.user?.role);
 
   const [email, setEmail] = useState("");
@@ -54,7 +59,13 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
     setError(null);
 
     invitationApi
-      .createTempInvitation({ email, firstName, lastName, role, ...(facilityId ? { facilityId } : {}) })
+      .createTempInvitation({
+        email,
+        firstName,
+        lastName,
+        role,
+        ...(facilityId ? { facilityId } : {}),
+      })
       .then((res) => {
         // res.data or res direct based on API client wrapper
         const data = (res as any)?.data ?? res;
@@ -141,7 +152,14 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
               <UserPlus size={20} color="var(--primary-foreground)" />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700, color: "var(--primary-foreground)" }}>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: "1.1rem",
+                  fontWeight: 700,
+                  color: "var(--primary-foreground)",
+                }}
+              >
                 {facilityName ? `Invite Facility Manager for ${facilityName}` : "Invite New User"}
               </h2>
               <p style={{ margin: "2px 0 0", fontSize: "0.8rem", color: "rgba(255,255,255,0.7)" }}>
@@ -186,7 +204,10 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
           )}
 
           {!createdResult ? (
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <form
+              onSubmit={handleSubmit}
+              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            >
               <div style={{ display: "flex", gap: "12px" }}>
                 <div style={{ flex: 1 }}>
                   <label
@@ -341,7 +362,9 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
               >
                 <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: "2px" }} />
                 <div>
-                  <strong>Important:</strong> Save or copy these temporary credentials. If the user does not login within <strong>15 minutes</strong>, the account will be automatically purged.
+                  <strong>Important:</strong> Save or copy these temporary credentials. If the user
+                  does not login within <strong>15 minutes</strong>, the account will be
+                  automatically purged.
                 </div>
               </div>
 
@@ -357,7 +380,14 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
                 }}
               >
                 <div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--muted-foreground)", textTransform: "uppercase", fontWeight: 700 }}>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--muted-foreground)",
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                    }}
+                  >
                     User Email
                   </span>
                   <div style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--foreground)" }}>
@@ -366,7 +396,14 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
                 </div>
 
                 <div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--muted-foreground)", textTransform: "uppercase", fontWeight: 700 }}>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--muted-foreground)",
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                    }}
+                  >
                     Temporary Password
                   </span>
                   <div
@@ -393,7 +430,9 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
                   padding: "10px",
                   borderRadius: "6px",
                   border: "1.5px solid var(--primary)",
-                  background: copied ? "color-mix(in oklch, var(--success) 12%, transparent)" : "transparent",
+                  background: copied
+                    ? "color-mix(in oklch, var(--success) 12%, transparent)"
+                    : "transparent",
                   color: copied ? "var(--success)" : "var(--primary)",
                   borderColor: copied ? "var(--success)" : "var(--primary)",
                   fontWeight: 600,

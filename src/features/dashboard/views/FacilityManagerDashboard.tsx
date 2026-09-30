@@ -216,19 +216,14 @@ function PriorityBar({ orders }: { orders: WorkOrder[] }) {
   const liveTotals = PRIORITY_LEVELS.map((p) => ({
     ...p,
     value:
-      orders.length > 0
-        ? orders.filter((o) => o.priority === p.label.toLowerCase()).length
-        : 0,
+      orders.length > 0 ? orders.filter((o) => o.priority === p.label.toLowerCase()).length : 0,
   }));
   const total = Math.max(
     liveTotals.reduce((n, p) => n + p.value, 0),
     1,
   );
   return (
-    <SectionCard
-      title="Work Orders by Priority"
-      subtitle="Total open tasks grouped by severity"
-    >
+    <SectionCard title="Work Orders by Priority" subtitle="Total open tasks grouped by severity">
       <div className="flex h-3 w-full overflow-hidden rounded-full">
         {liveTotals.map((p) => (
           <span
@@ -300,9 +295,7 @@ function SchedulePanel({ orders }: { orders: WorkOrder[] }) {
                 <p className="text-[13px] font-semibold text-foreground leading-snug">
                   {row.title}
                 </p>
-                <p className="text-[12px] text-muted-foreground">
-                  {row.location}
-                </p>
+                <p className="text-[12px] text-muted-foreground">{row.location}</p>
               </div>
               <span
                 className="text-[12px] font-medium whitespace-nowrap"
@@ -345,21 +338,12 @@ function ActivityPanel({ orders }: { orders: WorkOrder[] }) {
           </p>
         ) : (
           rows.map((row) => (
-            <div
-              key={row.id}
-              className="flex items-start justify-between gap-3 px-5 py-3"
-            >
+            <div key={row.id} className="flex items-start justify-between gap-3 px-5 py-3">
               <div className="min-w-0">
-                <p className="text-[13px] font-medium text-foreground leading-snug">
-                  {row.text}
-                </p>
-                <p className="mt-0.5 text-[12px] text-muted-foreground">
-                  {row.sub}
-                </p>
+                <p className="text-[13px] font-medium text-foreground leading-snug">{row.text}</p>
+                <p className="mt-0.5 text-[12px] text-muted-foreground">{row.sub}</p>
               </div>
-              <span className="shrink-0 text-[12px] text-muted-foreground">
-                {row.time}
-              </span>
+              <span className="shrink-0 text-[12px] text-muted-foreground">{row.time}</span>
             </div>
           ))
         )}
@@ -368,11 +352,7 @@ function ActivityPanel({ orders }: { orders: WorkOrder[] }) {
   );
 }
 
-function FacilityHealthPanel({
-  locations,
-}: {
-  locations: { id: string; name: string }[];
-}) {
+function FacilityHealthPanel({ locations }: { locations: { id: string; name: string }[] }) {
   if (true) {
     return (
       <SectionCard
@@ -402,19 +382,12 @@ function FacilityHealthPanel({
     >
       <div className="divide-y divide-[#f1f5f9]">
         {rows.map((f) => (
-          <div
-            key={f.name}
-            className="flex items-start justify-between gap-3 px-5 py-3"
-          >
+          <div key={f.name} className="flex items-start justify-between gap-3 px-5 py-3">
             <div>
-              <p className="text-[13px] font-semibold text-foreground">
-                {f.name}
-              </p>
+              <p className="text-[13px] font-semibold text-foreground">{f.name}</p>
               <p className="mt-1 text-[12px] text-muted-foreground">
-                SLA:{" "}
-                <span className="font-medium text-foreground">{f.sla}</span>
-                {"  "}PM Schedule:{" "}
-                <span className="font-medium text-foreground">{f.pm}</span>
+                SLA: <span className="font-medium text-foreground">{f.sla}</span>
+                {"  "}PM Schedule: <span className="font-medium text-foreground">{f.pm}</span>
               </p>
             </div>
             <span
@@ -458,14 +431,10 @@ function TechnicianWorkloadPanel() {
               style={{ backgroundColor: t.dotColor }}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold text-foreground">
-                {t.name}
-              </p>
+              <p className="text-[13px] font-semibold text-foreground">{t.name}</p>
               <p className="text-[12px] text-muted-foreground">{t.status}</p>
             </div>
-            <span className="text-[13px] font-semibold text-foreground">
-              {t.wos} WOs
-            </span>
+            <span className="text-[13px] font-semibold text-foreground">{t.wos} WOs</span>
           </div>
         ))}
       </div>
@@ -495,17 +464,10 @@ function PreferredVendorsPanel() {
     >
       <div className="divide-y divide-[#f1f5f9]">
         {PREFERRED_VENDORS.map((v) => (
-          <div
-            key={v.name}
-            className="flex items-center justify-between gap-3 px-5 py-3"
-          >
+          <div key={v.name} className="flex items-center justify-between gap-3 px-5 py-3">
             <div>
-              <p className="text-[13px] font-semibold text-foreground">
-                {v.name}
-              </p>
-              <p className="text-[12px] text-muted-foreground">
-                {v.discipline}
-              </p>
+              <p className="text-[13px] font-semibold text-foreground">{v.name}</p>
+              <p className="text-[12px] text-muted-foreground">{v.discipline}</p>
             </div>
             <span
               className="rounded px-2 py-0.5 text-[11px] font-bold whitespace-nowrap"
@@ -524,8 +486,7 @@ function PreferredVendorsPanel() {
 
 export function FacilityManagerDashboard() {
   const user = useAuthStore((s) => s.user);
-  const { workOrdersInRange, stats, activeWorkOrders, hasData } =
-    useRoleDashboardDateRange("30d");
+  const { workOrdersInRange, stats, activeWorkOrders, hasData } = useRoleDashboardDateRange("30d");
   const locations = useLocationsApi().data ?? [];
   const createPath = usePortalPath("work-orders/new");
   const workOrdersPath = usePortalPath("work-orders");
@@ -580,11 +541,7 @@ export function FacilityManagerDashboard() {
           <KPICard
             title="Open Work Orders"
             value={stats.openWorkOrders}
-            changeLabel={
-              hasData
-                ? "Current reporting period"
-                : "No work orders in this period"
-            }
+            changeLabel={hasData ? "Current reporting period" : "No work orders in this period"}
             icon="work-orders"
             href={workOrdersPath}
           />

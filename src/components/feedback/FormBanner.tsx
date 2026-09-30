@@ -1,26 +1,26 @@
-import { FeedbackAlert, type FeedbackVariant } from '@/components/feedback/FeedbackAlert'
-import { mapHttpToAppError } from '@/lib/errors/errorMapper'
-import type { ErrorCategory } from '@/lib/errors/AppError'
-import { getErrorMessages } from '@/lib/get-error-message'
-import { cn } from '@/utils/helpers'
+import { FeedbackAlert, type FeedbackVariant } from "@/components/feedback/FeedbackAlert";
+import { mapHttpToAppError } from "@/lib/errors/errorMapper";
+import type { ErrorCategory } from "@/lib/errors/AppError";
+import { getErrorMessages } from "@/lib/get-error-message";
+import { cn } from "@/utils/helpers";
 
 const CATEGORY_VARIANT: Record<ErrorCategory, FeedbackVariant> = {
-  VALIDATION: 'error',
-  AUTHENTICATION: 'error',
-  AUTHORIZATION: 'warning',
-  NOT_FOUND: 'info',
-  BUSINESS: 'warning',
-  NETWORK: 'error',
-  EMAIL_VERIFICATION_REQUIRED: 'warning',
-  UNEXPECTED: 'error',
-}
+  VALIDATION: "error",
+  AUTHENTICATION: "error",
+  AUTHORIZATION: "warning",
+  NOT_FOUND: "info",
+  BUSINESS: "warning",
+  NETWORK: "error",
+  EMAIL_VERIFICATION_REQUIRED: "warning",
+  UNEXPECTED: "error",
+};
 
 interface FormBannerProps {
   /** Raw error from a mutation/query — mapped and categorized here. Never re-worded. */
-  error: unknown
-  fallback?: string
-  className?: string
-  onDismiss?: () => void
+  error: unknown;
+  fallback?: string;
+  className?: string;
+  onDismiss?: () => void;
 }
 
 /**
@@ -29,11 +29,11 @@ interface FormBannerProps {
  * message — this component only handles presentation, icon, and color.
  */
 export function FormBanner({ error, fallback, className, onDismiss }: FormBannerProps) {
-  if (!error) return null
+  if (!error) return null;
 
-  const appError = mapHttpToAppError(error)
-  const variant = CATEGORY_VARIANT[appError.category]
-  const messages = getErrorMessages(error, fallback)
+  const appError = mapHttpToAppError(error);
+  const variant = CATEGORY_VARIANT[appError.category];
+  const messages = getErrorMessages(error, fallback);
 
   return (
     <FeedbackAlert variant={variant} className={cn(className)} onDismiss={onDismiss}>
@@ -50,5 +50,5 @@ export function FormBanner({ error, fallback, className, onDismiss }: FormBanner
         </div>
       )}
     </FeedbackAlert>
-  )
+  );
 }

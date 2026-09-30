@@ -6,13 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -21,18 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  ArrowLeft,
-  Calendar as CalendarIcon,
-  Loader2,
-  Upload,
-  X,
-} from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ArrowLeft, Calendar as CalendarIcon, Loader2, Upload, X } from "lucide-react";
 import { workOrdersService } from "../services/workOrders.service";
 import { facilitiesApi } from "@/features/facilities/api/facilities.api";
 import { locationsApi } from "@/features/locations/api/locations.api";
@@ -43,17 +27,27 @@ import { useAuthStore } from "@/app/store";
 import { usePortalPath } from "@/hooks/usePortal";
 import { toast } from "sonner";
 
-export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: boolean; onComplete?: () => void }) {
-  const navigate = useNavigate()
-  const workOrdersPath = usePortalPath('work-orders')
+export function CreateWorkOrder({
+  embedded = false,
+  onComplete,
+}: {
+  embedded?: boolean;
+  onComplete?: () => void;
+}) {
+  const navigate = useNavigate();
+  const workOrdersPath = usePortalPath("work-orders");
   const [isLoading, setIsLoading] = useState(false);
   const [dueDate, setDueDate] = useState<Date>();
   const user = useAuthStore((state) => state.user);
-  const [facilities, setFacilities] = useState<Array<{ id: string; name: string }>>([])
-  const [locations, setLocations] = useState<Array<{ id: string; name: string; facilityId: string }>>([])
-  const [assets, setAssets] = useState<Array<{ id: string; assetTag: string; name: string; locationId: string }>>([])
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const [validationError, setValidationError] = useState<string | null>(null)
+  const [facilities, setFacilities] = useState<Array<{ id: string; name: string }>>([]);
+  const [locations, setLocations] = useState<
+    Array<{ id: string; name: string; facilityId: string }>
+  >([]);
+  const [assets, setAssets] = useState<
+    Array<{ id: string; assetTag: string; name: string; locationId: string }>
+  >([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const isManager = user?.role === "facility_manager" || user?.role === "admin";
 
@@ -70,17 +64,34 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
   });
 
   useEffect(() => {
-    void facilitiesApi.list({ page: 1, limit: 100 }).then((result) => { setFacilities(result.data); if (result.data.length === 1) setFormData((current) => ({ ...current, facilityId: result.data[0].id })) }).catch(() => setLoadError('Unable to load facilities'))
-  }, [])
+    void facilitiesApi
+      .list({ page: 1, limit: 100 })
+      .then((result) => {
+        setFacilities(result.data);
+        if (result.data.length === 1)
+          setFormData((current) => ({ ...current, facilityId: result.data[0].id }));
+      })
+      .catch(() => setLoadError("Unable to load facilities"));
+  }, []);
 
   useEffect(() => {
-    if (!formData.facilityId) { setLocations([]); setAssets([]); return }
-    setLoadError(null)
-    void locationsApi.listByFacility(formData.facilityId).then(setLocations).catch(() => setLoadError('Unable to load locations'))
-  }, [formData.facilityId])
+    if (!formData.facilityId) {
+      setLocations([]);
+      setAssets([]);
+      return;
+    }
+    setLoadError(null);
+    void locationsApi
+      .listByFacility(formData.facilityId)
+      .then(setLocations)
+      .catch(() => setLoadError("Unable to load locations"));
+  }, [formData.facilityId]);
 
   useEffect(() => {
-    if (!formData.locationId) { setAssets([]); return }
+    if (!formData.locationId) {
+      setAssets([]);
+      return;
+    }
     void assetsApi
       .list({ locationId: formData.locationId, page: 1, limit: 100 })
       .then((result) =>
@@ -89,41 +100,55 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
             id: asset.id,
             assetTag: asset.assetTag,
             name: asset.name,
-            locationId: asset.locationId ?? '',
+            locationId: asset.locationId ?? "",
           })),
         ),
       )
-      .catch(() => setLoadError('Unable to load assets'))
-  }, [formData.locationId])
+      .catch(() => setLoadError("Unable to load assets"));
+  }, [formData.locationId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const missing = [
-      ['title', formData.title],
-      ['description', formData.description],
-      ['facility', formData.facilityId],
-      ['location', formData.locationId],
-      ['asset', formData.assetId],
-      ['category', formData.category],
-      ['priority', formData.priority],
-    ].filter(([, value]) => !value.trim()).map(([label]) => label)
+      ["title", formData.title],
+      ["description", formData.description],
+      ["facility", formData.facilityId],
+      ["location", formData.locationId],
+      ["asset", formData.assetId],
+      ["category", formData.category],
+      ["priority", formData.priority],
+    ]
+      .filter(([, value]) => !value.trim())
+      .map(([label]) => label);
     if (missing.length) {
-      setValidationError(`Complete the required fields before creating this work order: ${missing.join(', ')}.`)
-      return
+      setValidationError(
+        `Complete the required fields before creating this work order: ${missing.join(", ")}.`,
+      );
+      return;
     }
-    setValidationError(null)
+    setValidationError(null);
     setIsLoading(true);
     try {
       await workOrdersService.create({
-        organizationId: user?.organizationId ?? '', facilityId: formData.facilityId, locationId: formData.locationId,
-        assetId: formData.assetId, title: formData.title, description: formData.description,
-        category: formData.category, priority: formData.priority || 'medium', dueDate: dueDate?.toISOString(),
+        organizationId: user?.organizationId ?? "",
+        facilityId: formData.facilityId,
+        locationId: formData.locationId,
+        assetId: formData.assetId,
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        priority: formData.priority || "medium",
+        dueDate: dueDate?.toISOString(),
         fulfillmentType: formData.fulfillmentType,
-      })
-      toast.success('Work order created successfully')
-      if (embedded && onComplete) onComplete()
-      else navigate(workOrdersPath)
-    } catch { toast.error('Unable to create work order') } finally { setIsLoading(false) }
+      });
+      toast.success("Work order created successfully");
+      if (embedded && onComplete) onComplete();
+      else navigate(workOrdersPath);
+    } catch {
+      toast.error("Unable to create work order");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const categories = [
@@ -141,23 +166,42 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
 
   return (
     <>
-      {!embedded && <Navbar
-        title="New Work Order"
-        subtitle="Create a new maintenance work order"
-        hideQuickCreate
-      />}
+      {!embedded && (
+        <Navbar
+          title="New Work Order"
+          subtitle="Create a new maintenance work order"
+          hideQuickCreate
+        />
+      )}
 
       <div className={embedded ? "min-h-0 overflow-y-auto pb-2 pr-2" : "page-body pb-8"}>
-        {!embedded && <Link
-          to={workOrdersPath}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Work Orders
-        </Link>}
+        {!embedded && (
+          <Link
+            to={workOrdersPath}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Work Orders
+          </Link>
+        )}
 
-        <form onSubmit={handleSubmit} noValidate className={embedded ? "space-y-6 rounded-2xl border border-border/80 bg-gradient-to-br from-card via-card to-muted/10 p-5 shadow-sm sm:p-6" : "space-y-6"}>
-          {validationError && <div role="alert" className="mb-5 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{validationError}</div>}
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className={
+            embedded
+              ? "space-y-6 rounded-2xl border border-border/80 bg-gradient-to-br from-card via-card to-muted/10 p-5 shadow-sm sm:p-6"
+              : "space-y-6"
+          }
+        >
+          {validationError && (
+            <div
+              role="alert"
+              className="mb-5 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+            >
+              {validationError}
+            </div>
+          )}
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Main Form */}
             <div className="lg:col-span-2 space-y-6">
@@ -165,16 +209,27 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="text-base">Basic Information</CardTitle>
-                  <CardDescription>
-                    Enter the work order details
-                  </CardDescription>
+                  <CardDescription>Enter the work order details</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label>Facility *</Label>
-                    <Select value={formData.facilityId} onValueChange={(value) => setFormData({ ...formData, facilityId: value, locationId: '', assetId: '' })}>
-                      <SelectTrigger className="bg-secondary"><SelectValue placeholder="Select facility" /></SelectTrigger>
-                      <SelectContent>{facilities.map((facility) => <SelectItem key={facility.id} value={facility.id}>{facility.name}</SelectItem>)}</SelectContent>
+                    <Select
+                      value={formData.facilityId}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, facilityId: value, locationId: "", assetId: "" })
+                      }
+                    >
+                      <SelectTrigger className="bg-secondary">
+                        <SelectValue placeholder="Select facility" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {facilities.map((facility) => (
+                          <SelectItem key={facility.id} value={facility.id}>
+                            {facility.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
@@ -183,9 +238,7 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
                       id="title"
                       placeholder="e.g., HVAC System Failure - Building A"
                       value={formData.title}
-                      onChange={(e) =>
-                        setFormData({ ...formData, title: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       required
                       className="bg-secondary"
                     />
@@ -211,9 +264,7 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
                       <Label>Category *</Label>
                       <Select
                         value={formData.category}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, category: value })
-                        }
+                        onValueChange={(value) => setFormData({ ...formData, category: value })}
                       >
                         <SelectTrigger className="bg-secondary">
                           <SelectValue placeholder="Select category" />
@@ -231,9 +282,7 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
                       <Label>Priority *</Label>
                       <Select
                         value={formData.priority}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, priority: value })
-                        }
+                        onValueChange={(value) => setFormData({ ...formData, priority: value })}
                       >
                         <SelectTrigger className="bg-secondary">
                           <SelectValue placeholder="Select priority" />
@@ -274,9 +323,7 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="text-base">Location & Asset</CardTitle>
-                  <CardDescription>
-                    Specify where the work needs to be done
-                  </CardDescription>
+                  <CardDescription>Specify where the work needs to be done</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
@@ -284,9 +331,7 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
                     <Select
                       value={formData.locationId}
                       disabled={!formData.facilityId}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, locationId: value })
-                      }
+                      onValueChange={(value) => setFormData({ ...formData, locationId: value })}
                     >
                       <SelectTrigger className="bg-secondary">
                         <SelectValue placeholder="Select location" />
@@ -303,13 +348,19 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
                   <div className="space-y-2">
                     <Label>Asset *</Label>
                     <Select
-                        value={formData.assetId}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, assetId: value })
-                      }
+                      value={formData.assetId}
+                      onValueChange={(value) => setFormData({ ...formData, assetId: value })}
                     >
                       <SelectTrigger className="bg-secondary">
-                        <SelectValue placeholder={formData.locationId ? (assets.length ? 'Select asset' : 'No assets registered for this location') : 'Select a location first'} />
+                        <SelectValue
+                          placeholder={
+                            formData.locationId
+                              ? assets.length
+                                ? "Select asset"
+                                : "No assets registered for this location"
+                              : "Select a location first"
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {assets.map((asset) => (
@@ -336,9 +387,7 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
                     <p className="mt-2 text-sm text-muted-foreground">
                       Drag and drop files here, or click to browse
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      PNG, JPG up to 10MB
-                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB</p>
                     <Button variant="outline" size="sm" className="mt-4">
                       Select Files
                     </Button>
@@ -361,7 +410,10 @@ export function CreateWorkOrder({ embedded = false, onComplete }: { embedded?: b
                       <Select
                         value={formData.fulfillmentType}
                         onValueChange={(value) =>
-                          setFormData({ ...formData, fulfillmentType: value as "internal" | "marketplace" })
+                          setFormData({
+                            ...formData,
+                            fulfillmentType: value as "internal" | "marketplace",
+                          })
                         }
                       >
                         <SelectTrigger className="bg-secondary">

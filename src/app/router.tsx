@@ -36,18 +36,12 @@ function lazyPage(element: ReactNode) {
 }
 
 const Login = lazyNamed(() => import("@/features/auth/pages/Login"), "Login");
-const SignupHub = lazyNamed(
-  () => import("@/features/auth/pages/SignupHub"),
-  "SignupHub",
-);
+const SignupHub = lazyNamed(() => import("@/features/auth/pages/SignupHub"), "SignupHub");
 const SignupOrganization = lazyNamed(
   () => import("@/features/auth/pages/SignupOrganization"),
   "SignupOrganization",
 );
-const SignupVendor = lazyNamed(
-  () => import("@/features/auth/pages/SignupVendor"),
-  "SignupVendor",
-);
+const SignupVendor = lazyNamed(() => import("@/features/auth/pages/SignupVendor"), "SignupVendor");
 const ForgotPassword = lazyNamed(
   () => import("@/features/auth/pages/ForgotPassword"),
   "ForgotPassword",
@@ -56,38 +50,18 @@ const ResetPassword = lazyNamed(
   () => import("@/features/auth/pages/ResetPassword"),
   "ResetPassword",
 );
-const AcceptInvite = lazyNamed(
-  () => import("@/features/auth/pages/AcceptInvite"),
-  "AcceptInvite",
-);
-const VerifyEmailPage = lazyNamed(
-  () => import("@/features/auth/pages/VerifyEmail"),
-  "VerifyEmail",
-);
-const OAuthSuccess = lazyNamed(
-  () => import("@/features/auth/pages/OAuthSuccess"),
-  "OAuthSuccess",
-);
-const UnauthorizedPage = lazy(
-  () => import("@/features/auth/pages/UnauthorizedPage"),
-);
+const AcceptInvite = lazyNamed(() => import("@/features/auth/pages/AcceptInvite"), "AcceptInvite");
+const VerifyEmailPage = lazyNamed(() => import("@/features/auth/pages/VerifyEmail"), "VerifyEmail");
+const OAuthSuccess = lazyNamed(() => import("@/features/auth/pages/OAuthSuccess"), "OAuthSuccess");
+const UnauthorizedPage = lazy(() => import("@/features/auth/pages/UnauthorizedPage"));
 
-const AboutPage = lazyNamed(
-  () => import("@/features/public/pages/AboutPage"),
-  "AboutPage",
-);
-const ContactPage = lazyNamed(
-  () => import("@/features/public/pages/ContactPage"),
-  "ContactPage",
-);
+const AboutPage = lazyNamed(() => import("@/features/public/pages/AboutPage"), "AboutPage");
+const ContactPage = lazyNamed(() => import("@/features/public/pages/ContactPage"), "ContactPage");
 const FeaturesPage = lazyNamed(
   () => import("@/features/public/pages/FeaturesPage"),
   "FeaturesPage",
 );
-const PricingPage = lazyNamed(
-  () => import("@/features/public/pages/PricingPage"),
-  "PricingPage",
-);
+const PricingPage = lazyNamed(() => import("@/features/public/pages/PricingPage"), "PricingPage");
 const CheckoutPage = lazyNamed(
   () => import("@/features/public/pages/CheckoutPage"),
   "CheckoutPage",
@@ -209,9 +183,7 @@ export const router = createBrowserRouter([
             </PortalRoute>
           </ProtectedRoute>
         ),
-        children: [
-          ...orgPortalRoutes,
-        ],
+        children: [...orgPortalRoutes],
       },
 
       /* VENDOR PORTAL — /vendor/:roleSegment/* */
@@ -224,9 +196,7 @@ export const router = createBrowserRouter([
             </PortalRoute>
           </ProtectedRoute>
         ),
-        children: [
-          ...vendorPortalRoutes,
-        ],
+        children: [...vendorPortalRoutes],
       },
 
       /* LEGACY /app/* REDIRECTS → new URL structure */

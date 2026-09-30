@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Bell,
-  Eye,
-  Key,
-  Shield,
-  User as UserIcon,
-  ShieldAlert,
-} from "lucide-react";
+import { Bell, Eye, Key, Shield, User as UserIcon, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/navigation/Navbar";
 import { useAuthStore } from "@/app/store";
@@ -49,7 +42,16 @@ export function UserProfile() {
   const userSettings = useUserSettings();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const { requestConfirm, ActionConfirmDialog } = useActionConfirm();
-  const [sessions, setSessions] = useState<Array<{ id: string; userAgent?: string; ipAddress?: string; location?: string; current?: boolean; lastSeenAt?: string }>>([]);
+  const [sessions, setSessions] = useState<
+    Array<{
+      id: string;
+      userAgent?: string;
+      ipAddress?: string;
+      location?: string;
+      current?: boolean;
+      lastSeenAt?: string;
+    }>
+  >([]);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -80,9 +82,15 @@ export function UserProfile() {
   const [weeklyDigest, setWeeklyDigest] = useState(false);
   const [timezone, setTimezone] = useState("UTC");
   const [language, setLanguage] = useState("en");
-  const [dateFormat, setDateFormat] = useState<"DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD">("YYYY-MM-DD");
+  const [dateFormat, setDateFormat] = useState<"DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD">(
+    "YYYY-MM-DD",
+  );
   const [timeFormat, setTimeFormat] = useState<"12h" | "24h">("24h");
-  const [accessibility, setAccessibility] = useState({ reducedMotion: false, highContrast: false, screenReaderAnnouncements: true });
+  const [accessibility, setAccessibility] = useState({
+    reducedMotion: false,
+    highContrast: false,
+    screenReaderAnnouncements: true,
+  });
 
   useEffect(() => {
     if (!user) return;
@@ -95,26 +103,36 @@ export function UserProfile() {
   useEffect(() => {
     const value = userSettings.data;
     if (!value) return;
-    setTimezone(value.timezone); setLanguage(value.language); setDateFormat(value.dateFormat); setTimeFormat(value.timeFormat); setAccessibility(value.accessibility);
+    setTimezone(value.timezone);
+    setLanguage(value.language);
+    setDateFormat(value.dateFormat);
+    setTimeFormat(value.timeFormat);
+    setAccessibility(value.accessibility);
   }, [userSettings.data]);
 
   useEffect(() => {
-    void authService.sessions().then(setSessions).catch(() => toast.error("Unable to load active sessions"));
+    void authService
+      .sessions()
+      .then(setSessions)
+      .catch(() => toast.error("Unable to load active sessions"));
   }, []);
 
   const sessionRows = sessions.map((session) => ({
     ...session,
-    device: session.userAgent || 'Browser session',
-    ip: session.ipAddress ? `IP: ${session.ipAddress}` : 'IP unavailable',
-    loc: session.location ? `Location: ${session.location}` : 'Location unavailable',
-    time: session.lastSeenAt ? new Date(session.lastSeenAt).toLocaleString() : 'Recently active',
+    device: session.userAgent || "Browser session",
+    ip: session.ipAddress ? `IP: ${session.ipAddress}` : "IP unavailable",
+    loc: session.location ? `Location: ${session.location}` : "Location unavailable",
+    time: session.lastSeenAt ? new Date(session.lastSeenAt).toLocaleString() : "Recently active",
   }));
 
   const revokeSession = (sessionId: string) => {
-    void authService.revokeSession(sessionId).then(() => {
-      setSessions((current) => current.filter((session) => session.id !== sessionId));
-      toast.success('Session revoked');
-    }).catch(() => toast.error('Unable to revoke session'));
+    void authService
+      .revokeSession(sessionId)
+      .then(() => {
+        setSessions((current) => current.filter((session) => session.id !== sessionId));
+        toast.success("Session revoked");
+      })
+      .catch(() => toast.error("Unable to revoke session"));
   };
 
   if (!user) return null;
@@ -147,41 +165,67 @@ export function UserProfile() {
       newPassword?: string;
       confirmPassword?: string;
     } = {};
-    if (!currentPassword)
-      nextErrors.currentPassword = "Enter your current password";
+    if (!currentPassword) nextErrors.currentPassword = "Enter your current password";
     if (!newPassword) {
       nextErrors.newPassword = "Enter a new password";
     } else if (newPassword.length < 8) {
       nextErrors.newPassword = "New password must be at least 8 characters";
     }
-    if (newPassword !== confirmPassword)
-      nextErrors.confirmPassword = "New passwords do not match";
+    if (newPassword !== confirmPassword) nextErrors.confirmPassword = "New passwords do not match";
 
     setPasswordErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
     try {
       await authService.changePassword({ currentPassword, newPassword });
-      setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
       toast.success("Password updated");
-    } catch (error) { toast.error(error instanceof Error ? error.message : "Unable to update password"); }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update password");
+    }
   };
 
   const handleSavePreferences = async () => {
-    try { await userSettings.update.mutateAsync({ timezone, language, dateFormat, timeFormat, accessibility }); toast.success("Personal preferences saved"); }
-    catch { toast.error("Unable to save personal preferences"); }
+    try {
+      await userSettings.update.mutateAsync({
+        timezone,
+        language,
+        dateFormat,
+        timeFormat,
+        accessibility,
+      });
+      toast.success("Personal preferences saved");
+    } catch {
+      toast.error("Unable to save personal preferences");
+    }
   };
 
   const handleResetPreferences = async () => {
-    const defaults = { timezone: "UTC", language: "en", dateFormat: "YYYY-MM-DD" as const, timeFormat: "24h" as const, accessibility: { reducedMotion: false, highContrast: false, screenReaderAnnouncements: true } };
-    setTimezone(defaults.timezone); setLanguage(defaults.language); setDateFormat(defaults.dateFormat); setTimeFormat(defaults.timeFormat); setAccessibility(defaults.accessibility);
-    try { await userSettings.update.mutateAsync(defaults); toast.success("Preferences reset"); }
-    catch { toast.error("Unable to reset preferences"); }
+    const defaults = {
+      timezone: "UTC",
+      language: "en",
+      dateFormat: "YYYY-MM-DD" as const,
+      timeFormat: "24h" as const,
+      accessibility: { reducedMotion: false, highContrast: false, screenReaderAnnouncements: true },
+    };
+    setTimezone(defaults.timezone);
+    setLanguage(defaults.language);
+    setDateFormat(defaults.dateFormat);
+    setTimeFormat(defaults.timeFormat);
+    setAccessibility(defaults.accessibility);
+    try {
+      await userSettings.update.mutateAsync(defaults);
+      toast.success("Preferences reset");
+    } catch {
+      toast.error("Unable to reset preferences");
+    }
   };
 
   const [jobTitle, setJobTitle] = useState("Organization Admin");
   const [bioNotes, setBioNotes] = useState(
-    "Managing facilities, vendor dispatch, and maintenance schedules across all regional campuses. Contact for high-level operations clearance."
+    "Managing facilities, vendor dispatch, and maintenance schedules across all regional campuses. Contact for high-level operations clearance.",
   );
 
   return (
@@ -259,7 +303,11 @@ export function UserProfile() {
                             updateUser(await userApi.updateMe({ avatar }));
                             toast.success("Profile photo updated");
                           } catch (error) {
-                            toast.error(error instanceof Error ? error.message : "Unable to upload profile photo");
+                            toast.error(
+                              error instanceof Error
+                                ? error.message
+                                : "Unable to upload profile photo",
+                            );
                           }
                         })();
                       }}
@@ -280,26 +328,36 @@ export function UserProfile() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => requestConfirm({
-                            title: "Remove profile photo?",
-                            description: "Your current profile photo will be removed from your account.",
-                            confirmLabel: "Remove photo",
-                            destructive: true,
-                            onConfirm: () => updateUser({ avatar: undefined }),
-                          })}
+                          onClick={() =>
+                            requestConfirm({
+                              title: "Remove profile photo?",
+                              description:
+                                "Your current profile photo will be removed from your account.",
+                              confirmLabel: "Remove photo",
+                              destructive: true,
+                              onConfirm: () => updateUser({ avatar: undefined }),
+                            })
+                          }
                           className="text-rose-500 hover:text-rose-600 border-border text-[12px] font-semibold px-3 py-2 h-auto rounded-lg"
                         >
                           Remove
                         </Button>
                       </div>
-                      <p className="text-[11px] text-muted-foreground">JPG, GIF or PNG. Max size of 800K</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        JPG, GIF or PNG. Max size of 800K
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">FIRST NAME</Label>
+                    <Label
+                      htmlFor="firstName"
+                      className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
+                    >
+                      FIRST NAME
+                    </Label>
                     <Input
                       id="firstName"
                       value={firstName}
@@ -308,7 +366,12 @@ export function UserProfile() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">LAST NAME</Label>
+                    <Label
+                      htmlFor="lastName"
+                      className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
+                    >
+                      LAST NAME
+                    </Label>
                     <Input
                       id="lastName"
                       value={lastName}
@@ -320,7 +383,10 @@ export function UserProfile() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+                    <Label
+                      htmlFor="email"
+                      className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between"
+                    >
                       EMAIL ADDRESS (READ-ONLY) <Key className="h-3 w-3 text-muted-foreground" />
                     </Label>
                     <Input
@@ -331,7 +397,12 @@ export function UserProfile() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">PHONE NUMBER</Label>
+                    <Label
+                      htmlFor="phone"
+                      className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
+                    >
+                      PHONE NUMBER
+                    </Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -343,7 +414,12 @@ export function UserProfile() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="jobTitle" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">JOB TITLE</Label>
+                  <Label
+                    htmlFor="jobTitle"
+                    className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
+                  >
+                    JOB TITLE
+                  </Label>
                   <Input
                     id="jobTitle"
                     value={jobTitle}
@@ -353,7 +429,12 @@ export function UserProfile() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="bioNotes" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">BIO & NOTES</Label>
+                  <Label
+                    htmlFor="bioNotes"
+                    className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
+                  >
+                    BIO & NOTES
+                  </Label>
                   <textarea
                     id="bioNotes"
                     rows={4}
@@ -364,8 +445,15 @@ export function UserProfile() {
                 </div>
 
                 <div className="pt-4 flex justify-end gap-3 border-t border-border/60">
-                  <Button variant="outline" className="rounded-xl text-[13px]">Cancel</Button>
-                  <Button onClick={handleSaveProfile} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[13px] font-bold px-5">Save Changes</Button>
+                  <Button variant="outline" className="rounded-xl text-[13px]">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSaveProfile}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[13px] font-bold px-5"
+                  >
+                    Save Changes
+                  </Button>
                 </div>
               </Card>
             </TabsContent>
@@ -375,7 +463,8 @@ export function UserProfile() {
               <div>
                 <h3 className="text-xl font-bold text-foreground">Security & Sessions</h3>
                 <p className="text-[13px] text-muted-foreground">
-                  Protect your workspace credentials, enable two-factor validation, and monitor active logins.
+                  Protect your workspace credentials, enable two-factor validation, and monitor
+                  active logins.
                 </p>
               </div>
 
@@ -387,7 +476,12 @@ export function UserProfile() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="currentPassword" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">CURRENT PASSWORD</Label>
+                    <Label
+                      htmlFor="currentPassword"
+                      className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
+                    >
+                      CURRENT PASSWORD
+                    </Label>
                     <Input
                       id="currentPassword"
                       type="password"
@@ -398,7 +492,12 @@ export function UserProfile() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="newPassword" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">NEW PASSWORD</Label>
+                    <Label
+                      htmlFor="newPassword"
+                      className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
+                    >
+                      NEW PASSWORD
+                    </Label>
                     <Input
                       id="newPassword"
                       type="password"
@@ -409,7 +508,12 @@ export function UserProfile() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">CONFIRM NEW PASSWORD</Label>
+                    <Label
+                      htmlFor="confirmPassword"
+                      className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
+                    >
+                      CONFIRM NEW PASSWORD
+                    </Label>
                     <Input
                       id="confirmPassword"
                       type="password"
@@ -422,7 +526,10 @@ export function UserProfile() {
                 </div>
 
                 <div className="pt-2 flex justify-end">
-                  <Button onClick={handleChangePassword} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[13px] font-bold px-5">
+                  <Button
+                    onClick={handleChangePassword}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[13px] font-bold px-5"
+                  >
                     Update Password
                   </Button>
                 </div>
@@ -432,11 +539,14 @@ export function UserProfile() {
               <Card className="rounded-2xl border border-border bg-card p-6 shadow-sm flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-3">
-                    <h4 className="text-base font-bold text-foreground">Two-Factor Authentication (2FA)</h4>
+                    <h4 className="text-base font-bold text-foreground">
+                      Two-Factor Authentication (2FA)
+                    </h4>
                     <StatusBadge status="ACTIVE" label="ENABLED" />
                   </div>
                   <p className="text-[13px] text-muted-foreground mt-1">
-                    Add an extra layer of protection to your credentials by verifying via mobile auth app.
+                    Add an extra layer of protection to your credentials by verifying via mobile
+                    auth app.
                   </p>
                 </div>
 
@@ -454,7 +564,10 @@ export function UserProfile() {
 
                 <div className="space-y-3 pt-2">
                   {sessionRows.map((s) => (
-                    <div key={s.device} className="p-4 rounded-xl border border-border bg-muted/20 flex items-center justify-between text-[13px]">
+                    <div
+                      key={s.device}
+                      className="p-4 rounded-xl border border-border bg-muted/20 flex items-center justify-between text-[13px]"
+                    >
                       <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center text-muted-foreground shrink-0">
                           <Shield className="h-5 w-5" />
@@ -463,7 +576,10 @@ export function UserProfile() {
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-foreground">{s.device}</span>
                             {s.current && (
-                              <Badge variant="outline" className="bg-info-muted text-info border-info/20 text-[9px] font-bold">
+                              <Badge
+                                variant="outline"
+                                className="bg-info-muted text-info border-info/20 text-[9px] font-bold"
+                              >
                                 Current Session
                               </Badge>
                             )}
@@ -477,7 +593,12 @@ export function UserProfile() {
                       <div className="flex items-center gap-4">
                         <span className="text-[12px] text-muted-foreground">{s.time}</span>
                         {!s.current && (
-                          <Button variant="outline" size="sm" onClick={() => revokeSession(s.id)} className="text-destructive hover:text-destructive/90 border-border text-[12px] font-semibold">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => revokeSession(s.id)}
+                            className="text-destructive hover:text-destructive/90 border-border text-[12px] font-semibold"
+                          >
                             Revoke
                           </Button>
                         )}
@@ -493,14 +614,17 @@ export function UserProfile() {
               <div>
                 <h3 className="text-xl font-bold text-foreground">My Notification Preferences</h3>
                 <p className="text-[13px] text-muted-foreground">
-                  Tweak personal overrides for specific facility activities, assignment alerts, and system warnings.
+                  Tweak personal overrides for specific facility activities, assignment alerts, and
+                  system warnings.
                 </p>
               </div>
 
               <Card className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6">
                 <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center gap-3 text-[13px]">
                   <ShieldAlert className="h-5 w-5 shrink-0" />
-                  <span className="font-semibold">These preferences override organization defaults for your account only.</span>
+                  <span className="font-semibold">
+                    These preferences override organization defaults for your account only.
+                  </span>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -514,13 +638,48 @@ export function UserProfile() {
                     </thead>
                     <tbody className="divide-y divide-border/60">
                       {[
-                        { cat: 'Work Orders', desc: 'Notify when a work order assigned to you gets updated or completed.', email: true, app: true },
-                        { cat: 'Service Requests', desc: 'Alert when a new request is logged inside your managed facilities.', email: true, app: true },
-                        { cat: 'Preventive Maintenance', desc: 'Schedules, tasks upcoming lists, and routine system logs.', email: true, app: true },
-                        { cat: 'Inventory Alerts', desc: 'Warnings when spare parts drop below minimal safety stock.', email: false, app: true },
-                        { cat: 'Vendors & Contacts', desc: 'Technician dispatches, annual contract notices, and compliance ratings.', email: true, app: false },
-                        { cat: 'Billing & Finances', desc: 'Contract estimates, purchase confirmations, and invoice approvals.', email: false, app: true },
-                        { cat: 'Security Actions', desc: 'New login alerts, credential resets, or privilege alterations.', email: true, app: true },
+                        {
+                          cat: "Work Orders",
+                          desc: "Notify when a work order assigned to you gets updated or completed.",
+                          email: true,
+                          app: true,
+                        },
+                        {
+                          cat: "Service Requests",
+                          desc: "Alert when a new request is logged inside your managed facilities.",
+                          email: true,
+                          app: true,
+                        },
+                        {
+                          cat: "Preventive Maintenance",
+                          desc: "Schedules, tasks upcoming lists, and routine system logs.",
+                          email: true,
+                          app: true,
+                        },
+                        {
+                          cat: "Inventory Alerts",
+                          desc: "Warnings when spare parts drop below minimal safety stock.",
+                          email: false,
+                          app: true,
+                        },
+                        {
+                          cat: "Vendors & Contacts",
+                          desc: "Technician dispatches, annual contract notices, and compliance ratings.",
+                          email: true,
+                          app: false,
+                        },
+                        {
+                          cat: "Billing & Finances",
+                          desc: "Contract estimates, purchase confirmations, and invoice approvals.",
+                          email: false,
+                          app: true,
+                        },
+                        {
+                          cat: "Security Actions",
+                          desc: "New login alerts, credential resets, or privilege alterations.",
+                          email: true,
+                          app: true,
+                        },
                       ].map((row) => (
                         <tr key={row.cat} className="hover:bg-muted/20">
                           <td className="py-4 pr-4">
@@ -540,8 +699,21 @@ export function UserProfile() {
                 </div>
 
                 <div className="pt-4 flex justify-end gap-3 border-t border-border/60">
-                  <Button variant="outline" onClick={() => void handleResetPreferences()} disabled={userSettings.update.isPending} className="rounded-xl text-[13px]">Reset</Button>
-                  <Button onClick={() => void handleSavePreferences()} disabled={userSettings.update.isPending} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[13px] font-bold px-5">Save Preferences</Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => void handleResetPreferences()}
+                    disabled={userSettings.update.isPending}
+                    className="rounded-xl text-[13px]"
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    onClick={() => void handleSavePreferences()}
+                    disabled={userSettings.update.isPending}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[13px] font-bold px-5"
+                  >
+                    Save Preferences
+                  </Button>
                 </div>
               </Card>
             </TabsContent>
@@ -551,7 +723,8 @@ export function UserProfile() {
               <div>
                 <h3 className="text-xl font-bold text-foreground">Appearance & Accessibility</h3>
                 <p className="text-[13px] text-muted-foreground">
-                  Customize your screen view guidelines, timezone defaults, localization values, and reading layouts.
+                  Customize your screen view guidelines, timezone defaults, localization values, and
+                  reading layouts.
                 </p>
               </div>
 
@@ -562,10 +735,17 @@ export function UserProfile() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">DEFAULT INTERFACE THEME</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                    DEFAULT INTERFACE THEME
+                  </Label>
                   <div className="flex flex-wrap gap-6 text-[13px] font-semibold">
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="themeRadio" defaultChecked className="accent-indigo-600" />
+                      <input
+                        type="radio"
+                        name="themeRadio"
+                        defaultChecked
+                        className="accent-indigo-600"
+                      />
                       <span>Light Theme</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
@@ -581,7 +761,9 @@ export function UserProfile() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">LANGUAGE</Label>
+                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      LANGUAGE
+                    </Label>
                     <Select value={language} onValueChange={setLanguage}>
                       <SelectTrigger className="rounded-xl">
                         <SelectValue placeholder="Language" />
@@ -595,15 +777,23 @@ export function UserProfile() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">TIMEZONE</Label>
+                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      TIMEZONE
+                    </Label>
                     <Select value={timezone} onValueChange={setTimezone}>
                       <SelectTrigger className="rounded-xl">
                         <SelectValue placeholder="Timezone" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="America/New_York">UTC-5 Eastern Standard Time (EST)</SelectItem>
-                        <SelectItem value="America/Chicago">UTC-6 Central Standard Time (CST)</SelectItem>
-                        <SelectItem value="America/Los_Angeles">UTC-8 Pacific Standard Time (PST)</SelectItem>
+                        <SelectItem value="America/New_York">
+                          UTC-5 Eastern Standard Time (EST)
+                        </SelectItem>
+                        <SelectItem value="America/Chicago">
+                          UTC-6 Central Standard Time (CST)
+                        </SelectItem>
+                        <SelectItem value="America/Los_Angeles">
+                          UTC-8 Pacific Standard Time (PST)
+                        </SelectItem>
                         <SelectItem value="UTC">UTC Universal Coordinated Time</SelectItem>
                       </SelectContent>
                     </Select>
@@ -612,8 +802,13 @@ export function UserProfile() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">DATE FORMAT</Label>
-                    <Select value={dateFormat} onValueChange={(value) => setDateFormat(value as typeof dateFormat)}>
+                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      DATE FORMAT
+                    </Label>
+                    <Select
+                      value={dateFormat}
+                      onValueChange={(value) => setDateFormat(value as typeof dateFormat)}
+                    >
                       <SelectTrigger className="rounded-xl">
                         <SelectValue placeholder="Date Format" />
                       </SelectTrigger>
@@ -625,8 +820,13 @@ export function UserProfile() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">TIME FORMAT</Label>
-                    <Select value={timeFormat} onValueChange={(value) => setTimeFormat(value as typeof timeFormat)}>
+                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      TIME FORMAT
+                    </Label>
+                    <Select
+                      value={timeFormat}
+                      onValueChange={(value) => setTimeFormat(value as typeof timeFormat)}
+                    >
                       <SelectTrigger className="rounded-xl">
                         <SelectValue placeholder="Time Format" />
                       </SelectTrigger>
@@ -649,31 +849,64 @@ export function UserProfile() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-bold text-foreground text-[13px]">Reduced Motion</p>
-                      <p className="text-[12px] text-muted-foreground">Disable dashboard animations, transition glows, and sidebar sliding effects.</p>
+                      <p className="text-[12px] text-muted-foreground">
+                        Disable dashboard animations, transition glows, and sidebar sliding effects.
+                      </p>
                     </div>
-                    <Switch checked={accessibility.reducedMotion} onCheckedChange={(reducedMotion) => setAccessibility((value) => ({ ...value, reducedMotion }))} />
+                    <Switch
+                      checked={accessibility.reducedMotion}
+                      onCheckedChange={(reducedMotion) =>
+                        setAccessibility((value) => ({ ...value, reducedMotion }))
+                      }
+                    />
                   </div>
 
                   <div className="flex items-center justify-between border-t border-border/60 pt-4">
                     <div>
                       <p className="font-bold text-foreground text-[13px]">High Contrast Mode</p>
-                      <p className="text-[12px] text-muted-foreground">Tweak interface borders and text weights to fulfill AA visual contrast ratio guidelines.</p>
+                      <p className="text-[12px] text-muted-foreground">
+                        Tweak interface borders and text weights to fulfill AA visual contrast ratio
+                        guidelines.
+                      </p>
                     </div>
-                    <Switch checked={accessibility.highContrast} onCheckedChange={(highContrast) => setAccessibility((value) => ({ ...value, highContrast }))} />
+                    <Switch
+                      checked={accessibility.highContrast}
+                      onCheckedChange={(highContrast) =>
+                        setAccessibility((value) => ({ ...value, highContrast }))
+                      }
+                    />
                   </div>
 
                   <div className="flex items-center justify-between border-t border-border/60 pt-4">
                     <div>
-                      <p className="font-bold text-foreground text-[13px]">Screen Reader Announcements</p>
-                      <p className="text-[12px] text-muted-foreground">Prompt automatic ARIA role speech tags when critical work orders or alerts load.</p>
+                      <p className="font-bold text-foreground text-[13px]">
+                        Screen Reader Announcements
+                      </p>
+                      <p className="text-[12px] text-muted-foreground">
+                        Prompt automatic ARIA role speech tags when critical work orders or alerts
+                        load.
+                      </p>
                     </div>
-                    <Switch checked={accessibility.screenReaderAnnouncements} onCheckedChange={(screenReaderAnnouncements) => setAccessibility((value) => ({ ...value, screenReaderAnnouncements }))} />
+                    <Switch
+                      checked={accessibility.screenReaderAnnouncements}
+                      onCheckedChange={(screenReaderAnnouncements) =>
+                        setAccessibility((value) => ({ ...value, screenReaderAnnouncements }))
+                      }
+                    />
                   </div>
                 </div>
 
                 <div className="pt-4 flex justify-end gap-3 border-t border-border/60">
-                  <Button variant="outline" className="rounded-xl text-[13px]">Cancel</Button>
-                  <Button disabled={userSettings.update.isPending} onClick={handleSavePreferences} className="bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl text-[13px] font-bold px-5">Save Settings</Button>
+                  <Button variant="outline" className="rounded-xl text-[13px]">
+                    Cancel
+                  </Button>
+                  <Button
+                    disabled={userSettings.update.isPending}
+                    onClick={handleSavePreferences}
+                    className="bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl text-[13px] font-bold px-5"
+                  >
+                    Save Settings
+                  </Button>
                 </div>
               </Card>
             </TabsContent>

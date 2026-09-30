@@ -48,12 +48,7 @@ export const loginRequestSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-export const organizationPlanSchema = z.enum([
-  "free",
-  "starter",
-  "professional",
-  "enterprise",
-]);
+export const organizationPlanSchema = z.enum(["free", "starter", "professional", "enterprise"]);
 
 export const vendorPlanSchema = z.enum(["free", "starter", "professional"]);
 
@@ -163,4 +158,6 @@ export const regenerateVerificationRequestSchema = z.object({
 });
 
 export type VerifyEmailLinkRequestContract = z.infer<typeof verifyEmailLinkRequestSchema>;
-export type RegenerateVerificationRequestContract = z.infer<typeof regenerateVerificationRequestSchema>;
+export type RegenerateVerificationRequestContract = z.infer<
+  typeof regenerateVerificationRequestSchema
+>;

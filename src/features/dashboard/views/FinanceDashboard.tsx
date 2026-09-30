@@ -116,11 +116,7 @@ export function FinanceDashboard() {
     retry: false,
   });
   const stats = useMemo(
-    () =>
-      computeFinanceDashboardStats(
-        workOrdersInRange,
-        invoicesQuery.data ?? [],
-      ),
+    () => computeFinanceDashboardStats(workOrdersInRange, invoicesQuery.data ?? []),
     [workOrdersInRange, invoicesQuery.data],
   );
   const costTrendData = useMemo(() => {
@@ -230,30 +226,19 @@ export function FinanceDashboard() {
 
           <div className="flex flex-col gap-6">
             {/* Subscription & Billing */}
-            <SectionCard
-              title="Subscription & Billing"
-              subtitle="Enterprise system plan details"
-            >
+            <SectionCard title="Subscription & Billing" subtitle="Enterprise system plan details">
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-[13px]">
                   <span className="text-muted-foreground">Current Plan</span>
-                  <span className="font-semibold text-primary">
-                    "—"
-                  </span>
+                  <span className="font-semibold text-primary">"—"</span>
                 </div>
                 <div className="flex items-center justify-between text-[13px]">
                   <span className="text-muted-foreground">Active Licenses</span>
-                  <span className="font-semibold text-foreground">
-                    "—"
-                  </span>
+                  <span className="font-semibold text-foreground">"—"</span>
                 </div>
                 <div className="flex items-center justify-between text-[13px]">
-                  <span className="text-muted-foreground">
-                    Next Invoice Date
-                  </span>
-                  <span className="font-semibold text-foreground">
-                    "—"
-                  </span>
+                  <span className="text-muted-foreground">Next Invoice Date</span>
+                  <span className="font-semibold text-foreground">"—"</span>
                 </div>
               </div>
             </SectionCard>
@@ -265,21 +250,14 @@ export function FinanceDashboard() {
             >
               <div className="space-y-3">
                 {([] as typeof FINANCIAL_EVENTS).map((ev) => (
-                  <div
-                    key={ev.id}
-                    className="flex items-start justify-between gap-3"
-                  >
+                  <div key={ev.id} className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-[13px] font-medium text-foreground leading-snug">
                         {ev.event}
                       </p>
-                      <p className="mt-0.5 text-[12px] text-muted-foreground">
-                        {ev.detail}
-                      </p>
+                      <p className="mt-0.5 text-[12px] text-muted-foreground">{ev.detail}</p>
                     </div>
-                    <span className="shrink-0 text-[12px] text-muted-foreground">
-                      {ev.time}
-                    </span>
+                    <span className="shrink-0 text-[12px] text-muted-foreground">{ev.time}</span>
                   </div>
                 ))}
               </div>

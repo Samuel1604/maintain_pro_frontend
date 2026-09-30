@@ -7,22 +7,22 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { cn } from '@/utils/helpers'
-import { CircleX } from 'lucide-react'
+} from "@/components/ui/alert-dialog";
+import { cn } from "@/utils/helpers";
+import { CircleX } from "lucide-react";
 
 interface ConfirmDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  title: string
-  description: string
-  confirmLabel?: string
-  cancelLabel?: string
-  destructive?: boolean
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  destructive?: boolean;
   /** When true, only the primary button is shown (acknowledgement dialogs). */
-  singleAction?: boolean
-  onConfirm: () => void
-  warning?: string
+  singleAction?: boolean;
+  onConfirm: () => void;
+  warning?: string;
 }
 
 export function ConfirmDialog({
@@ -30,8 +30,8 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
   destructive = false,
   singleAction = false,
   onConfirm,
@@ -47,7 +47,9 @@ export function ConfirmDialog({
             </div>
           )}
           <AlertDialogTitle className="text-xl font-bold">{title}</AlertDialogTitle>
-          <AlertDialogDescription className="max-w-sm text-center leading-5">{description}</AlertDialogDescription>
+          <AlertDialogDescription className="max-w-sm text-center leading-5">
+            {description}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         {warning && (
           <div className="mx-6 mt-4 rounded-lg bg-destructive/10 px-3 py-3 text-left text-xs leading-4 text-destructive font-medium">
@@ -57,7 +59,9 @@ export function ConfirmDialog({
         <AlertDialogFooter className="mt-5 border-t border-border px-6 py-4 sm:justify-between">
           {!singleAction ? <AlertDialogCancel>{cancelLabel}</AlertDialogCancel> : null}
           <AlertDialogAction
-            className={cn(destructive && 'bg-destructive text-destructive-foreground hover:bg-destructive/90')}
+            className={cn(
+              destructive && "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+            )}
             onClick={onConfirm}
           >
             {confirmLabel}
@@ -65,5 +69,5 @@ export function ConfirmDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

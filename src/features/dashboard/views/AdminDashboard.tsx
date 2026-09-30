@@ -57,13 +57,7 @@ function SectionCard({
   );
 }
 
-function CriticalIssuesPanel({
-  orders,
-  path,
-}: {
-  orders: WorkOrder[];
-  path: string;
-}) {
+function CriticalIssuesPanel({ orders, path }: { orders: WorkOrder[]; path: string }) {
   const CRITICAL_LOCATIONS = ["Main HQ", "West Campus", "North Logistics"];
   const rows =
     orders.length > 0
@@ -97,9 +91,7 @@ function CriticalIssuesPanel({
             <span className="shrink-0 text-[13px] text-muted-foreground hidden sm:block">
               {row.location}
             </span>
-            <span className="shrink-0 text-[12px] text-muted-foreground">
-              {row.time}
-            </span>
+            <span className="shrink-0 text-[12px] text-muted-foreground">{row.time}</span>
           </Link>
         ))}
       </div>
@@ -108,33 +100,24 @@ function CriticalIssuesPanel({
 }
 
 function VendorSLAPanel() {
-    return (
-      <SectionCard
-        title="Vendor SLA Compliance"
-        subtitle="Contract response/resolution health"
-      >
-        <p className="text-sm text-muted-foreground">
-          Vendor SLA performance is not available from the dashboard API.
-        </p>
-      </SectionCard>
-    );
+  return (
+    <SectionCard title="Vendor SLA Compliance" subtitle="Contract response/resolution health">
+      <p className="text-sm text-muted-foreground">
+        Vendor SLA performance is not available from the dashboard API.
+      </p>
+    </SectionCard>
+  );
 }
 
 function StatusBreakdownPanel({ workOrders }: { workOrders: WorkOrder[] }) {
-  const STATUS_COLORS = [
-    "var(--chart-1)",
-    "var(--chart-2)",
-    "var(--warning)",
-    "var(--success)",
-  ];
+  const STATUS_COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--warning)", "var(--success)"];
   const STATUS_LABELS = ["Open", "In Progress", "On Hold", "Completed"];
   const STATUS_KEYS = ["open", "in_progress", "pending_completion", "completed"];
 
   const counts = STATUS_KEYS.map(
     (key) =>
-      workOrders.filter((o) =>
-        key === "completed" ? o.status === "completed" : o.status === key,
-      ).length,
+      workOrders.filter((o) => (key === "completed" ? o.status === "completed" : o.status === key))
+        .length,
   );
   // Fallback to static if no data
   const displayCounts = counts;
@@ -144,10 +127,7 @@ function StatusBreakdownPanel({ workOrders }: { workOrders: WorkOrder[] }) {
   );
 
   return (
-    <SectionCard
-      title="Work Order Status Breakdown"
-      subtitle="Current status of all open tickets"
-    >
+    <SectionCard title="Work Order Status Breakdown" subtitle="Current status of all open tickets">
       <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
         {displayCounts.map((count, i) => (
           <span
@@ -169,8 +149,7 @@ function StatusBreakdownPanel({ workOrders }: { workOrders: WorkOrder[] }) {
               className="inline-block h-2 w-2 rounded-full"
               style={{ backgroundColor: STATUS_COLORS[i] }}
             />
-            {STATUS_LABELS[i]}:{" "}
-            <strong className="text-foreground">{count}</strong>
+            {STATUS_LABELS[i]}: <strong className="text-foreground">{count}</strong>
           </span>
         ))}
       </div>
@@ -179,16 +158,16 @@ function StatusBreakdownPanel({ workOrders }: { workOrders: WorkOrder[] }) {
 }
 
 function VendorDispatchPanel() {
-    return (
-      <SectionCard
-        title="Recent Vendor Dispatch"
-        subtitle="Real-time activity log of assigned technicians"
-      >
-        <p className="text-sm text-muted-foreground">
-          Vendor dispatch activity is not available from the dashboard API.
-        </p>
-      </SectionCard>
-    );
+  return (
+    <SectionCard
+      title="Recent Vendor Dispatch"
+      subtitle="Real-time activity log of assigned technicians"
+    >
+      <p className="text-sm text-muted-foreground">
+        Vendor dispatch activity is not available from the dashboard API.
+      </p>
+    </SectionCard>
+  );
 }
 
 function PendingApprovalsPanel({ approvalsPath }: { approvalsPath: string }) {
@@ -217,19 +196,15 @@ function InventoryWarningsPanel() {
   );
 }
 
-function RecentActivityPanel({
-  orders,
-  path,
-}: {
-  orders: WorkOrder[];
-  path: string;
-}) {
+function RecentActivityPanel({ orders, path }: { orders: WorkOrder[]; path: string }) {
   const rows =
     orders.length > 0
       ? orders.slice(0, 8).map((o, i) => ({
           id: o.id,
           text: o.title,
-          time: new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(new Date(o.updatedAt)),
+          time: new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
+            new Date(o.updatedAt),
+          ),
           user: o.assigneeName?.slice(0, 2).toUpperCase() ?? "—",
           userBg: "var(--primary, #4f46e5)",
         }))
@@ -248,9 +223,7 @@ function RecentActivityPanel({
             to={`${path}/${row.id}`}
             className="flex items-center gap-3 px-5 py-3 hover:bg-muted/40 transition-colors"
           >
-            <span className="flex-1 text-[13px] text-foreground">
-              {row.text}
-            </span>
+            <span className="flex-1 text-[13px] text-foreground">{row.text}</span>
             <span
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
               style={{ backgroundColor: row.userBg }}
@@ -272,15 +245,8 @@ function RecentActivityPanel({
 export function AdminDashboard() {
   const [_range] = useState<DashboardDateRange>("30d");
   const user = useAuthStore((state) => state.user);
-  const {
-    activeWorkOrders,
-    workOrdersInRange,
-    stats,
-    reportTrends,
-    isLoading,
-    error,
-    refetch,
-  } = useRoleDashboardDateRange("30d");
+  const { activeWorkOrders, workOrdersInRange, stats, reportTrends, isLoading, error, refetch } =
+    useRoleDashboardDateRange("30d");
   const facilitiesQuery = useQuery({
     queryKey: ["dashboard", "facility-statistics", user?.id],
     queryFn: facilitiesApi.statistics,
@@ -298,9 +264,8 @@ export function AdminDashboard() {
   );
   const highPriorityCount = useMemo(
     () =>
-      activeWorkOrders.filter(
-        (order) => order.priority === "high" || order.priority === "critical",
-      ).length,
+      activeWorkOrders.filter((order) => order.priority === "high" || order.priority === "critical")
+        .length,
     [activeWorkOrders],
   );
   const displayStats = stats;
@@ -311,10 +276,7 @@ export function AdminDashboard() {
         created: point.created,
         completed: point.completed,
       }));
-    const buckets = new Map<
-      string,
-      { month: string; created: number; completed: number }
-    >();
+    const buckets = new Map<string, { month: string; created: number; completed: number }>();
     workOrdersInRange.forEach((order) => {
       const month = new Intl.DateTimeFormat(undefined, {
         month: "short",
@@ -353,11 +315,7 @@ export function AdminDashboard() {
     return (
       <PageError
         title="Dashboard unavailable"
-        message={
-          error instanceof Error
-            ? error.message
-            : "Unable to load dashboard data."
-        }
+        message={error instanceof Error ? error.message : "Unable to load dashboard data."}
         onRetry={() => void refetch()}
       />
     );
@@ -459,10 +417,7 @@ export function AdminDashboard() {
 }
 
 function relativeTime(value: Date) {
-  const minutes = Math.max(
-    1,
-    Math.round((Date.now() - new Date(value).getTime()) / 60000),
-  );
+  const minutes = Math.max(1, Math.round((Date.now() - new Date(value).getTime()) / 60000));
   return minutes < 60 ? `${minutes}m ago` : `${Math.round(minutes / 60)}h ago`;
 }
 

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { toast } from 'sonner'
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   CheckCircle2,
   XCircle,
@@ -9,99 +9,111 @@ import {
   FileText,
   Play,
   AlertTriangle,
-} from 'lucide-react'
+} from "lucide-react";
 
-import { PORTALS } from '@/app/portal.config'
-import { useAuthStore } from '@/app/store'
-import { usePortal } from '@/hooks/usePortal'
-import { useRoleAccess } from '@/hooks/useRoleAccess'
-import { useActionConfirm } from '@/hooks/useActionConfirm'
-import { appendNotification } from '@/features/notifications/services/notificationEvents'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { FieldError } from '@/components/feedback/FieldError'
-import { workOrdersService } from '@/features/work-orders/services/workOrders.service'
-import type { WorkOrder } from '@/types/common.types'
-import { USER_ROLES } from '@/types/user.types'
-import { uploadFile } from '@/api/uploads.api'
-import { serviceRequestsService } from '@/features/service-requests/services/serviceRequests.service'
+import { PORTALS } from "@/app/portal.config";
+import { useAuthStore } from "@/app/store";
+import { usePortal } from "@/hooks/usePortal";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
+import { useActionConfirm } from "@/hooks/useActionConfirm";
+import { appendNotification } from "@/features/notifications/services/notificationEvents";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { FieldError } from "@/components/feedback/FieldError";
+import { workOrdersService } from "@/features/work-orders/services/workOrders.service";
+import type { WorkOrder } from "@/types/common.types";
+import { USER_ROLES } from "@/types/user.types";
+import { uploadFile } from "@/api/uploads.api";
+import { serviceRequestsService } from "@/features/service-requests/services/serviceRequests.service";
 
 interface WorkOrderRolePanelProps {
-  workOrder: WorkOrder
-  onWorkOrderUpdated: (updated: WorkOrder) => void
+  workOrder: WorkOrder;
+  onWorkOrderUpdated: (updated: WorkOrder) => void;
 }
 
 export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderRolePanelProps) {
-  const portal = usePortal()
-  const user = useAuthStore((s) => s.user)
-  const { role, isMaintenanceReadOnly } = useRoleAccess()
+  const portal = usePortal();
+  const user = useAuthStore((s) => s.user);
+  const { role, isMaintenanceReadOnly } = useRoleAccess();
   const updateWorkOrder = async (id: string, changes: Partial<WorkOrder>) => {
-    if (changes.status === 'in_progress' || changes.status === 'pending_completion' || changes.status === 'on_hold') {
-      const targetStatus: 'in_progress' | 'pending_completion' | 'on_hold' = changes.status
-      const updated = await workOrdersService.transition(id, targetStatus)
-      onWorkOrderUpdated(updated)
-      return updated
+    if (
+      changes.status === "in_progress" ||
+      changes.status === "pending_completion" ||
+      changes.status === "on_hold"
+    ) {
+      const targetStatus: "in_progress" | "pending_completion" | "on_hold" = changes.status;
+      const updated = await workOrdersService.transition(id, targetStatus);
+      onWorkOrderUpdated(updated);
+      return updated;
     }
     const updated = await workOrdersService.update(id, {
       ...changes,
       dueDate: changes.dueDate,
-    })
-    onWorkOrderUpdated(updated)
-    return updated
-  }
-  const notifyUpdate = (promise: Promise<WorkOrder>, message: string, after?: (updated: WorkOrder) => void) => {
-    void promise.then((updated) => { after?.(updated); toast.success(message) }).catch((cause) => {
-      toast.error(cause instanceof Error ? cause.message : 'Unable to update work order')
-    })
-  }
-  const { requestConfirm, ActionConfirmDialog } = useActionConfirm()
+    });
+    onWorkOrderUpdated(updated);
+    return updated;
+  };
+  const notifyUpdate = (
+    promise: Promise<WorkOrder>,
+    message: string,
+    after?: (updated: WorkOrder) => void,
+  ) => {
+    void promise
+      .then((updated) => {
+        after?.(updated);
+        toast.success(message);
+      })
+      .catch((cause) => {
+        toast.error(cause instanceof Error ? cause.message : "Unable to update work order");
+      });
+  };
+  const { requestConfirm, ActionConfirmDialog } = useActionConfirm();
 
-  const [rejectReason, setRejectReason] = useState('')
-  const [rejectReasonError, setRejectReasonError] = useState<string | null>(null)
-  const [proposedDate, setProposedDate] = useState('')
-  const [completionNotes, setCompletionNotes] = useState('')
-  const [timeSpent, setTimeSpent] = useState('')
-  const [partsUsed, setPartsUsed] = useState('')
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectReasonError, setRejectReasonError] = useState<string | null>(null);
+  const [proposedDate, setProposedDate] = useState("");
+  const [completionNotes, setCompletionNotes] = useState("");
+  const [timeSpent, setTimeSpent] = useState("");
+  const [partsUsed, setPartsUsed] = useState("");
   const [invoiceAmount, setInvoiceAmount] = useState(
-    String(workOrder.estimatedCost ?? workOrder.actualCost ?? ''),
-  )
-  const [invoiceNumber, setInvoiceNumber] = useState('')
-  const [approvalNotes, setApprovalNotes] = useState('')
+    String(workOrder.estimatedCost ?? workOrder.actualCost ?? ""),
+  );
+  const [invoiceNumber, setInvoiceNumber] = useState("");
+  const [approvalNotes, setApprovalNotes] = useState("");
   const [issueForm, setIssueForm] = useState({
-    title: '',
+    title: "",
     category: workOrder.category,
-    description: '',
+    description: "",
     priority: workOrder.priority,
-  })
-  const [issueFormErrors, setIssueFormErrors] = useState<{ title?: string; description?: string }>({})
+  });
+  const [issueFormErrors, setIssueFormErrors] = useState<{ title?: string; description?: string }>(
+    {},
+  );
 
-  const isVendor =
-    portal === PORTALS.VENDOR && user?.id === workOrder.assigneeId
+  const isVendor = portal === PORTALS.VENDOR && user?.id === workOrder.assigneeId;
   const isTech =
-    portal === PORTALS.ORG &&
-    role === USER_ROLES.TECHNICIAN &&
-    user?.id === workOrder.assigneeId
-  const isFinance = portal === PORTALS.ORG && role === USER_ROLES.FINANCE
+    portal === PORTALS.ORG && role === USER_ROLES.TECHNICIAN && user?.id === workOrder.assigneeId;
+  const isFinance = portal === PORTALS.ORG && role === USER_ROLES.FINANCE;
   const needsApproval =
     isFinance &&
     workOrder.requiresApproval &&
     !workOrder.approvedAt &&
-    workOrder.status !== 'cancelled'
+    workOrder.status !== "cancelled";
 
   const notifyManager = (title: string, message: string) => {
-    appendNotification('user-1', USER_ROLES.FACILITY_MANAGER, {
-      type: 'work_order',
+    appendNotification("user-1", USER_ROLES.FACILITY_MANAGER, {
+      type: "work_order",
       title,
       message,
-      priority: 'high',
+      priority: "high",
       actionUrl: `work-orders/${workOrder.id}`,
-    })
-  }
+    });
+  };
 
-  if (workOrder.requiresApproval && !workOrder.approvedAt && workOrder.status !== 'cancelled') {
+  if (workOrder.requiresApproval && !workOrder.approvedAt && workOrder.status !== "cancelled") {
     if (isFinance) {
       return (
         <>
@@ -115,9 +127,8 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                Estimated cost:{' '}
-                <strong>${(workOrder.estimatedCost ?? 0).toLocaleString()}</strong> — exceeds
-                approval threshold.
+                Estimated cost: <strong>${(workOrder.estimatedCost ?? 0).toLocaleString()}</strong>{" "}
+                — exceeds approval threshold.
               </p>
               <Textarea
                 rows={2}
@@ -128,12 +139,15 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
               <div className="flex flex-wrap gap-2">
                 <Button
                   onClick={() => {
-                    notifyUpdate(updateWorkOrder(workOrder.id, {
-                      approvedAt: new Date(),
-                      approvedBy: user?.email,
-                      approvalNotes,
-                      requiresApproval: false,
-                    }), 'Work order approved')
+                    notifyUpdate(
+                      updateWorkOrder(workOrder.id, {
+                        approvedAt: new Date(),
+                        approvedBy: user?.email,
+                        approvalNotes,
+                        requiresApproval: false,
+                      }),
+                      "Work order approved",
+                    );
                   }}
                 >
                   Approve
@@ -142,10 +156,13 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
                   variant="outline"
                   className="text-destructive"
                   onClick={() => {
-                    notifyUpdate(updateWorkOrder(workOrder.id, {
-                      status: 'cancelled',
-                      rejectionReason: approvalNotes || 'Rejected by finance',
-                    }), 'Work order rejected')
+                    notifyUpdate(
+                      updateWorkOrder(workOrder.id, {
+                        status: "cancelled",
+                        rejectionReason: approvalNotes || "Rejected by finance",
+                      }),
+                      "Work order rejected",
+                    );
                   }}
                 >
                   Reject
@@ -154,7 +171,7 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
             </CardContent>
           </Card>
         </>
-      )
+      );
     }
 
     // Block both technician and vendor if work order requires approval but is not yet approved
@@ -166,14 +183,14 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
             Pending finance approval before work can proceed.
           </CardContent>
         </Card>
-      )
+      );
     }
   }
 
   if (isVendor) {
     const pending =
-      workOrder.vendorOfferStatus === 'pending_acceptance' ||
-      (workOrder.status === 'assigned' && !workOrder.vendorOfferStatus)
+      workOrder.vendorOfferStatus === "pending_acceptance" ||
+      (workOrder.status === "assigned" && !workOrder.vendorOfferStatus);
 
     return (
       <>
@@ -186,8 +203,8 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
             {pending ? (
               <>
                 <p className="text-sm text-muted-foreground">
-                  Accept this assignment or decline with a reason. You can propose a scheduled
-                  date after accepting.
+                  Accept this assignment or decline with a reason. You can propose a scheduled date
+                  after accepting.
                 </p>
                 <div className="space-y-2">
                   <Label>Proposed date (optional)</Label>
@@ -204,8 +221,8 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
                     placeholder="Required if declining"
                     value={rejectReason}
                     onChange={(e) => {
-                      setRejectReason(e.target.value)
-                      if (rejectReasonError) setRejectReasonError(null)
+                      setRejectReason(e.target.value);
+                      if (rejectReasonError) setRejectReasonError(null);
                     }}
                     aria-invalid={!!rejectReasonError}
                   />
@@ -215,7 +232,15 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
                   <Button
                     className="gap-2"
                     onClick={() => {
-                      notifyUpdate(workOrdersService.vendorAccept(workOrder.id, proposedDate || undefined), 'Job accepted', () => notifyManager('Vendor accepted job', `${workOrder.id} accepted by vendor`))
+                      notifyUpdate(
+                        workOrdersService.vendorAccept(workOrder.id, proposedDate || undefined),
+                        "Job accepted",
+                        () =>
+                          notifyManager(
+                            "Vendor accepted job",
+                            `${workOrder.id} accepted by vendor`,
+                          ),
+                      );
                     }}
                   >
                     <CheckCircle2 className="h-4 w-4" />
@@ -226,10 +251,13 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
                     className="gap-2 text-destructive"
                     onClick={() => {
                       if (!rejectReason.trim()) {
-                        setRejectReasonError('Provide a decline reason')
-                        return
+                        setRejectReasonError("Provide a decline reason");
+                        return;
                       }
-                      notifyUpdate(workOrdersService.vendorReject(workOrder.id, rejectReason), 'Job declined')
+                      notifyUpdate(
+                        workOrdersService.vendorReject(workOrder.id, rejectReason),
+                        "Job declined",
+                      );
                     }}
                   >
                     <XCircle className="h-4 w-4" />
@@ -239,8 +267,7 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
               </>
             ) : null}
 
-            {workOrder.vendorOfferStatus === 'accepted' ||
-            workOrder.status === 'in_progress' ? (
+            {workOrder.vendorOfferStatus === "accepted" || workOrder.status === "in_progress" ? (
               <div className="space-y-3 border-t border-border pt-4">
                 <p className="text-sm font-medium">Complete job & invoice (US-07)</p>
                 <div className="space-y-2">
@@ -274,19 +301,34 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
                   className="w-full gap-2"
                   onClick={() =>
                     requestConfirm({
-                      title: 'Mark complete & submit invoice?',
-                      description: 'Completes the work order and submits invoice for finance review.',
-                      confirmLabel: 'Submit',
+                      title: "Mark complete & submit invoice?",
+                      description:
+                        "Completes the work order and submits invoice for finance review.",
+                      confirmLabel: "Submit",
                       onConfirm: () => {
-                        const amount = Number(invoiceAmount) || 0
-                        notifyUpdate(workOrdersService.transition(workOrder.id, 'pending_completion').then((updated) => workOrdersService.submitInvoice(workOrder.id, { invoiceNumber: invoiceNumber || `INV-${workOrder.id}`, amount, currency: 'NGN' }).then(() => updated)), 'Job completed and invoice submitted', () => {
-                          appendNotification('user-3', USER_ROLES.FINANCE, {
-                            type: 'approval',
-                            title: 'Vendor invoice submitted',
-                            message: `${workOrder.id} — $${amount.toLocaleString()} pending verification`,
-                            actionUrl: 'invoices',
-                          })
-                        })
+                        const amount = Number(invoiceAmount) || 0;
+                        notifyUpdate(
+                          workOrdersService
+                            .transition(workOrder.id, "pending_completion")
+                            .then((updated) =>
+                              workOrdersService
+                                .submitInvoice(workOrder.id, {
+                                  invoiceNumber: invoiceNumber || `INV-${workOrder.id}`,
+                                  amount,
+                                  currency: "NGN",
+                                })
+                                .then(() => updated),
+                            ),
+                          "Job completed and invoice submitted",
+                          () => {
+                            appendNotification("user-3", USER_ROLES.FINANCE, {
+                              type: "approval",
+                              title: "Vendor invoice submitted",
+                              message: `${workOrder.id} — $${amount.toLocaleString()} pending verification`,
+                              actionUrl: "invoices",
+                            });
+                          },
+                        );
                       },
                     })
                   }
@@ -299,7 +341,7 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
           </CardContent>
         </Card>
       </>
-    )
+    );
   }
 
   if (isTech) {
@@ -315,9 +357,12 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
               <Button
                 variant="outline"
                 className="gap-2"
-                disabled={workOrder.status === 'in_progress'}
+                disabled={workOrder.status === "in_progress"}
                 onClick={() => {
-                  notifyUpdate(updateWorkOrder(workOrder.id, { status: 'in_progress' }), 'Work started')
+                  notifyUpdate(
+                    updateWorkOrder(workOrder.id, { status: "in_progress" }),
+                    "Work started",
+                  );
                 }}
               >
                 <Play className="h-4 w-4" />
@@ -325,20 +370,27 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
               </Button>
               <Button
                 className="gap-2"
-                disabled={workOrder.status === 'completed'}
+                disabled={workOrder.status === "completed"}
                 onClick={() =>
                   requestConfirm({
-                    title: 'Complete work order?',
-                    description: 'Mark this job as completed with your notes and time.',
-                    confirmLabel: 'Complete',
+                    title: "Complete work order?",
+                    description: "Mark this job as completed with your notes and time.",
+                    confirmLabel: "Complete",
                     onConfirm: () => {
                       const complete = async () => {
-                        if (timeSpent && Number(timeSpent) > 0) await workOrdersService.addTimeLog(workOrder.id, { hours: Number(timeSpent), note: completionNotes || undefined })
-                        const updated = await workOrdersService.transition(workOrder.id, 'pending_completion')
-                        onWorkOrderUpdated(updated)
-                        return updated
-                      }
-                      notifyUpdate(complete(), 'Work order submitted for completion')
+                        if (timeSpent && Number(timeSpent) > 0)
+                          await workOrdersService.addTimeLog(workOrder.id, {
+                            hours: Number(timeSpent),
+                            note: completionNotes || undefined,
+                          });
+                        const updated = await workOrdersService.transition(
+                          workOrder.id,
+                          "pending_completion",
+                        );
+                        onWorkOrderUpdated(updated);
+                        return updated;
+                      };
+                      notifyUpdate(complete(), "Work order submitted for completion");
                     },
                   })
                 }
@@ -381,22 +433,29 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
                 id="tech-photo-upload"
                 className="hidden"
                 onChange={(e) => {
-                  const file = e.target.files?.[0]
+                  const file = e.target.files?.[0];
                   if (file) {
-                    const reader = new FileReader()
+                    const reader = new FileReader();
                     reader.onloadend = () => {
                       requestConfirm({
-                        title: 'Add photo?',
-                        description: 'Attach the selected photo to this work order.',
-                        confirmLabel: 'Attach',
-                        onConfirm: () => notifyUpdate((async () => {
-                          const uploaded = await uploadFile(file, { purpose: 'work-order-attachment', facilityId: workOrder.facilityId })
-                          await workOrdersService.addAttachment(workOrder.id, uploaded.id)
-                          return workOrder
-                        })(), 'Photo attached'),
-                      })
-                    }
-                    reader.readAsDataURL(file)
+                        title: "Add photo?",
+                        description: "Attach the selected photo to this work order.",
+                        confirmLabel: "Attach",
+                        onConfirm: () =>
+                          notifyUpdate(
+                            (async () => {
+                              const uploaded = await uploadFile(file, {
+                                purpose: "work-order-attachment",
+                                facilityId: workOrder.facilityId,
+                              });
+                              await workOrdersService.addAttachment(workOrder.id, uploaded.id);
+                              return workOrder;
+                            })(),
+                            "Photo attached",
+                          ),
+                      });
+                    };
+                    reader.readAsDataURL(file);
                   }
                 }}
               />
@@ -405,7 +464,7 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
                 size="sm"
                 className="gap-2"
                 onClick={() => {
-                  document.getElementById('tech-photo-upload')?.click()
+                  document.getElementById("tech-photo-upload")?.click();
                 }}
               >
                 <Camera className="h-4 w-4" />
@@ -427,8 +486,8 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
               placeholder="Issue title"
               value={issueForm.title}
               onChange={(e) => {
-                setIssueForm((p) => ({ ...p, title: e.target.value }))
-                if (issueFormErrors.title) setIssueFormErrors((p) => ({ ...p, title: undefined }))
+                setIssueForm((p) => ({ ...p, title: e.target.value }));
+                if (issueFormErrors.title) setIssueFormErrors((p) => ({ ...p, title: undefined }));
               }}
               aria-invalid={!!issueFormErrors.title}
             />
@@ -438,8 +497,9 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
               placeholder="Describe the issue found"
               value={issueForm.description}
               onChange={(e) => {
-                setIssueForm((p) => ({ ...p, description: e.target.value }))
-                if (issueFormErrors.description) setIssueFormErrors((p) => ({ ...p, description: undefined }))
+                setIssueForm((p) => ({ ...p, description: e.target.value }));
+                if (issueFormErrors.description)
+                  setIssueFormErrors((p) => ({ ...p, description: undefined }));
               }}
               aria-invalid={!!issueFormErrors.description}
             />
@@ -447,14 +507,34 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
             <Button
               size="sm"
               onClick={() => {
-                const nextErrors: { title?: string; description?: string } = {}
-                if (!issueForm.title.trim()) nextErrors.title = 'Issue title is required'
-                if (!issueForm.description.trim()) nextErrors.description = 'Description is required'
-                setIssueFormErrors(nextErrors)
-                if (Object.keys(nextErrors).length > 0) return
-                const report = serviceRequestsService.create({ organizationId: user?.organizationId ?? '', facilityId: workOrder.facilityId ?? '', locationId: workOrder.locationId ?? '', assetId: workOrder.assetId ?? '', title: issueForm.title, description: `${issueForm.description}\n\nLinked to ${workOrder.id}`, priority: issueForm.priority, serviceCategory: issueForm.category, sourceWorkOrderId: workOrder.id }).then(() => workOrder)
-                notifyUpdate(report, 'Issue reported — manager notified', () => notifyManager('Issue reported from field', issueForm.title))
-                setIssueForm({ title: '', category: workOrder.category, description: '', priority: workOrder.priority })
+                const nextErrors: { title?: string; description?: string } = {};
+                if (!issueForm.title.trim()) nextErrors.title = "Issue title is required";
+                if (!issueForm.description.trim())
+                  nextErrors.description = "Description is required";
+                setIssueFormErrors(nextErrors);
+                if (Object.keys(nextErrors).length > 0) return;
+                const report = serviceRequestsService
+                  .create({
+                    organizationId: user?.organizationId ?? "",
+                    facilityId: workOrder.facilityId ?? "",
+                    locationId: workOrder.locationId ?? "",
+                    assetId: workOrder.assetId ?? "",
+                    title: issueForm.title,
+                    description: `${issueForm.description}\n\nLinked to ${workOrder.id}`,
+                    priority: issueForm.priority,
+                    serviceCategory: issueForm.category,
+                    sourceWorkOrderId: workOrder.id,
+                  })
+                  .then(() => workOrder);
+                notifyUpdate(report, "Issue reported — manager notified", () =>
+                  notifyManager("Issue reported from field", issueForm.title),
+                );
+                setIssueForm({
+                  title: "",
+                  category: workOrder.category,
+                  description: "",
+                  priority: workOrder.priority,
+                });
               }}
             >
               Submit issue
@@ -462,8 +542,8 @@ export function WorkOrderRolePanel({ workOrder, onWorkOrderUpdated }: WorkOrderR
           </CardContent>
         </Card>
       </>
-    )
+    );
   }
 
-  return null
+  return null;
 }

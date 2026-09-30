@@ -3,10 +3,12 @@ import type { FieldValues, Path, UseFormSetError } from "react-hook-form";
 import { ApiClientError, type ValidationErrors, type ValidationIssue } from "@/api/types";
 import { AppError } from "@/lib/errors/AppError";
 
-export type ApiFieldErrorMap<TFormValues extends FieldValues> = Partial<Record<Path<TFormValues>, string>>;
+export type ApiFieldErrorMap<TFormValues extends FieldValues> = Partial<
+  Record<Path<TFormValues>, string>
+>;
 
 function firstMessage(value: string | string[]): string {
-  return Array.isArray(value) ? value[0] ?? "Invalid value" : value;
+  return Array.isArray(value) ? (value[0] ?? "Invalid value") : value;
 }
 
 function isValidationIssue(value: unknown): value is ValidationIssue {
@@ -101,7 +103,7 @@ export function getApiValidationMessages(error: unknown): string[] {
 
 export function mapApiValidationErrors<TFormValues extends FieldValues>(
   error: unknown,
-  fieldNames: readonly Path<TFormValues>[]
+  fieldNames: readonly Path<TFormValues>[],
 ): ApiFieldErrorMap<TFormValues> {
   const errors = getValidationErrors(error);
 
@@ -137,7 +139,7 @@ export function mapApiValidationErrors<TFormValues extends FieldValues>(
 export function applyBackendValidationErrors<TFormValues extends FieldValues>(
   error: unknown,
   setError: UseFormSetError<TFormValues>,
-  fieldNames: readonly Path<TFormValues>[]
+  fieldNames: readonly Path<TFormValues>[],
 ): boolean {
   const mappedErrors = mapApiValidationErrors(error, fieldNames);
 

@@ -33,16 +33,16 @@ VITE_API_URL=http://localhost:8000/api/v1
 
 ## Commands
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Start the Vite development server |
-| `npm run build` | Type-check and build the production bundle |
-| `npm run preview` | Preview the production build locally |
-| `npm run type-check` | Run TypeScript without emitting files |
-| `npm run lint` | Run ESLint against the source tree |
-| `npm test` | Run frontend contract and route tests |
-| `npm run format` | Format frontend files with Prettier |
-| `npm run format:check` | Verify Prettier formatting |
+| Command                | Purpose                                      |
+| ---------------------- | -------------------------------------------- |
+| `npm run dev`          | Start the Vite development server            |
+| `npm run build`        | Type-check and build the production bundle   |
+| `npm run preview`      | Preview the production build locally         |
+| `npm run type-check`   | Run TypeScript without emitting files        |
+| `npm run lint`         | Run ESLint against the source tree           |
+| `npm test`             | Run frontend contract and route tests        |
+| `npm run format`       | Format frontend files with Prettier          |
+| `npm run format:check` | Verify Prettier formatting                   |
 | `npm run audit:routes` | Verify portal navigation and route contracts |
 
 ## Project structure

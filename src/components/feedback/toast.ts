@@ -1,4 +1,4 @@
-import { toast } from 'sonner'
+import { toast } from "sonner";
 
 /**
  * Use for transient feedback only — "Saved successfully", "Invitation sent",
@@ -14,4 +14,4 @@ export const notify = {
   error: (message: string) => toast.error(message),
   warning: (message: string) => toast.warning(message),
   info: (message: string) => toast.info(message),
-}
+};

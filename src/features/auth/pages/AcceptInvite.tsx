@@ -1,32 +1,32 @@
-import { useState } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
-import { ArrowLeft, Loader2, ShieldCheck, CheckCircle2 } from 'lucide-react'
+import { useState } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import { ArrowLeft, Loader2, ShieldCheck, CheckCircle2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { AuthSplitLayout } from '@/features/auth/components/AuthBrandingPanel'
-import { PasswordField } from '@/features/auth/components/PasswordField'
-import { useAcceptInvitation } from '@/features/auth/hooks/useAuthQueries'
-import { FormBanner } from '@/components/feedback/FormBanner'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuthSplitLayout } from "@/features/auth/components/AuthBrandingPanel";
+import { PasswordField } from "@/features/auth/components/PasswordField";
+import { useAcceptInvitation } from "@/features/auth/hooks/useAuthQueries";
+import { FormBanner } from "@/components/feedback/FormBanner";
 
 export function AcceptInvite() {
-  const [searchParams] = useSearchParams()
-  const acceptInvitationMutation = useAcceptInvitation()
-  const token = searchParams.get('token') ?? ''
+  const [searchParams] = useSearchParams();
+  const acceptInvitationMutation = useAcceptInvitation();
+  const token = searchParams.get("token") ?? "";
 
-  const [form, setForm] = useState({ password: '' })
+  const [form, setForm] = useState({ password: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!token) return
+    e.preventDefault();
+    if (!token) return;
 
     acceptInvitationMutation.mutate({
       token,
       password: form.password,
-    })
-  }
+    });
+  };
 
   if (!token) {
     return (
@@ -45,7 +45,7 @@ export function AcceptInvite() {
           </CardContent>
         </Card>
       </AuthSplitLayout>
-    )
+    );
   }
 
   return (
@@ -66,9 +66,7 @@ export function AcceptInvite() {
         </CardHeader>
 
         <CardContent className="space-y-5">
-          {acceptInvitationMutation.error && (
-            <FormBanner error={acceptInvitationMutation.error} />
-          )}
+          {acceptInvitationMutation.error && <FormBanner error={acceptInvitationMutation.error} />}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <PasswordField
@@ -83,11 +81,11 @@ export function AcceptInvite() {
             <div className="flex items-start gap-2 rounded-md border border-border bg-muted/40 px-3 py-2">
               <ShieldCheck className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
               <p className="text-xs text-muted-foreground">
-                By accepting, you agree to the{' '}
+                By accepting, you agree to the{" "}
                 <Link to="/terms-of-service" className="underline hover:text-foreground">
                   Terms of Service
-                </Link>{' '}
-                and{' '}
+                </Link>{" "}
+                and{" "}
                 <Link to="/privacy-policy" className="underline hover:text-foreground">
                   Privacy Policy
                 </Link>
@@ -106,13 +104,13 @@ export function AcceptInvite() {
                   Accepting invitation…
                 </>
               ) : (
-                'Create account & join'
+                "Create account & join"
               )}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <Link to="/login" className="text-primary hover:underline">
               Sign in
             </Link>
@@ -120,5 +118,5 @@ export function AcceptInvite() {
         </CardContent>
       </Card>
     </AuthSplitLayout>
-  )
+  );
 }

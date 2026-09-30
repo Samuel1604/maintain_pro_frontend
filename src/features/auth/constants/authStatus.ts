@@ -1,7 +1,7 @@
 export enum AuthStatus {
-  LOADING = 'loading',
+  LOADING = "loading",
 
-  AUTHENTICATED = 'authenticated',
+  AUTHENTICATED = "authenticated",
 
-  UNAUTHENTICATED = 'unauthenticated',
+  UNAUTHENTICATED = "unauthenticated",
 }

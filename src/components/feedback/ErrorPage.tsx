@@ -1,32 +1,32 @@
-import type { LucideIcon } from 'lucide-react'
-import { ShieldAlert, CircleAlert, SearchX, ServerCrash } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import type { LucideIcon } from "lucide-react";
+import { ShieldAlert, CircleAlert, SearchX, ServerCrash } from "lucide-react";
+import { Link } from "react-router-dom";
 
-import { Button } from '@/components/ui/button'
-import { cn } from '@/utils/helpers'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/utils/helpers";
 
-export type ErrorPageKind = 'not-found' | 'unauthorized' | 'server' | 'generic'
+export type ErrorPageKind = "not-found" | "unauthorized" | "server" | "generic";
 
 const KIND_ICON: Record<ErrorPageKind, LucideIcon> = {
-  'not-found': SearchX,
+  "not-found": SearchX,
   unauthorized: ShieldAlert,
   server: ServerCrash,
   generic: CircleAlert,
-}
+};
 
 interface ErrorPageAction {
-  label: string
-  to?: string
-  onClick?: () => void
+  label: string;
+  to?: string;
+  onClick?: () => void;
 }
 
 interface ErrorPageProps {
-  kind?: ErrorPageKind
-  title: string
-  message?: string
-  primaryAction?: ErrorPageAction
-  secondaryAction?: ErrorPageAction
-  className?: string
+  kind?: ErrorPageKind;
+  title: string;
+  message?: string;
+  primaryAction?: ErrorPageAction;
+  secondaryAction?: ErrorPageAction;
+  className?: string;
 }
 
 /**
@@ -36,17 +36,19 @@ interface ErrorPageProps {
  * PageError for those instead.
  */
 export function ErrorPage({
-  kind = 'generic',
+  kind = "generic",
   title,
   message,
   primaryAction,
   secondaryAction,
   className,
 }: ErrorPageProps) {
-  const Icon = KIND_ICON[kind]
+  const Icon = KIND_ICON[kind];
 
   return (
-    <div className={cn('flex min-h-screen items-center justify-center bg-background px-4', className)}>
+    <div
+      className={cn("flex min-h-screen items-center justify-center bg-background px-4", className)}
+    >
       <div
         role="alert"
         className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-sm"
@@ -64,32 +66,34 @@ export function ErrorPage({
         {(primaryAction || secondaryAction) && (
           <div className="flex flex-wrap justify-center gap-3">
             {primaryAction ? <ErrorPageButton action={primaryAction} /> : null}
-            {secondaryAction ? <ErrorPageButton action={secondaryAction} variant="outline" /> : null}
+            {secondaryAction ? (
+              <ErrorPageButton action={secondaryAction} variant="outline" />
+            ) : null}
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function ErrorPageButton({
   action,
-  variant = 'default',
+  variant = "default",
 }: {
-  action: ErrorPageAction
-  variant?: 'default' | 'outline'
+  action: ErrorPageAction;
+  variant?: "default" | "outline";
 }) {
   if (action.to) {
     return (
       <Button asChild variant={variant}>
         <Link to={action.to}>{action.label}</Link>
       </Button>
-    )
+    );
   }
 
   return (
     <Button variant={variant} onClick={action.onClick}>
       {action.label}
     </Button>
-  )
+  );
 }
