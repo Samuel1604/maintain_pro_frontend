@@ -12,14 +12,30 @@ import { Input } from "@/components/ui/input";
 
 type ChatMessage = { id: number; role: "assistant" | "user"; text: string };
 
-const suggestions = [
+const portalSuggestions = [
   "How do I create a work order?",
   "Where can I see preventive maintenance?",
   "How do I assign a technician?",
 ];
+const publicSuggestions = [
+  "What is MaintainPro?",
+  "Which teams can use it?",
+  "How do I get started?",
+];
 
-function answerFor(message: string) {
+function answerFor(message: string, publicMode: boolean) {
   const question = message.toLowerCase();
+  if (publicMode) {
+    if (question.includes("what") || question.includes("maintainpro"))
+      return "MaintainPro is a facility maintenance operations platform for facilities, locations, assets, work orders, preventive maintenance, inventory, and vendors.";
+    if (question.includes("team") || question.includes("use"))
+      return "Administrators, facility managers, technicians, staff, finance teams, and vendors each get role-aware workflows.";
+    if (question.includes("start") || question.includes("sign"))
+      return "Choose Get Started to create an organization or vendor account. For enterprise onboarding, our contact team can help.";
+    if (question.includes("price"))
+      return "Review the available plans on the Pricing page, or ask for an enterprise conversation for organization-specific requirements.";
+    return "I can answer questions about MaintainPro, supported teams, features, pricing, and getting started.";
+  }
   if (question.includes("work order"))
     return "Open Work Orders from the sidebar, then select Create Work Order. You can link the facility, location, asset, priority, and technician before submitting.";
   if (question.includes("preventive") || question.includes("maintenance"))
@@ -34,16 +50,20 @@ function answerFor(message: string) {
 export function SupportChat({
   open,
   onOpenChange,
+  publicMode = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  publicMode?: boolean;
 }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 1,
       role: "assistant",
-      text: "Hi! I’m the MaintainPro assistant. What would you like help with?",
+      text: publicMode
+        ? "Hi! I’m the MaintainPro assistant. Ask me about the platform, teams, pricing, or getting started."
+        : "Hi! I’m the MaintainPro assistant. What would you like help with?",
     },
   ]);
 
@@ -53,7 +73,7 @@ export function SupportChat({
     setMessages((current) => [
       ...current,
       { id: Date.now(), role: "user", text },
-      { id: Date.now() + 1, role: "assistant", text: answerFor(text) },
+      { id: Date.now() + 1, role: "assistant", text: answerFor(text, publicMode) },
     ]);
     setInput("");
   };
@@ -84,7 +104,7 @@ export function SupportChat({
             ))}
           </div>
           <div className="flex flex-wrap gap-2">
-            {suggestions.map((suggestion) => (
+            {(publicMode ? publicSuggestions : portalSuggestions).map((suggestion) => (
               <Button key={suggestion} variant="outline" size="sm" onClick={() => send(suggestion)}>
                 <Sparkles className="mr-1.5 h-3.5 w-3.5" />
                 {suggestion}
