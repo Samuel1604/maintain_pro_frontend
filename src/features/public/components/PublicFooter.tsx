@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
-import { MaterialIcon } from "@/features/public/components/MaterialIcon";
 import { PUBLIC_ROUTES } from "@/features/public/constants/routes";
 
 type FooterVariant = "landing" | "features" | "about" | "contact" | "pricing";
@@ -12,9 +11,10 @@ interface PublicFooterProps {
 }
 
 export function PublicFooter({ variant = "landing" }: PublicFooterProps) {
-  const showNewsletter = variant === "landing";
-  const showConnect =
-    variant === "about" || variant === "contact" || variant === "features" || variant === "pricing";
+  // Keep the public experience consistent across every marketing page.
+  // `variant` remains accepted for existing call sites and future active-state needs.
+  void variant;
+  const showNewsletter = true;
   const [newsletterState, setNewsletterState] = useState<"idle" | "success">(
     "idle",
   );
@@ -37,26 +37,14 @@ export function PublicFooter({ variant = "landing" }: PublicFooterProps) {
             className="mb-6"
           />
           <p className="font-body-md text-body-md text-on-surface-variant">
-            {variant === "landing" &&
-              "A connected system for facility operations, maintenance work, assets, and external service vendors."}
-            {variant === "features" &&
-              "One operational workflow: service request → approval → work order → assignment → completion → history."}
-            {variant === "about" &&
-              "Built for the people and teams that keep physical environments running."}
-            {variant === "contact" &&
-              "Connecting organizations, technicians, and vendors in one operational system."}
-            {variant === "pricing" &&
-              "Transparent plans for organizations managing facility work and vendors delivering it."}
+            A connected system for facility operations, maintenance work, assets, and external service
+            vendors.
           </p>
         </div>
 
         <div>
           <h4 className="mb-6 font-label-md text-label-md font-bold text-on-surface">
-            {variant === "about"
-              ? "Product"
-              : variant === "features"
-              ? "Solutions"
-              : "Platform"}
+            Platform
           </h4>
           <ul className="space-y-4">
             <li>
@@ -167,39 +155,11 @@ export function PublicFooter({ variant = "landing" }: PublicFooterProps) {
           </div>
         )}
 
-        {showConnect && !showNewsletter && (
-          <div>
-            <h4 className="mb-6 font-label-md text-label-md font-bold uppercase text-on-surface">
-              Stay Connected
-            </h4>
-            <div className="flex gap-4">
-              <a
-                href="mailto:support@maintainpro.com"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border-subtle text-on-surface-variant transition-all hover:border-primary hover:text-primary"
-                aria-label="Email us"
-              >
-                <MaterialIcon name="mail" className="text-xl" />
-              </a>
-              <Link
-                to={PUBLIC_ROUTES.CONTACT}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border-subtle text-on-surface-variant transition-all hover:border-primary hover:text-primary"
-                aria-label="Contact page"
-              >
-                <MaterialIcon name="apps" className="text-xl" />
-              </Link>
-            </div>
-            <p className="mt-8 font-body-md text-body-md text-on-surface-variant opacity-80">
-              © 2026 MaintainPro Inc. All rights reserved.
-            </p>
-          </div>
-        )}
       </div>
 
-      {(showNewsletter || variant === "features") && (
-        <div className="mx-auto mt-12 max-w-max-width border-t border-border-subtle px-gutter-desktop pt-8 text-center font-body-md text-body-md text-on-surface-variant">
-          © 2026 MaintainPro Inc. All rights reserved.
-        </div>
-      )}
+      <div className="mx-auto mt-12 max-w-max-width border-t border-border-subtle px-gutter-desktop pt-8 text-center font-body-md text-body-md text-on-surface-variant">
+        © 2026 MaintainPro Inc. All rights reserved.
+      </div>
     </footer>
   );
 }
