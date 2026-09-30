@@ -12,7 +12,6 @@ import {
 } from '@/features/public/constants/routes'
 import { useAuthStore } from '@/app/store'
 import { getDefaultPathForRole } from '@/app/portal.config'
-import { SupportChat } from '@/components/navigation/SupportChat'
 
 interface PublicNavbarProps {
   activeItem?: PublicNavItem | 'portals'
@@ -21,7 +20,6 @@ interface PublicNavbarProps {
 export function PublicNavbar({ activeItem }: PublicNavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [chatOpen, setChatOpen] = useState(false)
   const location = useLocation()
   const user = useAuthStore((state) => state.user)
 
@@ -83,16 +81,6 @@ export function PublicNavbar({ activeItem }: PublicNavbarProps) {
 
           <PublicThemeToggle />
 
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 rounded-lg border border-border-subtle px-3 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:border-primary hover:text-primary"
-            onClick={() => setChatOpen(true)}
-            aria-label="Open MaintainPro assistant"
-          >
-            <MaterialIcon name="support_agent" className="text-base" />
-            <span>Ask us</span>
-          </button>
-
           {user && portalPath ? (
             <Link
               to={portalPath}
@@ -124,8 +112,6 @@ export function PublicNavbar({ activeItem }: PublicNavbarProps) {
           </button>
         </div>
       </nav>
-
-      <SupportChat open={chatOpen} onOpenChange={setChatOpen} publicMode />
 
       {mobileOpen && (
         <div className="border-t border-border-subtle bg-surface-bright px-gutter-mobile py-4 md:hidden">
