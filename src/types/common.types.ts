@@ -1,11 +1,5 @@
 // ─── User ────────────────────────────────────────────────────────────────────
-export type UserRole =
-  | "facility_manager"
-  | "technician"
-  | "vendor"
-  | "staff"
-  | "finance"
-  | "admin";
+export type UserRole = "facility_manager" | "technician" | "vendor" | "staff" | "finance" | "admin";
 export type UserStatus = "active" | "inactive" | "pending";
 
 export interface User {
@@ -32,16 +26,11 @@ export type WorkOrderStatus =
   | "completed"
   | "cancelled";
 export type WorkOrderPriority = "critical" | "high" | "medium" | "low";
-export type WorkOrderType =
-  | "reactive"
-  | "preventive"
-  | "emergency"
-  | "inspection"
-  | "project";
+export type WorkOrderType = "reactive" | "preventive" | "emergency" | "inspection" | "project";
 
 export interface WorkOrder {
   id: string;
-  sourceType?: 'manual' | 'service_request' | 'preventive_maintenance';
+  sourceType?: "manual" | "service_request" | "preventive_maintenance";
   title: string;
   description: string;
   type: WorkOrderType;
@@ -124,11 +113,7 @@ export interface PartUsed {
 }
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
-export type AssetStatus =
-  | "active"
-  | "inactive"
-  | "under_maintenance"
-  | "retired";
+export type AssetStatus = "active" | "inactive" | "under_maintenance" | "retired";
 
 export interface Asset {
   id: string;
@@ -202,7 +187,7 @@ export interface Location {
   managerName?: string;
   floorPlanUrl?: string;
   description?: string;
-  status?: 'active' | 'inactive';
+  status?: "active" | "inactive";
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -291,13 +276,7 @@ export interface StockReceipt {
 }
 
 // ─── Preventive Maintenance ───────────────────────────────────────────────────
-export type PMFrequency =
-  | "daily"
-  | "weekly"
-  | "monthly"
-  | "quarterly"
-  | "yearly"
-  | "custom";
+export type PMFrequency = "daily" | "weekly" | "monthly" | "quarterly" | "yearly" | "custom";
 export type PMStatus = "active" | "paused" | "completed" | "cancelled";
 
 export interface PreventiveMaintenance {
@@ -337,72 +316,72 @@ export interface ChecklistItem {
 }
 
 // ─── Service Requests ─────────────────────────────────────────────────────────
-export type ServiceRequestStatus = 'pending' | 'approved' | 'rejected';
+export type ServiceRequestStatus = "pending" | "approved" | "rejected";
 
 export interface ServiceRequest {
-  id: string
-  title: string
-  description: string
-  category: string
-  status: ServiceRequestStatus
-  priority: WorkOrderPriority
-  requesterId: string
-  requesterName: string
-  requesterEmail: string
-  locationId: string
-  locationName: string
-  images?: string[]
-  createdAt: Date
-  resolvedAt?: Date
-  rating?: number
-  feedback?: string
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  status: ServiceRequestStatus;
+  priority: WorkOrderPriority;
+  requesterId: string;
+  requesterName: string;
+  requesterEmail: string;
+  locationId: string;
+  locationName: string;
+  images?: string[];
+  createdAt: Date;
+  resolvedAt?: Date;
+  rating?: number;
+  feedback?: string;
   // Workflow fields
-  assignmentType?: 'internal' | 'vendor'
-  assignedTechnicianId?: string
-  assignedTechnicianName?: string
-  selectedVendorId?: string
-  selectedVendorName?: string
-  generatedWorkOrderId?: string
-  reviewedBy?: string
-  reviewedAt?: Date
-  approvedAt?: Date
-  reviewNotes?: string
-  opportunityId?: string
+  assignmentType?: "internal" | "vendor";
+  assignedTechnicianId?: string;
+  assignedTechnicianName?: string;
+  selectedVendorId?: string;
+  selectedVendorName?: string;
+  generatedWorkOrderId?: string;
+  reviewedBy?: string;
+  reviewedAt?: Date;
+  approvedAt?: Date;
+  reviewNotes?: string;
+  opportunityId?: string;
   // Legacy compat
-  convertedToWorkOrderId?: string
-  assignedTo?: string
-  isGuest?: boolean
-  guestContactInfo?: string
+  convertedToWorkOrderId?: string;
+  assignedTo?: string;
+  isGuest?: boolean;
+  guestContactInfo?: string;
 }
 
 // ─── Vendor Opportunities ─────────────────────────────────────────────────────
 export interface VendorBid {
-  id: string
-  opportunityId: string
-  vendorId: string
-  vendorName: string
-  proposedCost: number
-  estimatedDays: number
-  notes?: string
-  submittedAt: Date
-  status: 'pending' | 'accepted' | 'rejected'
+  id: string;
+  opportunityId: string;
+  vendorId: string;
+  vendorName: string;
+  proposedCost: number;
+  estimatedDays: number;
+  notes?: string;
+  submittedAt: Date;
+  status: "pending" | "accepted" | "rejected";
 }
 
 export interface VendorOpportunity {
-  id: string
-  serviceRequestId: string
-  title: string
-  description: string
-  category: string
-  locationName: string
-  priority: WorkOrderPriority
-  estimatedBudget?: number
-  publishedAt: Date
-  deadline?: Date
-  status: 'open' | 'awarded' | 'closed'
-  bids: VendorBid[]
-  awardedVendorId?: string
-  awardedVendorName?: string
+  id: string;
+  serviceRequestId: string;
+  title: string;
+  description: string;
+  category: string;
+  locationName: string;
+  priority: WorkOrderPriority;
+  estimatedBudget?: number;
+  publishedAt: Date;
+  deadline?: Date;
+  status: "open" | "awarded" | "closed";
+  bids: VendorBid[];
+  awardedVendorId?: string;
+  awardedVendorName?: string;
 }
 
 // ─── Notifications ────────────────────────────────────────────────────────────
