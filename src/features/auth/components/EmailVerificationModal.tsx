@@ -66,7 +66,6 @@ export function EmailVerificationModal() {
     };
   }, []);
 
-
   function handleVerifyOtp(e: React.FormEvent) {
     e.preventDefault();
     if (!email || !otpState.code || otpState.code.length < 6 || isVerifyingOtp) return;
@@ -130,8 +129,7 @@ export function EmailVerificationModal() {
                 </DialogDescription>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-            </div>
+            <div className="flex items-center gap-2"></div>
           </div>
         </div>
 
