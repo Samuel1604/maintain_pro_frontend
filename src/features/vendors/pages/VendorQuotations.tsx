@@ -196,7 +196,7 @@ export function VendorQuotations() {
         hideQuickCreate
       />
 
-      <div className="px-8 py-6 space-y-8">
+      <main className="mx-auto w-full max-w-[1400px] space-y-6 px-6 py-6 lg:px-8">
         <PageHeader
           className="rounded-xl border border-border"
           title="Quotations"
@@ -208,7 +208,7 @@ export function VendorQuotations() {
         />
 
         {/* Quotations Table */}
-        <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
           <div className="p-4 border-b border-border flex justify-between items-center">
             <div className="w-72">
               <SearchInput
@@ -348,7 +348,7 @@ export function VendorQuotations() {
             </div>
           </div>
         )}
-      </div>
+      </main>
       <ConfirmDialog
         open={Boolean(awardTarget)}
         onOpenChange={(open) => {

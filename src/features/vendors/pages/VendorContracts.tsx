@@ -95,7 +95,7 @@ export function VendorContracts() {
           subtitle={isOrganizationView ? "Organization contract awards" : "My Service Contracts"}
           hideQuickCreate
         />
-        <main className="px-6 py-8 lg:px-8">
+        <main className="mx-auto w-full max-w-[1400px] space-y-6 px-6 py-6 lg:px-8">
           <PageHeader
             className="rounded-xl border border-border"
             title={isOrganizationView ? "Contracts" : "My Service Contracts"}
@@ -105,7 +105,6 @@ export function VendorContracts() {
                 : "Review your active service contracts, scope, and renewal dates."
             }
           />
-          <div className="h-6" />
           <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
             {isOrganizationView
               ? "No organization contract awards are available yet."
@@ -130,7 +129,7 @@ export function VendorContracts() {
         hideQuickCreate
       />
 
-      <div className="px-8 py-6 space-y-6">
+      <main className="mx-auto w-full max-w-[1400px] space-y-6 px-6 py-6 lg:px-8">
         <PageHeader
           className="rounded-xl border border-border"
           title={isOrganizationView ? "Contracts" : "My Service Contracts"}
@@ -140,7 +139,7 @@ export function VendorContracts() {
               : "Review your active service contracts, scope, and renewal dates."
           }
         />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
           {/* Left Contracts List (7 cols) */}
           <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center justify-between gap-4">
@@ -155,7 +154,7 @@ export function VendorContracts() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+            <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-[13px]">
                   <thead>
@@ -212,8 +211,8 @@ export function VendorContracts() {
           </div>
 
           {/* Right Contract Side Card (5 cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-6">
+          <div className="space-y-6 lg:col-span-5">
+            <div className="space-y-6 rounded-xl border border-border bg-card p-6 shadow-sm">
               <div className="flex items-start justify-between">
                 {selectedContract && (
                   <>
@@ -282,7 +281,7 @@ export function VendorContracts() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
