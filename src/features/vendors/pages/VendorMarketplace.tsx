@@ -53,6 +53,17 @@ interface MarketplaceVendor {
   activeContracts: Array<{ id: string; title: string; amount: string }>;
 }
 
+function normalizeServiceCategories(categories: string[]): string[] {
+  return [
+    ...new Set(
+      categories
+        .flatMap((category) => category.split(","))
+        .map((category) => category.replace(/\.\.\.$/, "").trim())
+        .filter(Boolean),
+    ),
+  ];
+}
+
 const MARKETPLACE_VENDORS: MarketplaceVendor[] = [
   {
     id: "m1",
@@ -133,6 +144,12 @@ export function VendorMarketplace() {
   const [liveVendors, setLiveVendors] = useState<MarketplaceVendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: "",
+    category: "all",
+    proximity: "all",
+    slaFilter: "all",
+  });
 
   useEffect(() => {
     void organizationVendorsApi
@@ -148,7 +165,7 @@ export function VendorMarketplace() {
             distance: "Distance not provided",
             rating: vendor.averageRating ?? 0,
             slaCompliance: 0,
-            serviceCategories: vendor.serviceCategories ?? [],
+            serviceCategories: normalizeServiceCategories(vendor.serviceCategories ?? []),
             description:
               "Vendor profile details are available through the vendor relationship workflow.",
             certifications: vendor.certifications ?? [],
@@ -203,23 +220,31 @@ export function VendorMarketplace() {
     );
   const filteredVendors = liveVendors.filter((v) => {
     if (
-      search &&
-      !v.name.toLowerCase().includes(search.toLowerCase()) &&
-      !v.description.toLowerCase().includes(search.toLowerCase())
+      appliedFilters.search &&
+      !v.name.toLowerCase().includes(appliedFilters.search.toLowerCase()) &&
+      !v.description.toLowerCase().includes(appliedFilters.search.toLowerCase()) &&
+      !v.serviceCategories.some((item) =>
+        item.toLowerCase().includes(appliedFilters.search.toLowerCase()),
+      )
     )
       return false;
     if (
-      category !== "all" &&
-      !v.serviceCategories.some((item) => item.toLowerCase().includes(category))
+      appliedFilters.category !== "all" &&
+      !v.serviceCategories.some((item) => item.toLowerCase().includes(appliedFilters.category))
     )
       return false;
-    if (proximity !== "all" && Number.parseFloat(v.distance) > Number(proximity)) return false;
-    if (slaFilter !== "all" && v.slaCompliance < Number(slaFilter)) return false;
+    if (
+      appliedFilters.proximity !== "all" &&
+      Number.parseFloat(v.distance) > Number(appliedFilters.proximity)
+    )
+      return false;
+    if (appliedFilters.slaFilter !== "all" && v.slaCompliance < Number(appliedFilters.slaFilter))
+      return false;
     return true;
   });
-  const marketplaceCategories = [
-    ...new Set(liveVendors.flatMap((vendor) => vendor.serviceCategories)),
-  ].sort();
+  const marketplaceCategories = normalizeServiceCategories(
+    liveVendors.flatMap((vendor) => vendor.serviceCategories),
+  ).sort();
 
   const handleRequestRelationship = async (vendor: MarketplaceVendor) => {
     try {
@@ -314,7 +339,7 @@ export function VendorMarketplace() {
             <div className="min-w-0">
               <Button
                 type="button"
-                onClick={() => undefined}
+                onClick={() => setAppliedFilters({ search, category, proximity, slaFilter })}
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-[13px] font-semibold h-[38px] rounded-lg"
               >
                 Filter Results
