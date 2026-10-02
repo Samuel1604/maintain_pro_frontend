@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, KeyRound } from "lucide-react";
-import {
-  useVerifyEmail,
-  useResendVerification,
-} from "../hooks/useAuthQueries";
+import { useVerifyEmail, useResendVerification } from "../hooks/useAuthQueries";
 import { useAuthStore } from "@/app/store";
 import { useVerificationModalStore } from "../store/useVerificationModalStore";
 import { authService } from "@/services/auth.service";
@@ -20,7 +17,6 @@ export function EmailVerificationModal() {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
   const email = user?.email ?? "";
-
 
   const [otpState, setOtpState] = useState({
     code: "",
@@ -209,9 +205,7 @@ export function EmailVerificationModal() {
               <div className="space-y-3 pt-4">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>Auto closing soon</span>
-                  <span>
-                    {Math.ceil((autoDismissSeconds * dismissProgress) / 100)}s
-                  </span>
+                  <span>{Math.ceil((autoDismissSeconds * dismissProgress) / 100)}s</span>
                 </div>
                 <Progress value={dismissProgress} />
               </div>
