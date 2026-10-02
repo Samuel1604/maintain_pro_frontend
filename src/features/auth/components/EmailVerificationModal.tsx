@@ -39,7 +39,6 @@ export function EmailVerificationModal() {
 
   const [otpVerified, setOtpVerified] = useState(false);
   const [dismissProgress, setDismissProgress] = useState(100);
-  const [timerCancelled, setTimerCancelled] = useState(false);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const dismissTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -56,7 +55,7 @@ export function EmailVerificationModal() {
   }, [mode]);
 
   useEffect(() => {
-    if (!isOpen || !autoDismissSeconds || timerCancelled) {
+    if (!isOpen || !autoDismissSeconds) {
       if (dismissTimerRef.current) clearInterval(dismissTimerRef.current);
       return;
     }
@@ -79,7 +78,7 @@ export function EmailVerificationModal() {
     return () => {
       if (dismissTimerRef.current) clearInterval(dismissTimerRef.current);
     };
-  }, [isOpen, autoDismissSeconds, timerCancelled, closeModal]);
+  }, [isOpen, autoDismissSeconds, closeModal]);
 
   useEffect(() => {
     return () => {
@@ -103,7 +102,6 @@ export function EmailVerificationModal() {
 
   function handleRegenerateLink() {
     if (!email || isRegeneratingLink) return;
-    setTimerCancelled(true);
     setIsRegenerated(true);
 
     forceGenerate(email, 15)
@@ -122,7 +120,6 @@ export function EmailVerificationModal() {
     e.preventDefault();
     if (!email || !otpState.code || otpState.code.length < 6 || isVerifyingOtp) return;
 
-    setTimerCancelled(true);
     setOtpState((prev) => ({ ...prev, error: null }));
 
     verifyOtp(
@@ -149,7 +146,6 @@ export function EmailVerificationModal() {
 
   function handleResendOtp() {
     if (!email || isResendingOtp) return;
-    setTimerCancelled(true);
 
     resendOtp(
       { email },
@@ -165,9 +161,11 @@ export function EmailVerificationModal() {
     );
   }
 
+  const canDismiss = otpVerified || !autoDismissSeconds;
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="!max-w-xl max-h-[calc(100dvh-2rem)] overflow-y-auto p-0">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && canDismiss && closeModal()}>
+      <DialogContent className="!max-w-xl min-h-[32rem] sm:min-h-[38rem] max-h-[calc(100dvh-2rem)] overflow-y-auto p-0">
         <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4">
@@ -310,11 +308,13 @@ export function EmailVerificationModal() {
               </div>
             )}
 
-            {autoDismissSeconds && !timerCancelled ? (
+            {autoDismissSeconds ? (
               <div className="space-y-3 pt-4">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>Auto closing soon</span>
-                  <span>{Math.ceil((autoDismissSeconds * dismissProgress) / 100)}s</span>
+                  <span>
+                    {Math.ceil((autoDismissSeconds * dismissProgress) / 100)}s
+                  </span>
                 </div>
                 <Progress value={dismissProgress} />
               </div>
