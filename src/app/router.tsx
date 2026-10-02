@@ -26,8 +26,23 @@ function lazyNamed<TModule, TKey extends keyof TModule>(
   exportName: TKey,
 ) {
   return lazy(async () => {
-    const module = await loader();
-    return { default: module[exportName] as ComponentType };
+    try {
+      const module = await loader();
+      sessionStorage.removeItem("maintainpro:chunk-reload");
+      return { default: module[exportName] as ComponentType };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const isChunkLoadFailure =
+        message.includes("Failed to fetch dynamically imported module") ||
+        message.includes("Importing a module script failed");
+
+      if (isChunkLoadFailure && !sessionStorage.getItem("maintainpro:chunk-reload")) {
+        sessionStorage.setItem("maintainpro:chunk-reload", "1");
+        window.location.reload();
+      }
+
+      throw error;
+    }
   });
 }
 
