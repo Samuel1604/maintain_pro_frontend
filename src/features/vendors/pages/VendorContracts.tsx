@@ -95,9 +95,9 @@ export function VendorContracts() {
           subtitle={isOrganizationView ? "Organization contract awards" : "My Service Contracts"}
           hideQuickCreate
         />
-        <main className="mx-auto w-full max-w-[1400px] space-y-6 px-6 py-6 lg:px-8">
+        <main className="w-full space-y-6 px-6 py-6 lg:px-8">
           <PageHeader
-            className="rounded-xl border border-border"
+            className="border-b border-border bg-card px-8 py-5"
             title={isOrganizationView ? "Contracts" : "My Service Contracts"}
             subtitle={
               isOrganizationView
@@ -129,9 +129,9 @@ export function VendorContracts() {
         hideQuickCreate
       />
 
-      <main className="mx-auto w-full max-w-[1400px] space-y-6 px-6 py-6 lg:px-8">
+      <main className="w-full space-y-6 px-6 py-6 lg:px-8">
         <PageHeader
-          className="rounded-xl border border-border"
+          className="border-b border-border bg-card px-8 py-5"
           title={isOrganizationView ? "Contracts" : "My Service Contracts"}
           subtitle={
             isOrganizationView
