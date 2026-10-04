@@ -102,6 +102,7 @@ export function VendorSLADetails() {
           ),
         );
   }, [sla, slaId]);
+  const slaNotes = sla?.notes ?? "Full unit replacement requests, duct modifications exceeding 10 meters, and works subcontracted out to third parties without prior authorization.";
   const base = location.pathname.split("/").slice(0, 3).join("/");
   return (
     <div className="min-h-full bg-background text-foreground">
@@ -253,8 +254,7 @@ export function VendorSLADetails() {
                       <div className="mt-5 border-t border-border pt-4">
                         <p className={label}>Explicit SLA exclusions</p>
                         <p className="text-sm text-muted-foreground">
-                          {sla.notes ??
-                            "Full unit replacement requests, duct modifications exceeding 10 meters, and works subcontracted out to third parties without prior authorization."}
+                          {slaNotes}
                         </p>
                       </div>
                     </>

@@ -160,26 +160,6 @@ export function VendorInvoices() {
                       )}
                     </div>
                   </div>
-                  {wo?.completionNotes && (
-                    <p className="rounded-md bg-muted/40 p-2 text-sm text-muted-foreground">
-                      Completion: {wo.completionNotes}
-                    </p>
-                  )}
-                  {wo?.images && wo.images.length > 0 && (
-                    <div className="space-y-1.5">
-                      <span className="text-xs font-semibold text-muted-foreground">Completion Photos:</span>
-                      <div className="flex flex-wrap gap-2">
-                        {wo.images.map((img, i) => (
-                          <img
-                            key={i}
-                            src={img.startsWith('data:') ? img : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='}
-                            alt="Work completion evidence"
-                            className="h-16 w-16 object-cover rounded border border-border"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
                   {inv.auditLog && inv.auditLog.length > 0 && (
                     <div className="rounded-lg border border-border p-3 space-y-2 bg-muted/10">
                       <span className="text-xs font-semibold text-muted-foreground block">Invoice Audit Trail</span>

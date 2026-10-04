@@ -1183,7 +1183,7 @@ export function OrganizationSettings() {
                 </div>
 
                 <div className="space-y-4">
-                  {((facilitiesQuery.data?.data ?? []) as SettingsFacility[]).map((facility) => (
+                  {((facilitiesQuery.data ?? []) as SettingsFacility[]).map((facility) => (
                     <div
                       key={facility.name}
                       className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4"
@@ -1262,7 +1262,7 @@ export function OrganizationSettings() {
                   )}
                   {!facilitiesQuery.isLoading &&
                     !facilitiesQuery.isError &&
-                    (facilitiesQuery.data?.data ?? []).length === 0 && (
+                    (facilitiesQuery.data ?? []).length === 0 && (
                       <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
                         No facilities have been added to this organization yet.
                       </div>
