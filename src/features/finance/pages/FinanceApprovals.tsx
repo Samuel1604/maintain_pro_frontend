@@ -1,47 +1,55 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { DollarSign, ExternalLink, MessageSquare } from 'lucide-react'
-import { toast } from 'sonner'
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { DollarSign, ExternalLink, MessageSquare } from "lucide-react";
+import { toast } from "sonner";
 
-import { AppHeader } from '@/components/navigation/Navbar'
-import { PageIntro } from '@/components/layout/PageIntro'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Textarea } from '@/components/ui/textarea'
-import { FieldError } from '@/components/feedback/FieldError'
-import { SkeletonCard } from '@/components/feedback/Skeletons'
-import { useAuthStore } from '@/app/store'
-import { usePortalPath } from '@/hooks/usePortal'
-import { financeApprovalsService } from '../services/financeApprovals.service'
-import type { WorkOrder } from '@/types/common.types'
+import { AppHeader } from "@/components/navigation/Navbar";
+import { PageIntro } from "@/components/layout/PageIntro";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { FieldError } from "@/components/feedback/FieldError";
+import { SkeletonCard } from "@/components/feedback/Skeletons";
+import { useAuthStore } from "@/app/store";
+import { usePortalPath } from "@/hooks/usePortal";
+import { financeApprovalsService } from "../services/financeApprovals.service";
+import type { WorkOrder } from "@/types/common.types";
 
 export function FinanceApprovals() {
-  const user = useAuthStore((s) => s.user)
-  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([])
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState('')
-  const workOrdersPath = usePortalPath('work-orders')
-  const [notesById, setNotesById] = useState<Record<string, string>>({})
-  const [noteErrorById, setNoteErrorById] = useState<Record<string, string>>({})
+  const user = useAuthStore((s) => s.user);
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const workOrdersPath = usePortalPath("work-orders");
+  const [notesById, setNotesById] = useState<Record<string, string>>({});
+  const [noteErrorById, setNoteErrorById] = useState<Record<string, string>>({});
 
   const loadApprovals = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const result = await financeApprovalsService.list()
-      setWorkOrders((result.data ?? []).map((item: any) => ({
-        ...item,
-        id: item._id ?? item.id,
-        category: item.serviceCategory ?? item.category,
-        status: item.status === 'pending_completion' ? 'pending' : item.status,
-        createdAt: new Date(item.createdAt),
-        updatedAt: new Date(item.updatedAt),
-      })))
-      setLoadError('')
-    } catch { setLoadError('Unable to load finance approvals.') } finally { setLoading(false) }
-  }
+      const result = await financeApprovalsService.list();
+      setWorkOrders(
+        (result.data ?? []).map((item: any) => ({
+          ...item,
+          id: item._id ?? item.id,
+          category: item.serviceCategory ?? item.category,
+          status: item.status === "pending_completion" ? "pending" : item.status,
+          createdAt: new Date(item.createdAt),
+          updatedAt: new Date(item.updatedAt),
+        })),
+      );
+      setLoadError("");
+    } catch {
+      setLoadError("Unable to load finance approvals.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  useEffect(() => { void loadApprovals() }, [])
+  useEffect(() => {
+    void loadApprovals();
+  }, []);
 
   const pending = useMemo(
     () =>
@@ -49,29 +57,50 @@ export function FinanceApprovals() {
         (wo) =>
           wo.requiresApproval &&
           !wo.approvedAt &&
-          wo.status !== 'cancelled' &&
-          wo.status !== 'completed',
+          wo.status !== "cancelled" &&
+          wo.status !== "completed",
       ),
     [workOrders],
-  )
+  );
 
   const handleApprove = (wo: WorkOrder) => {
-    void financeApprovalsService.approve(wo.id).then(() => { toast.success(`${wo.id} approved`); void loadApprovals() }).catch(() => toast.error(`Unable to approve ${wo.id}`))
-  }
+    void financeApprovalsService
+      .approve(wo.id)
+      .then(() => {
+        toast.success(`${wo.id} approved`);
+        void loadApprovals();
+      })
+      .catch(() => toast.error(`Unable to approve ${wo.id}`));
+  };
 
   const handleReject = (wo: WorkOrder) => {
-    void financeApprovalsService.reject(wo.id, notesById[wo.id] || 'Rejected by finance').then(() => { toast.success(`${wo.id} rejected`); void loadApprovals() }).catch(() => toast.error(`Unable to reject ${wo.id}`))
-  }
+    void financeApprovalsService
+      .reject(wo.id, notesById[wo.id] || "Rejected by finance")
+      .then(() => {
+        toast.success(`${wo.id} rejected`);
+        void loadApprovals();
+      })
+      .catch(() => toast.error(`Unable to reject ${wo.id}`));
+  };
 
   const handleRequestMoreInfo = (wo: WorkOrder) => {
-    const note = notesById[wo.id]?.trim()
+    const note = notesById[wo.id]?.trim();
     if (!note) {
-      setNoteErrorById((p) => ({ ...p, [wo.id]: 'Add a note explaining what information is needed before requesting more info' }))
-      return
+      setNoteErrorById((p) => ({
+        ...p,
+        [wo.id]: "Add a note explaining what information is needed before requesting more info",
+      }));
+      return;
     }
-    setNoteErrorById((p) => ({ ...p, [wo.id]: '' }))
-    void financeApprovalsService.requestInformation(wo.id, note).then(() => { toast.success(`More info requested for ${wo.id}`); void loadApprovals() }).catch(() => toast.error(`Unable to request information for ${wo.id}`))
-  }
+    setNoteErrorById((p) => ({ ...p, [wo.id]: "" }));
+    void financeApprovalsService
+      .requestInformation(wo.id, note)
+      .then(() => {
+        toast.success(`More info requested for ${wo.id}`);
+        void loadApprovals();
+      })
+      .catch(() => toast.error(`Unable to request information for ${wo.id}`));
+  };
 
   return (
     <div className="flex flex-col bg-background">
@@ -80,9 +109,25 @@ export function FinanceApprovals() {
         subtitle="High-value work orders and transactions requiring finance sign-off (US-10)"
         hideQuickCreate
       />
-      <div className="px-6 pt-6 lg:px-8"><PageIntro title="Financial & Budget Approvals" description="Review pending financial decisions and approve eligible maintenance expenses." /></div>
+      <div className="border-b border-border bg-card px-8 py-5">
+        <PageIntro
+          title="Financial & Budget Approvals"
+          description="Review pending financial decisions and approve eligible maintenance expenses."
+        />
+      </div>
       <div className="page-body space-y-4">
-        {loading ? <div role="status" aria-live="polite" className="space-y-4"><span className="sr-only">Loading approvals…</span>{Array.from({ length: 3 }).map((_, index) => <SkeletonCard key={index} />)}</div> : loadError ? <Card><CardContent className="p-8 text-center text-destructive">{loadError}</CardContent></Card> : pending.length === 0 ? (
+        {loading ? (
+          <div role="status" aria-live="polite" className="space-y-4">
+            <span className="sr-only">Loading approvals…</span>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <SkeletonCard key={index} />
+            ))}
+          </div>
+        ) : loadError ? (
+          <Card>
+            <CardContent className="p-8 text-center text-destructive">{loadError}</CardContent>
+          </Card>
+        ) : pending.length === 0 ? (
           <Card className="border-border bg-card">
             <CardContent className="p-8 text-center text-muted-foreground">
               No work orders pending approval.
@@ -101,7 +146,9 @@ export function FinanceApprovals() {
                       </Badge>
                     </div>
                     <p className="font-medium">{wo.title}</p>
-                    <p className="text-sm text-muted-foreground">{wo.locationName} · {wo.category}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {wo.locationName} · {wo.category}
+                    </p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-muted-foreground">Estimated cost</p>
@@ -115,12 +162,12 @@ export function FinanceApprovals() {
                 <Textarea
                   rows={2}
                   placeholder="Approval notes (optional for approve/reject, required for requesting more info)"
-                  value={notesById[wo.id] ?? ''}
+                  value={notesById[wo.id] ?? ""}
                   aria-invalid={!!noteErrorById[wo.id]}
                   aria-describedby={noteErrorById[wo.id] ? `note-error-${wo.id}` : undefined}
                   onChange={(e) => {
-                    setNotesById((p) => ({ ...p, [wo.id]: e.target.value }))
-                    if (noteErrorById[wo.id]) setNoteErrorById((p) => ({ ...p, [wo.id]: '' }))
+                    setNotesById((p) => ({ ...p, [wo.id]: e.target.value }));
+                    if (noteErrorById[wo.id]) setNoteErrorById((p) => ({ ...p, [wo.id]: "" }));
                   }}
                 />
                 <FieldError id={`note-error-${wo.id}`} message={noteErrorById[wo.id]} />
@@ -150,5 +197,5 @@ export function FinanceApprovals() {
         )}
       </div>
     </div>
-  )
+  );
 }
