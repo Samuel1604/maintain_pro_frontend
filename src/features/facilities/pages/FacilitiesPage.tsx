@@ -129,9 +129,9 @@ export function FacilitiesPage() {
         payload: {
           name: formName.trim(),
           address: { street: formStreet, city: formCity, state: formState, postalCode: editingFacility.address.postalCode, country: editingFacility.address.country || 'USA' },
-          description: formDescription.trim() || null,
-          primaryPhone: formPrimaryPhone.trim() || null,
-          emergencyContact: formEmergencyContact.trim() || null,
+          description: formDescription.trim() || undefined,
+          primaryPhone: formPrimaryPhone.trim() || undefined,
+          emergencyContact: formEmergencyContact.trim() || undefined,
         },
       })
       toast.success(`Facility "${formName}" updated successfully`)

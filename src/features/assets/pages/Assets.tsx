@@ -610,6 +610,10 @@ export function Assets() {
                     manufacturer: "",
                     model: "",
                     serialNumber: "",
+                    purchaseDate: "",
+                    installationDate: "",
+                    estimatedValue: "",
+                    currency: "NGN",
                     description: "",
                   });
                 } catch (error) {
