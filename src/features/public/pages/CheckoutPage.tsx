@@ -9,6 +9,7 @@ import { billingService } from "@/services/billingService";
 import type { SubscriptionResponseData } from "@/services/billingService";
 import { useAuthStore } from "@/app/store";
 import { getDefaultPathForRole, getSettingsPath } from "@/app/portal.config";
+import { formatMajorMoney } from "@/lib/money";
 
 export function CheckoutPage() {
   const [searchParams] = useSearchParams();
@@ -26,6 +27,7 @@ export function CheckoutPage() {
   const [successData, setSuccessData] = useState<SubscriptionResponseData | null>(null);
   const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
   const [catalogPrice, setCatalogPrice] = useState<number | null>(null);
+  const [catalogCurrency, setCatalogCurrency] = useState("USD");
   const [trialDays, setTrialDays] = useState(0);
 
   usePageSeo({
@@ -40,6 +42,7 @@ export function CheckoutPage() {
       if (!cancelled) {
         const selected = catalog.plans.find((item) => item.id === plan);
         setCatalogPrice(selected ? (billingCycle === "annual" ? selected.annualPrice : selected.monthlyPrice) : 0);
+        setCatalogCurrency(catalog.currency);
         setTrialDays(selected?.trialDays ?? 0);
       }
     }).catch(() => { if (!cancelled) { setCatalogPrice(null); setTrialDays(0); } });
@@ -311,7 +314,7 @@ export function CheckoutPage() {
                 </div>
                 <div className="text-right">
                   <span className="font-mono font-bold text-primary text-lg block">
-                    {currentPrice === 0 ? "Free" : `$${currentPrice}/mo`}
+                    {currentPrice === 0 ? "Free" : `${formatMajorMoney(currentPrice, catalogCurrency)}/mo`}
                   </span>
                   {billingCycle === "annual" && currentPrice > 0 && (
                     <span className="text-[10px] text-status-success font-semibold uppercase">20% Annual Discount Applied</span>
@@ -353,7 +356,7 @@ export function CheckoutPage() {
             <div className="border-t border-border-subtle pt-4 flex justify-between items-center font-headline-md text-on-surface">
               <span>Total Due Today</span>
               <span className="text-primary font-bold font-mono text-lg">
-                {currentPrice === 0 ? "$0.00" : displayedTrialDays > 0 ? "$0.00 (Trial)" : `$${currentPrice}.00`}
+                {currentPrice === 0 ? formatMajorMoney(0, catalogCurrency) : displayedTrialDays > 0 ? `${formatMajorMoney(0, catalogCurrency)} (Trial)` : formatMajorMoney(currentPrice, catalogCurrency)}
               </span>
             </div>
           </div>
