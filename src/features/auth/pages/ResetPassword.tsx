@@ -1,37 +1,37 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Loader2, KeyRound } from "lucide-react";
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { ArrowLeft, Loader2, KeyRound } from 'lucide-react'
 
-import { BrandLogo } from "@/components/brand/BrandLogo";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PasswordField } from "@/features/auth/components/PasswordField";
-import { useResetPassword } from "@/features/auth/hooks/useAuthQueries";
-import { FormBanner } from "@/components/feedback/FormBanner";
-import { SuccessState } from "@/components/feedback/SuccessState";
+import { BrandLogo } from '@/components/brand/BrandLogo'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PasswordField } from '@/features/auth/components/PasswordField'
+import { useResetPassword } from '@/features/auth/hooks/useAuthQueries'
+import { FormBanner } from '@/components/feedback/FormBanner'
+import { SuccessState } from '@/components/feedback/SuccessState'
 
 interface FieldErrors {
-  password?: string;
-  confirm?: string;
+  password?: string
+  confirm?: string
 }
 
 export function ResetPassword() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const token = searchParams.get("token") ?? "";
-  const resetPasswordMutation = useResetPassword();
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const token = searchParams.get('token') ?? ''
+  const resetPasswordMutation = useResetPassword()
 
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [done, setDone] = useState(false);
-  const navigateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [done, setDone] = useState(false)
+  const navigateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     return () => {
-      if (navigateTimeoutRef.current) clearTimeout(navigateTimeoutRef.current);
-    };
-  }, []);
+      if (navigateTimeoutRef.current) clearTimeout(navigateTimeoutRef.current)
+    }
+  }, [])
 
   if (!token) {
     return (
@@ -40,8 +40,7 @@ export function ResetPassword() {
           <CardHeader>
             <CardTitle>Invalid reset link</CardTitle>
             <CardDescription>
-              This password reset link is missing or expired. Request a new one from the sign-in
-              page.
+              This password reset link is missing or expired. Request a new one from the sign-in page.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -51,37 +50,34 @@ export function ResetPassword() {
           </CardContent>
         </Card>
       </div>
-    );
+    )
   }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const nextErrors: FieldErrors = {};
+    const nextErrors: FieldErrors = {}
     if (password.length < 8) {
-      nextErrors.password = "Password must be at least 8 characters";
+      nextErrors.password = 'Password must be at least 8 characters'
     }
     if (password !== confirm) {
-      nextErrors.confirm = "Passwords do not match";
+      nextErrors.confirm = 'Passwords do not match'
     }
 
-    setFieldErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    setFieldErrors(nextErrors)
+    if (Object.keys(nextErrors).length > 0) return
 
     resetPasswordMutation.mutate(
       { token, password },
       {
         onSuccess: () => {
-          setDone(true);
-          setTimeout(() => navigate("/login", { replace: true }), 2000);
-          navigateTimeoutRef.current = setTimeout(
-            () => navigate("/login", { replace: true }),
-            2000,
-          );
+          setDone(true)
+          setTimeout(() => navigate('/login', { replace: true }), 2000)
+          navigateTimeoutRef.current = setTimeout(() => navigate('/login', { replace: true }), 2000)
         },
-      },
-    );
-  };
+      }
+    )
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -128,18 +124,14 @@ export function ResetPassword() {
                     onChange={setConfirm}
                     error={fieldErrors.confirm}
                   />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={resetPasswordMutation.isPending}
-                  >
+                  <Button type="submit" className="w-full" disabled={resetPasswordMutation.isPending}>
                     {resetPasswordMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Updating…
                       </>
                     ) : (
-                      "Update password"
+                      'Update password'
                     )}
                   </Button>
                 </form>
@@ -159,5 +151,5 @@ export function ResetPassword() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

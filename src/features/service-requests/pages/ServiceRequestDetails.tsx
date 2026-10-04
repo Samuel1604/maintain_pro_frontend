@@ -45,30 +45,19 @@ export function ServiceRequestDetails() {
       setLocationName(loaded.locationName);
       setAssetName(loaded.assetName);
       if (loaded.facilityName) setFacilityName(loaded.facilityName);
-      else
-        void facilitiesApi
-          .get(loaded.facilityId)
-          .then((facility) => setFacilityName(facility.name))
-          .catch(() => undefined);
+      else void facilitiesApi.get(loaded.facilityId).then((facility) => setFacilityName(facility.name)).catch(() => undefined);
       if (loaded.locationName) setLocationName(loaded.locationName);
-      else
-        void locationsApi
-          .get(loaded.locationId)
-          .then((location) => setLocationName(location.name))
-          .catch(() => undefined);
+      else void locationsApi.get(loaded.locationId).then((location) => setLocationName(location.name)).catch(() => undefined);
       if (loaded.assetName) setAssetName(loaded.assetName);
-      else
-        void assetsApi
-          .list({ limit: 100 })
-          .then((result) => {
-            const asset = result.data.find(
-              (item) => item.id === loaded.assetId || item.assetTag === loaded.assetId,
-            );
-            if (asset) setAssetName(asset.name);
-          })
-          .catch(() => undefined);
+      else void assetsApi.list({ limit: 100 }).then((result) => {
+        const asset = result.data.find((item) => item.id === loaded.assetId || item.assetTag === loaded.assetId);
+        if (asset) setAssetName(asset.name);
+      }).catch(() => undefined);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to load service request";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to load service request";
       setLoadError(message);
       toast.error(message);
     } finally {
@@ -93,11 +82,15 @@ export function ServiceRequestDetails() {
           ? await serviceRequestsService.approve(request.id, "internal")
           : await serviceRequestsService.reject(request.id, reason.trim());
       setRequest(
-        ("serviceRequest" in updated ? updated.serviceRequest : updated) as ServiceRequestRecord,
+        ("serviceRequest" in updated
+          ? updated.serviceRequest
+          : updated) as ServiceRequestRecord,
       );
       setReason("");
       toast.success(
-        decision === "approve" ? "Service request approved" : "Service request rejected",
+        decision === "approve"
+          ? "Service request approved"
+          : "Service request rejected",
       );
     } catch {
       toast.error(`Unable to ${decision} service request`);
@@ -110,7 +103,9 @@ export function ServiceRequestDetails() {
     return (
       <>
         <AppHeader title="Service Request" hideQuickCreate />
-        <main className="p-6 text-sm text-muted-foreground">Loading service request…</main>
+        <main className="p-6 text-sm text-muted-foreground">
+          Loading service request…
+        </main>
       </>
     );
   if (loadError)
@@ -132,7 +127,11 @@ export function ServiceRequestDetails() {
         <AppHeader title="Service Request" hideQuickCreate />
         <main className="p-6">
           <p className="text-sm text-destructive">Service request not found.</p>
-          <Button className="mt-4" variant="outline" onClick={() => navigate(path)}>
+          <Button
+            className="mt-4"
+            variant="outline"
+            onClick={() => navigate(path)}
+          >
             Back to requests
           </Button>
         </main>
@@ -142,57 +141,45 @@ export function ServiceRequestDetails() {
   return (
     <>
       <AppHeader title={request.title} subtitle="Service Request Detail" hideQuickCreate />
-      <div className="border-b border-border bg-card px-8 py-5">
-        <PageIntro
-          title={request.title}
-          description="Review the request, operational location, and approval status."
-        />
-        <p className="mt-2 pl-4 font-mono text-xs text-muted-foreground">
-          {displayReference("SR", request.id)}
-        </p>
-      </div>
+      <div className="border-b border-border bg-card px-8 py-5"><PageIntro title={request.title} description="Review the request, operational location, and approval status." /><p className="mt-2 pl-4 font-mono text-xs text-muted-foreground">{displayReference('SR', request.id)}</p></div>
       <main className="min-h-full bg-muted/30 p-8 text-foreground">
         <div className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Button variant="ghost" className="gap-2" onClick={() => navigate(path)}>
-              <ArrowLeft className="h-4 w-4" />
-              Back to requests
-            </Button>
-            <span className="font-mono text-xs text-muted-foreground">
-              {displayReference("SR", request.id)}
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge status={request.status} />
-            <PriorityBadge priority={request.priority} />
-            <span className="text-sm text-muted-foreground">
-              Submitted {new Date(request.createdAt).toLocaleString()}
-            </span>
-          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3"><Button variant="ghost" className="gap-2" onClick={() => navigate(path)}><ArrowLeft className="h-4 w-4" />Back to requests</Button><span className="font-mono text-xs text-muted-foreground">{displayReference('SR', request.id)}</span></div>
+          <div className="flex flex-wrap items-center gap-2"><StatusBadge status={request.status} /><PriorityBadge priority={request.priority} /><span className="text-sm text-muted-foreground">Submitted {new Date(request.createdAt).toLocaleString()}</span></div>
           <section className="rounded-xl border border-border bg-card p-5">
             <h2 className="text-lg font-semibold">Request details</h2>
             <dl className="mt-5 grid gap-5 sm:grid-cols-2">
               <div>
-                <dt className="text-xs uppercase text-muted-foreground">Category</dt>
+                <dt className="text-xs uppercase text-muted-foreground">
+                  Category
+                </dt>
                 <dd className="mt-1">{displayLabel(request.serviceCategory)}</dd>
               </div>
               <div>
-                <dt className="text-xs uppercase text-muted-foreground">Priority</dt>
+                <dt className="text-xs uppercase text-muted-foreground">
+                  Priority
+                </dt>
                 <dd className="mt-1 capitalize">{request.priority}</dd>
               </div>
               <div>
-                <dt className="text-xs uppercase text-muted-foreground">Facility</dt>
-                <dd className="mt-1">{facilityName ?? request.facilityName ?? "Not configured"}</dd>
+                <dt className="text-xs uppercase text-muted-foreground">
+                  Facility
+                </dt>
+                <dd className="mt-1">
+                  {facilityName ?? request.facilityName ?? "Not configured"}
+                </dd>
               </div>
               <div>
-                <dt className="text-xs uppercase text-muted-foreground">Location</dt>
-                <dd className="mt-1">{locationName ?? request.locationName ?? "Not configured"}</dd>
+                <dt className="text-xs uppercase text-muted-foreground">
+                  Location
+                </dt>
+                <dd className="mt-1">
+                  {locationName ?? request.locationName ?? "Not configured"}
+                </dd>
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Asset</dt>
-                <dd className="mt-1">
-                  {assetName ?? request.assetName ?? displayReference("AST", request.assetId)}
-                </dd>
+                <dd className="mt-1">{assetName ?? request.assetName ?? displayReference('AST', request.assetId)}</dd>
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Requested by</dt>
@@ -214,7 +201,11 @@ export function ServiceRequestDetails() {
                 rows={4}
               />
               <div className="mt-4 flex flex-wrap gap-3">
-                <Button disabled={saving} onClick={() => void review("approve")} className="gap-2">
+                <Button
+                  disabled={saving}
+                  onClick={() => void review("approve")}
+                  className="gap-2"
+                >
                   <CheckCircle2 className="h-4 w-4" />
                   Approve
                 </Button>

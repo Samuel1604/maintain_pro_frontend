@@ -53,17 +53,6 @@ interface MarketplaceVendor {
   activeContracts: Array<{ id: string; title: string; amount: string }>;
 }
 
-function normalizeServiceCategories(categories: string[]): string[] {
-  return [
-    ...new Set(
-      categories
-        .flatMap((category) => category.split(","))
-        .map((category) => category.replace(/\.\.\.$/, "").trim())
-        .filter(Boolean),
-    ),
-  ];
-}
-
 const MARKETPLACE_VENDORS: MarketplaceVendor[] = [
   {
     id: "m1",
@@ -138,46 +127,36 @@ export function VendorMarketplace() {
   const [category, setCategory] = useState("all");
   const [proximity, setProximity] = useState("all");
   const [slaFilter, setSlaFilter] = useState("all");
-  const [selectedVendor, setSelectedVendor] = useState<MarketplaceVendor | null>(null);
+  const [selectedVendor, setSelectedVendor] =
+    useState<MarketplaceVendor | null>(null);
   const [rfqVendor, setRfqVendor] = useState<MarketplaceVendor | null>(null);
   const [rfqDetails, setRfqDetails] = useState("");
   const [liveVendors, setLiveVendors] = useState<MarketplaceVendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [appliedFilters, setAppliedFilters] = useState({
-    search: "",
-    category: "all",
-    proximity: "all",
-    slaFilter: "all",
-  });
 
   useEffect(() => {
     void organizationVendorsApi
       .marketplace({ limit: 100 })
-      .then((result) =>
-        setLiveVendors(
-          (result.data ?? []).map((vendor) => ({
-            id: vendor.id,
-            name: vendor.name,
-            location:
-              [vendor.address?.city, vendor.address?.state].filter(Boolean).join(", ") ||
-              "Location not provided",
-            distance: "Distance not provided",
-            rating: vendor.averageRating ?? 0,
-            slaCompliance: 0,
-            serviceCategories: normalizeServiceCategories(vendor.serviceCategories ?? []),
-            description:
-              "Vendor profile details are available through the vendor relationship workflow.",
-            certifications: vendor.certifications ?? [],
-            insuranceLimit: "Not provided",
-            avgDispatchTime: "Not provided",
-            activeContracts: [],
-          })),
-        ),
-      )
+      .then((result) => setLiveVendors((result.data ?? []).map((vendor) => ({
+        id: vendor.id,
+        name: vendor.name,
+        location: [vendor.address?.city, vendor.address?.state].filter(Boolean).join(", ") || "Location not provided",
+        distance: "Distance not provided",
+        rating: vendor.averageRating ?? 0,
+        slaCompliance: 0,
+        serviceCategories: vendor.serviceCategories ?? [],
+        description: "Vendor profile details are available through the vendor relationship workflow.",
+        certifications: vendor.certifications ?? [],
+        insuranceLimit: "Not provided",
+        avgDispatchTime: "Not provided",
+        activeContracts: [],
+      }))))
       .catch((error) =>
         setLoadError(
-          error instanceof Error ? error.message : "The vendor marketplace could not be loaded.",
+          error instanceof Error
+            ? error.message
+            : "The vendor marketplace could not be loaded.",
         ),
       )
       .finally(() => setLoading(false));
@@ -220,41 +199,33 @@ export function VendorMarketplace() {
     );
   const filteredVendors = liveVendors.filter((v) => {
     if (
-      appliedFilters.search &&
-      !v.name.toLowerCase().includes(appliedFilters.search.toLowerCase()) &&
-      !v.description.toLowerCase().includes(appliedFilters.search.toLowerCase()) &&
-      !v.serviceCategories.some((item) =>
-        item.toLowerCase().includes(appliedFilters.search.toLowerCase()),
-      )
+      search &&
+      !v.name.toLowerCase().includes(search.toLowerCase()) &&
+      !v.description.toLowerCase().includes(search.toLowerCase())
     )
       return false;
     if (
-      appliedFilters.category !== "all" &&
-      !v.serviceCategories.some((item) => item.toLowerCase().includes(appliedFilters.category))
+      category !== "all" &&
+      !v.serviceCategories.some((item) => item.toLowerCase().includes(category))
     )
       return false;
     if (
-      appliedFilters.proximity !== "all" &&
-      Number.parseFloat(v.distance) > Number(appliedFilters.proximity)
+      proximity !== "all" &&
+      Number.parseFloat(v.distance) > Number(proximity)
     )
       return false;
-    if (appliedFilters.slaFilter !== "all" && v.slaCompliance < Number(appliedFilters.slaFilter))
+    if (slaFilter !== "all" && v.slaCompliance < Number(slaFilter))
       return false;
     return true;
   });
-  const marketplaceCategories = normalizeServiceCategories(
-    liveVendors.flatMap((vendor) => vendor.serviceCategories),
-  ).sort();
+  const marketplaceCategories = [...new Set(liveVendors.flatMap((vendor) => vendor.serviceCategories))].sort();
 
   const handleRequestRelationship = async (vendor: MarketplaceVendor) => {
     try {
       await organizationVendorsApi.requestRelationship(vendor.id);
       toast.success(`Relationship request sent to ${vendor.name}`);
-      setRfqVendor(null);
-      setRfqDetails("");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Unable to send vendor request");
-    }
+      setRfqVendor(null); setRfqDetails("");
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Unable to send vendor request") }
   };
 
   return (
@@ -267,19 +238,17 @@ export function VendorMarketplace() {
             role="alert"
             className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning"
           >
-            <p className="font-semibold">Marketplace data could not be loaded.</p>
+            <p className="font-semibold">
+              Marketplace data could not be loaded.
+            </p>
             <p className="mt-1 text-muted-foreground">
-              {loadError} You can still use the marketplace filters and retry from the page.
+              {loadError} You can still use the marketplace filters and retry
+              from the page.
             </p>
           </div>
         ) : null}
         {/* Page Title & Subtitle */}
-        <div className="flex items-center justify-between">
-          <PageIntro
-            title="Vendor Marketplace"
-            description="Discover, evaluate, and connect with certified facility maintenance operators."
-          />
-        </div>
+        <div className="flex items-center justify-between"><PageIntro title="Vendor Marketplace" description="Discover, evaluate, and connect with certified facility maintenance operators." /></div>
 
         {/* ── Filter Bar ── */}
         <div className="mt-6 space-y-4">
@@ -290,15 +259,13 @@ export function VendorMarketplace() {
               </Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="w-full border-border text-[13px] bg-background text-foreground">
-                  <SelectValue placeholder="Any category" />
+                  <SelectValue placeholder="Elevator, Escalator, HVAC, Plumbing..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Any category</SelectItem>
-                  {marketplaceCategories.map((item) => (
-                    <SelectItem key={item} value={item.toLowerCase()}>
-                      {item}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="all">
+                    Elevator, Escalator, HVAC, Plumbing...
+                  </SelectItem>
+                  {marketplaceCategories.map((item) => <SelectItem key={item} value={item.toLowerCase()}>{item}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -337,13 +304,7 @@ export function VendorMarketplace() {
             </div>
 
             <div className="min-w-0">
-              <Button
-                type="button"
-                onClick={() => setAppliedFilters({ search, category, proximity, slaFilter })}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-[13px] font-semibold h-[38px] rounded-lg"
-              >
-                Filter Results
-              </Button>
+              <Button type="button" onClick={() => undefined} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-[13px] font-semibold h-[38px] rounded-lg">Filter Results</Button>
             </div>
           </div>
         </div>
@@ -378,7 +339,9 @@ export function VendorMarketplace() {
               <div className="lg:col-span-8 space-y-6">
                 <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-6">
                   <div>
-                    <h3 className="text-[15px] font-bold text-foreground mb-2">Service Overview</h3>
+                    <h3 className="text-[15px] font-bold text-foreground mb-2">
+                      Service Overview
+                    </h3>
                     <p className="text-[13px] text-muted-foreground leading-relaxed">
                       {selectedVendor.description}
                     </p>
@@ -432,8 +395,12 @@ export function VendorMarketplace() {
                     ].map((st) => (
                       <div key={st.label} className="space-y-1.5">
                         <div className="flex justify-between text-[13px]">
-                          <span className="text-muted-foreground font-medium">{st.label}</span>
-                          <span className="font-bold text-foreground">{st.val}%</span>
+                          <span className="text-muted-foreground font-medium">
+                            {st.label}
+                          </span>
+                          <span className="font-bold text-foreground">
+                            {st.val}%
+                          </span>
                         </div>
                         <div className="h-2 w-full rounded-full bg-accent/40 overflow-hidden">
                           <div
@@ -453,7 +420,9 @@ export function VendorMarketplace() {
                   <p className="text-[11px] font-bold uppercase text-muted-foreground">
                     Direct Actions
                   </p>
-                  <h4 className="text-[14px] font-bold text-foreground">Send RFQ or Contact</h4>
+                  <h4 className="text-[14px] font-bold text-foreground">
+                    Send RFQ or Contact
+                  </h4>
                   <Button
                     onClick={() => void handleRequestRelationship(selectedVendor)}
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-[13px]"
@@ -471,7 +440,9 @@ export function VendorMarketplace() {
                 </div>
 
                 <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
-                  <h4 className="text-[14px] font-bold text-foreground">Active Contracts</h4>
+                  <h4 className="text-[14px] font-bold text-foreground">
+                    Active Contracts
+                  </h4>
                   {selectedVendor.activeContracts.length === 0 ? (
                     <p className="text-xs text-muted-foreground italic">
                       No active contracts linked.
@@ -483,10 +454,16 @@ export function VendorMarketplace() {
                         className="rounded-lg border border-border bg-accent/30 p-3 flex justify-between items-center"
                       >
                         <div>
-                          <p className="text-[13px] font-bold text-foreground">{c.title}</p>
-                          <p className="text-[11px] text-muted-foreground font-mono">{c.id}</p>
+                          <p className="text-[13px] font-bold text-foreground">
+                            {c.title}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground font-mono">
+                            {c.id}
+                          </p>
                         </div>
-                        <span className="text-[12px] font-bold text-success">{c.amount}</span>
+                        <span className="text-[12px] font-bold text-success">
+                          {c.amount}
+                        </span>
                       </div>
                     ))
                   )}
@@ -496,18 +473,7 @@ export function VendorMarketplace() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Marketplace vendors</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {filteredVendors.length} {filteredVendors.length === 1 ? "vendor" : "vendors"}{" "}
-                  match your criteria.
-                </p>
-              </div>
-              <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                {liveVendors.length} available
-              </span>
-            </div>
+            <div className="flex items-center justify-between"><div><h2 className="text-lg font-semibold">Marketplace vendors</h2><p className="mt-1 text-sm text-muted-foreground">{filteredVendors.length} {filteredVendors.length === 1 ? "vendor" : "vendors"} match your criteria.</p></div><span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">{liveVendors.length} available</span></div>
             {filteredVendors.length === 0 ? (
               <div className="rounded-xl border border-dashed border-border bg-card px-6 py-14 text-center">
                 <Building className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
@@ -523,69 +489,71 @@ export function VendorMarketplace() {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-4 lg:grid-cols-2">
-                {filteredVendors.map((vendor) => (
-                  <div
-                    key={vendor.id}
-                    className="flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3.5">
-                        <div className="h-10 w-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-primary flex items-center justify-center font-bold shrink-0">
-                          <Building className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <h3 className="text-[16px] font-bold text-foreground">{vendor.name}</h3>
-                          <p className="text-[12px] text-muted-foreground flex items-center gap-1.5 mt-0.5">
-                            <span>{vendor.location}</span>
-                            <span>•</span>
-                            <span>{vendor.distance}</span>
-                          </p>
-                        </div>
+              <div className="grid gap-4 lg:grid-cols-2">{filteredVendors.map((vendor) => (
+                <div
+                  key={vendor.id}
+                  className="flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3.5">
+                      <div className="h-10 w-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-primary flex items-center justify-center font-bold shrink-0">
+                        <Building className="h-5 w-5" />
                       </div>
-                      <div className="flex items-center gap-1 text-[13px] font-bold text-foreground">
-                        <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-                        {vendor.rating}
+                      <div>
+                        <h3 className="text-[16px] font-bold text-foreground">
+                          {vendor.name}
+                        </h3>
+                        <p className="text-[12px] text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                          <span>{vendor.location}</span>
+                          <span>•</span>
+                          <span>{vendor.distance}</span>
+                        </p>
                       </div>
                     </div>
-
-                    <div className="flex flex-wrap gap-1.5">
-                      {vendor.serviceCategories.map((cat) => (
-                        <span
-                          key={cat}
-                          className="rounded bg-accent/50 px-2.5 py-1 text-[11px] font-medium text-muted-foreground border border-border/50"
-                        >
-                          {cat}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
-                      <span className="text-[13px] text-muted-foreground">
-                        SLA Compliance:{" "}
-                        <strong className="text-foreground">{vendor.slaCompliance}%</strong>
-                      </span>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => void handleRequestRelationship(vendor)}
-                          className="border-border text-foreground text-[12px] font-semibold h-8 px-4"
-                        >
-                          Connect vendor
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => setSelectedVendor(vendor)}
-                          className="bg-primary hover:bg-primary/90 text-primary-foreground text-[12px] font-semibold h-8 px-4"
-                        >
-                          View Profile
-                        </Button>
-                      </div>
+                    <div className="flex items-center gap-1 text-[13px] font-bold text-foreground">
+                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                      {vendor.rating}
                     </div>
                   </div>
-                ))}
-              </div>
+
+                  <div className="flex flex-wrap gap-1.5">
+                    {vendor.serviceCategories.map((cat) => (
+                      <span
+                        key={cat}
+                        className="rounded bg-accent/50 px-2.5 py-1 text-[11px] font-medium text-muted-foreground border border-border/50"
+                      >
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
+                    <span className="text-[13px] text-muted-foreground">
+                      SLA Compliance:{" "}
+                      <strong className="text-foreground">
+                        {vendor.slaCompliance}%
+                      </strong>
+                    </span>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => void handleRequestRelationship(vendor)}
+                        className="border-border text-foreground text-[12px] font-semibold h-8 px-4"
+                      >
+                        Connect vendor
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => setSelectedVendor(vendor)}
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground text-[12px] font-semibold h-8 px-4"
+                      >
+                        View Profile
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}</div>
             )}
           </div>
         )}
@@ -595,7 +563,9 @@ export function VendorMarketplace() {
       <Dialog open={!!rfqVendor} onOpenChange={() => setRfqVendor(null)}>
         <DialogContent className="max-w-md bg-card border-border">
           <DialogHeader>
-            <DialogTitle className="text-foreground">Request Quotation</DialogTitle>
+            <DialogTitle className="text-foreground">
+              Request Quotation
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <p className="text-[13px] text-muted-foreground">
@@ -603,7 +573,9 @@ export function VendorMarketplace() {
               <strong className="text-foreground">{rfqVendor?.name}</strong>
             </p>
             <div className="space-y-1.5">
-              <Label className="text-xs text-foreground">Notes (optional)</Label>
+              <Label className="text-xs text-foreground">
+                Notes (optional)
+              </Label>
               <Textarea
                 placeholder="Describe your maintenance requirement, facility location, and target timeline..."
                 rows={4}

@@ -79,14 +79,7 @@ export function VerificationMethodPickerModal() {
           </button>
         </div>
 
-        <div
-          style={{
-            padding: "20px 24px 24px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
-          }}
-        >
+        <div style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: "12px" }}>
           {/* Method 1: Magic Link */}
           <button
             onClick={() => open("link")}
@@ -124,13 +117,7 @@ export function VerificationMethodPickerModal() {
               <div style={{ fontWeight: 600, fontSize: "0.95rem", color: "var(--foreground)" }}>
                 Verification Link
               </div>
-              <div
-                style={{
-                  fontSize: "0.8125rem",
-                  color: "var(--muted-foreground)",
-                  marginTop: "2px",
-                }}
-              >
+              <div style={{ fontSize: "0.8125rem", color: "var(--muted-foreground)", marginTop: "2px" }}>
                 Generate a 1-click verification link directly on your screen
               </div>
             </div>
@@ -173,13 +160,7 @@ export function VerificationMethodPickerModal() {
               <div style={{ fontWeight: 600, fontSize: "0.95rem", color: "var(--foreground)" }}>
                 6-Digit OTP Code
               </div>
-              <div
-                style={{
-                  fontSize: "0.8125rem",
-                  color: "var(--muted-foreground)",
-                  marginTop: "2px",
-                }}
-              >
+              <div style={{ fontSize: "0.8125rem", color: "var(--muted-foreground)", marginTop: "2px" }}>
                 Receive a numeric code and enter it directly in the application
               </div>
             </div>

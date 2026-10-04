@@ -114,6 +114,7 @@ export function PricingPage() {
   const [pricingAudience, setPricingAudience] = useState<PricingAudience>("organization");
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [catalogPrices, setCatalogPrices] = useState<Record<string, { monthlyPrice: number; annualPrice: number }>>({});
+  const [catalogCurrency, setCatalogCurrency] = useState('USD');
 
   const activePlans = pricingAudience === "organization" ? ORGANIZATION_PLANS : VENDOR_PLANS;
 
@@ -126,6 +127,7 @@ export function PricingPage() {
             monthlyPrice: plan.monthlyPrice,
             annualPrice: plan.annualPrice,
           }])));
+          setCatalogCurrency(catalog.currency);
         }
       })
       .catch(() => {
@@ -260,7 +262,7 @@ export function PricingPage() {
                     "Free"
                   ) : (
                     <>
-                      ${displayPrice}
+                      {catalogCurrency} {displayPrice}
                       <span className="text-body-md font-normal text-on-surface-variant">
                         /mo
                       </span>
@@ -316,7 +318,7 @@ export function PricingPage() {
           </div>
         </section>
       </main>
-      <PublicFooter />
+      <PublicFooter variant="pricing" />
     </>
   );
 }

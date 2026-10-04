@@ -1,11 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge, PriorityBadge, StatusBadge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowRight } from "lucide-react";
-import { WorkOrder } from "@/types/common.types";
-import { Link } from "react-router-dom";
-import { usePortalPath } from "@/hooks/usePortal";
+
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge, PriorityBadge, StatusBadge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { ArrowRight } from 'lucide-react'
+import { WorkOrder } from '@/types/common.types'
+import { Link } from 'react-router-dom'
+import { usePortalPath } from '@/hooks/usePortal'
 import {
   Table,
   TableBody,
@@ -13,23 +15,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 
 interface WorkOrderListProps {
-  workOrders: WorkOrder[];
-  title?: string;
-  showViewAll?: boolean;
-  maxItems?: number;
+  workOrders: WorkOrder[]
+  title?: string
+  showViewAll?: boolean
+  maxItems?: number
 }
 
-export function WorkOrderList({
-  workOrders,
-  title = "Recent Work Orders",
-  showViewAll = true,
-  maxItems = 5,
-}: WorkOrderListProps) {
-  const workOrdersPath = usePortalPath("work-orders");
-  const displayOrders = workOrders.slice(0, maxItems);
+export function WorkOrderList({ workOrders, title = 'Recent Work Orders', showViewAll = true, maxItems = 5 }: WorkOrderListProps) {
+  const workOrdersPath = usePortalPath('work-orders')
+  const displayOrders = workOrders.slice(0, maxItems)
 
   return (
     <Card className="bg-card border-border">
@@ -84,11 +81,7 @@ export function WorkOrderList({
                       <div className="flex items-center gap-2">
                         <Avatar className="h-6 w-6">
                           <AvatarFallback className="bg-primary/20 text-primary text-xs">
-                            {(order.assigneeName || "")
-                              .split(" ")
-                              .filter(Boolean)
-                              .map((n) => n[0])
-                              .join("")}
+                            {(order.assigneeName || '').split(' ').filter(Boolean).map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <span className="text-sm">{order.assigneeName}</span>
@@ -104,5 +97,5 @@ export function WorkOrderList({
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

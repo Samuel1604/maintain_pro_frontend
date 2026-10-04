@@ -25,33 +25,21 @@ export abstract class AppError extends Error {
 
 export class ValidationError extends AppError {
   readonly category = "VALIDATION";
-  constructor(
-    message = "Please check the entered information and try again.",
-    status = 422,
-    errors?: ValidationErrors,
-  ) {
+  constructor(message = "Please check the entered information and try again.", status = 422, errors?: ValidationErrors) {
     super(message, status, errors);
   }
 }
 
 export class AuthenticationError extends AppError {
   readonly category = "AUTHENTICATION";
-  constructor(
-    message = "Invalid email or password. Please try again.",
-    status = 401,
-    errors?: ValidationErrors,
-  ) {
+  constructor(message = "Invalid email or password. Please try again.", status = 401, errors?: ValidationErrors) {
     super(message, status, errors);
   }
 }
 
 export class AuthorizationError extends AppError {
   readonly category = "AUTHORIZATION";
-  constructor(
-    message = "You do not have permission to perform this action.",
-    status = 403,
-    errors?: ValidationErrors,
-  ) {
+  constructor(message = "You do not have permission to perform this action.", status = 403, errors?: ValidationErrors) {
     super(message, status, errors);
   }
 }
@@ -66,55 +54,35 @@ export class AuthorizationError extends AppError {
  */
 export class EmailVerificationRequiredError extends AppError {
   readonly category = "EMAIL_VERIFICATION_REQUIRED";
-  constructor(
-    message = "Please verify your email address to continue.",
-    status = 403,
-    errors?: ValidationErrors,
-  ) {
+  constructor(message = "Please verify your email address to continue.", status = 403, errors?: ValidationErrors) {
     super(message, status, errors);
   }
 }
 
 export class NotFoundError extends AppError {
   readonly category = "NOT_FOUND";
-  constructor(
-    message = "The requested resource could not be found.",
-    status = 404,
-    errors?: ValidationErrors,
-  ) {
+  constructor(message = "The requested resource could not be found.", status = 404, errors?: ValidationErrors) {
     super(message, status, errors);
   }
 }
 
 export class BusinessError extends AppError {
   readonly category = "BUSINESS";
-  constructor(
-    message = "Unable to process request due to a business rule violation.",
-    status = 409,
-    errors?: ValidationErrors,
-  ) {
+  constructor(message = "Unable to process request due to a business rule violation.", status = 409, errors?: ValidationErrors) {
     super(message, status, errors);
   }
 }
 
 export class NetworkError extends AppError {
   readonly category = "NETWORK";
-  constructor(
-    message = "Unable to reach the server. Please check your network connection.",
-    status = 0,
-    errors?: ValidationErrors,
-  ) {
+  constructor(message = "Unable to reach the server. Please check your network connection.", status = 0, errors?: ValidationErrors) {
     super(message, status, errors);
   }
 }
 
 export class UnexpectedError extends AppError {
   readonly category = "UNEXPECTED";
-  constructor(
-    message = "Something went wrong on our end. Please try again later.",
-    status = 500,
-    errors?: ValidationErrors,
-  ) {
+  constructor(message = "Something went wrong on our end. Please try again later.", status = 500, errors?: ValidationErrors) {
     super(message, status, errors);
   }
 }

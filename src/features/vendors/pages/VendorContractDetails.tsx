@@ -72,12 +72,16 @@ export function VendorContractDetails() {
           .then(setWorkOrders)
           .catch((error) =>
             setWorkOrdersError(
-              error instanceof Error ? error.message : "Unable to load linked work orders",
+              error instanceof Error
+                ? error.message
+                : "Unable to load linked work orders",
             ),
           );
       })
       .catch((error) =>
-        setLoadError(error instanceof Error ? error.message : "Unable to load contract"),
+        setLoadError(
+          error instanceof Error ? error.message : "Unable to load contract",
+        ),
       )
       .finally(() => setLoading(false));
   }, [contractId]);
@@ -89,7 +93,11 @@ export function VendorContractDetails() {
     <div className="min-h-full bg-background text-foreground">
       <AppHeader
         title={`${contractId} Detail`}
-        subtitle={isOrganizationView ? "Organization contract award" : "My Service Contracts"}
+        subtitle={
+          isOrganizationView
+            ? "Organization contract award"
+            : "My Service Contracts"
+        }
         hideQuickCreate
       />
 
@@ -110,7 +118,9 @@ export function VendorContractDetails() {
             <PageHeader
               className="rounded-xl border border-border"
               title={`${contractId}: ${
-                isOrganizationView ? "Vendor Contract Award" : "Client Service Agreement"
+                isOrganizationView
+                  ? "Vendor Contract Award"
+                  : "Client Service Agreement"
               }`}
               subtitle={
                 isOrganizationView
@@ -166,10 +176,14 @@ export function VendorContractDetails() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                        {isOrganizationView ? "VENDOR PARTNER" : "ORGANIZATION CLIENT"}
+                        {isOrganizationView
+                          ? "VENDOR PARTNER"
+                          : "ORGANIZATION CLIENT"}
                       </p>
                       <p className="text-[13px] font-bold text-foreground mt-1">
-                        {isOrganizationView ? "ProTech Services" : contract.organizationId}
+                        {isOrganizationView
+                          ? "ProTech Services"
+                          : contract.organizationId}
                       </p>
                     </div>
                     <div>
@@ -193,7 +207,8 @@ export function VendorContractDetails() {
                         CONTRACT PERIOD
                       </p>
                       <p className="text-[13px] font-bold text-foreground mt-1">
-                        {formatDate(contract.effectiveAt)} – {formatDate(contract.expiresAt)}
+                        {formatDate(contract.effectiveAt)} –{" "}
+                        {formatDate(contract.expiresAt)}
                       </p>
                     </div>
                   </div>
@@ -208,7 +223,9 @@ export function VendorContractDetails() {
                     <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground pt-1">
                       <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                       <span>
-                        <strong>{isOrganizationView ? "Owner note:" : "Notice:"}</strong>{" "}
+                        <strong>
+                          {isOrganizationView ? "Owner note:" : "Notice:"}
+                        </strong>{" "}
                         {isOrganizationView
                           ? "Use the linked work orders and SLA commitments to monitor vendor delivery against this award."
                           : "Transactions authorized manually via work-order signoff. No automated credit card billing or automatic payments."}
@@ -225,11 +242,14 @@ export function VendorContractDetails() {
 
                   <div className="overflow-x-auto">
                     {workOrdersError && (
-                      <p className="text-sm text-destructive">{workOrdersError}</p>
+                      <p className="text-sm text-destructive">
+                        {workOrdersError}
+                      </p>
                     )}
                     {!workOrdersError && workOrders.length === 0 && (
                       <p className="text-sm text-muted-foreground">
-                        {contract.notes || "No linked work orders are available for this contract."}
+                        {contract.notes ||
+                          "No linked work orders are available for this contract."}
                       </p>
                     )}
                     <table
@@ -258,9 +278,13 @@ export function VendorContractDetails() {
                               {workOrder.title || "Linked work order"}
                             </td>
                             <td className="px-4 py-3.5">
-                              <StatusBadge status={workOrder.status || "open"} />
+                              <StatusBadge
+                                status={workOrder.status || "open"}
+                              />
                             </td>
-                            <td className="px-4 py-3.5 text-right text-muted-foreground">—</td>
+                            <td className="px-4 py-3.5 text-right text-muted-foreground">
+                              —
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -276,8 +300,8 @@ export function VendorContractDetails() {
                     Service Level Agreement
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    SLA targets are not included in this contract response yet. The organization
-                    owner can provide the linked SLA details.
+                    SLA targets are not included in this contract response yet.
+                    The organization owner can provide the linked SLA details.
                   </p>
                 </div>
                 <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
@@ -289,20 +313,25 @@ export function VendorContractDetails() {
                     <div className="relative pl-6 space-y-0.5">
                       <span className="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-amber-500 ring-4 ring-card" />
                       <div className="flex justify-between items-center">
-                        <p className="font-bold text-foreground">Contract Approved & Signed</p>
+                        <p className="font-bold text-foreground">
+                          Contract Approved & Signed
+                        </p>
                         <span className="text-[11px] text-muted-foreground font-mono">
                           Feb 10, 2026
                         </span>
                       </div>
                       <p className="text-[11px] text-muted-foreground">
-                        Accepted by your vendor team and the organization client.
+                        Accepted by your vendor team and the organization
+                        client.
                       </p>
                     </div>
 
                     <div className="relative pl-6 space-y-0.5">
                       <span className="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-muted-foreground/40 ring-4 ring-card" />
                       <div className="flex justify-between items-center">
-                        <p className="font-bold text-foreground">Contract Initial Creation</p>
+                        <p className="font-bold text-foreground">
+                          Contract Initial Creation
+                        </p>
                         <span className="text-[11px] text-muted-foreground font-mono">
                           Feb 08, 2026
                         </span>

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useState } from 'react'
+import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
-import { workOrdersService } from "@/features/work-orders/services/workOrders.service";
-import { Button } from "@/components/ui/button";
+import { workOrdersService } from '@/features/work-orders/services/workOrders.service'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -11,38 +11,38 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import type { WorkOrder, WorkOrderPriority } from "@/types/common.types";
+} from '@/components/ui/select'
+import type { WorkOrder, WorkOrderPriority } from '@/types/common.types'
 
 const CATEGORIES = [
-  "HVAC",
-  "Electrical",
-  "Plumbing",
-  "Elevator",
-  "Structural",
-  "Safety",
-  "Security",
-  "Cleaning",
-  "Other",
-];
+  'HVAC',
+  'Electrical',
+  'Plumbing',
+  'Elevator',
+  'Structural',
+  'Safety',
+  'Security',
+  'Cleaning',
+  'Other',
+]
 
-const PRIORITIES: WorkOrderPriority[] = ["critical", "high", "medium", "low"];
+const PRIORITIES: WorkOrderPriority[] = ['critical', 'high', 'medium', 'low']
 
 interface EditWorkOrderDialogProps {
-  workOrder: WorkOrder | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSaved?: (workOrder: WorkOrder) => void;
+  workOrder: WorkOrder | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSaved?: (workOrder: WorkOrder) => void
 }
 
 export function EditWorkOrderDialog({
@@ -51,30 +51,30 @@ export function EditWorkOrderDialog({
   onOpenChange,
   onSaved,
 }: EditWorkOrderDialogProps) {
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
-    title: "",
-    description: "",
-    category: "",
-    priority: "" as WorkOrderPriority | "",
-    dueDate: "",
-  });
+    title: '',
+    description: '',
+    category: '',
+    priority: '' as WorkOrderPriority | '',
+    dueDate: '',
+  })
 
   useEffect(() => {
-    if (!workOrder || !open) return;
+    if (!workOrder || !open) return
     setForm({
       title: workOrder.title,
       description: workOrder.description,
       category: workOrder.category.toLowerCase(),
       priority: workOrder.priority,
-      dueDate: workOrder.dueDate ? workOrder.dueDate.toISOString().slice(0, 10) : "",
-    });
-  }, [workOrder, open]);
+      dueDate: workOrder.dueDate ? workOrder.dueDate.toISOString().slice(0, 10) : '',
+    })
+  }, [workOrder, open])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!workOrder) return;
-    setSaving(true);
+    e.preventDefault()
+    if (!workOrder) return
+    setSaving(true)
     try {
       const updated = await workOrdersService.update(workOrder.id, {
         title: form.title,
@@ -82,16 +82,16 @@ export function EditWorkOrderDialog({
         category: form.category,
         priority: form.priority || undefined,
         dueDate: form.dueDate ? new Date(form.dueDate) : undefined,
-      });
-      toast.success(`${workOrder.id} updated`);
-      onSaved?.(updated);
-      onOpenChange(false);
+      })
+      toast.success(`${workOrder.id} updated`)
+      onSaved?.(updated)
+      onOpenChange(false)
     } catch {
-      toast.error("Unable to update the work order");
+      toast.error('Unable to update the work order')
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -99,7 +99,7 @@ export function EditWorkOrderDialog({
         <DialogHeader>
           <DialogTitle>Edit work order</DialogTitle>
           <DialogDescription>
-            {workOrder ? `Update details for ${workOrder.id}` : "Update work order details"}
+            {workOrder ? `Update details for ${workOrder.id}` : 'Update work order details'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -162,12 +162,7 @@ export function EditWorkOrderDialog({
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="wo-edit-due-date">Due date</Label>
-            <Input
-              id="wo-edit-due-date"
-              type="date"
-              value={form.dueDate}
-              onChange={(e) => setForm((p) => ({ ...p, dueDate: e.target.value }))}
-            />
+            <Input id="wo-edit-due-date" type="date" value={form.dueDate} onChange={(e) => setForm((p) => ({ ...p, dueDate: e.target.value }))} />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
@@ -181,5 +176,5 @@ export function EditWorkOrderDialog({
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -10,7 +10,10 @@ export interface ValidationIssue {
   message: string;
 }
 
-export type ValidationErrors = Record<string, string[] | string> | string[] | ValidationIssue[];
+export type ValidationErrors =
+  | Record<string, string[] | string>
+  | string[]
+  | ValidationIssue[];
 
 export interface ApplicationResult<T = unknown> {
   success: boolean;
@@ -23,7 +26,8 @@ export interface ApplicationResult<T = unknown> {
   code?: string;
 }
 
-export interface PaginatedApplicationResult<T = unknown> extends ApplicationResult<T[]> {
+export interface PaginatedApplicationResult<T = unknown>
+  extends ApplicationResult<T[]> {
   data: T[];
   meta: PaginationMeta;
 }

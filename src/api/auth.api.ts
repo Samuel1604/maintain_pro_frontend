@@ -1,5 +1,8 @@
 import { apiClient } from "./client";
-import { toAuthenticatedUser, toAuthResponse } from "./contracts/auth.contract";
+import {
+  toAuthenticatedUser,
+  toAuthResponse,
+} from "./contracts/auth.contract";
 import type {
   LoginRequest,
   RegisterOrganizationRequest,
@@ -21,19 +24,8 @@ export const authApi = {
   },
 
   logout: () => apiClient.post<void>("/auth/logout"),
-  changePassword: (payload: { currentPassword: string; newPassword: string }) =>
-    apiClient.post<void>("/auth/change-password", payload),
-  sessions: () =>
-    apiClient.get<
-      Array<{
-        id: string;
-        userAgent?: string;
-        ipAddress?: string;
-        location?: string;
-        current?: boolean;
-        lastSeenAt?: string;
-      }>
-    >("/auth/sessions"),
+  changePassword: (payload: { currentPassword: string; newPassword: string }) => apiClient.post<void>("/auth/change-password", payload),
+  sessions: () => apiClient.get<Array<{ id: string; userAgent?: string; ipAddress?: string; location?: string; current?: boolean; lastSeenAt?: string }>>("/auth/sessions"),
   revokeSession: (id: string) => apiClient.delete<void>(`/auth/sessions/${id}`),
 
   // Tokens are refreshed via httpOnly cookies — there's no user payload
@@ -50,9 +42,7 @@ export const authApi = {
   },
 
   async registerOrganization(payload: RegisterOrganizationRequest): Promise<AuthResponse> {
-    return toAuthResponse(
-      await apiClient.post<AuthResponse>("/auth/register/organization", payload),
-    );
+    return toAuthResponse(await apiClient.post<AuthResponse>("/auth/register/organization", payload));
   },
 
   async registerVendor(payload: RegisterVendorRequest): Promise<AuthResponse> {
@@ -68,7 +58,8 @@ export const authApi = {
   resetPassword: (payload: ResetPasswordRequest) =>
     apiClient.post<void>("/auth/reset-password", payload),
 
-  verifyEmail: (payload: VerifyEmailRequest) => apiClient.post<void>("/auth/verify-otp", payload),
+  verifyEmail: (payload: VerifyEmailRequest) =>
+    apiClient.post<void>("/auth/verify-otp", payload),
 
   resendVerification: (payload: ResendVerificationRequest) =>
     apiClient.post<void>("/auth/resend-otp", payload),
@@ -77,11 +68,9 @@ export const authApi = {
     apiClient.post<void>("/auth/verify-link", payload),
 
   regenerateVerificationLink: (payload: RegenerateVerificationRequest) =>
-    apiClient.post<{ expiresInSeconds: number; verificationUrl?: string }>(
-      "/auth/regenerate-verification",
-      payload,
-    ),
+    apiClient.post<{ expiresInSeconds: number; verificationUrl?: string }>("/auth/regenerate-verification", payload),
 };
+
 
 export const login = authApi.login;
 export const logout = authApi.logout;

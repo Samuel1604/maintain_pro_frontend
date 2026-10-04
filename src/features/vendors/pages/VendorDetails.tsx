@@ -26,27 +26,33 @@ export function VendorDetails() {
     <div className="min-h-full bg-background text-foreground">
       <AppHeader
         title="Vendor Profile & Record"
-        subtitle={"Organization vendor management"}
+        subtitle={
+          "Organization vendor management"
+        }
         hideQuickCreate
       />
 
       <div className="px-8 py-6 space-y-6">
-        {
+        {(
           <div
             role="status"
             className="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning"
           >
-            <p className="font-semibold">Vendor relationship details are not available yet.</p>
+            <p className="font-semibold">
+              Vendor relationship details are not available yet.
+            </p>
             <p className="mt-1 text-muted-foreground">
-              The vendor profile endpoint does not expose these relationships, so unavailable fields
-              are shown without demo values.
+              The vendor profile endpoint does not expose these relationships,
+              so unavailable fields are shown without demo values.
             </p>
           </div>
-        }
+        )}
         <PageHeader
           className="rounded-xl border border-border"
           title="Vendor Profile & Record"
-          subtitle={"Organization vendor management"}
+          subtitle={
+            "Organization vendor management"
+          }
           breadcrumbs={
             <span className="rounded bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-500">
               ACTIVE PARTNER
@@ -78,7 +84,9 @@ export function VendorDetails() {
           <div className="lg:col-span-8 space-y-6">
             {/* Vendor Profile Card */}
             <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
-              <h3 className="text-[15px] font-bold text-card-foreground">Vendor Profile</h3>
+              <h3 className="text-[15px] font-bold text-card-foreground">
+                Vendor Profile
+              </h3>
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -125,7 +133,9 @@ export function VendorDetails() {
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     SLA Compliance
                   </p>
-                  <p className="text-3xl font-extrabold text-emerald-500 mt-2">"—"</p>
+                  <p className="text-3xl font-extrabold text-emerald-500 mt-2">
+                    "—"
+                  </p>
                   <p className="text-[11px] text-muted-foreground mt-1">
                     Target commitment &gt; 98.0%
                   </p>
@@ -135,7 +145,9 @@ export function VendorDetails() {
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Avg Response
                   </p>
-                  <p className="text-3xl font-extrabold text-foreground mt-2">"—"</p>
+                  <p className="text-3xl font-extrabold text-foreground mt-2">
+                    "—"
+                  </p>
                   <p className="text-[11px] text-muted-foreground mt-1">
                     Emergency target: 15.0 min
                   </p>
@@ -145,7 +157,9 @@ export function VendorDetails() {
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Completed Orders
                   </p>
-                  <p className="text-3xl font-extrabold text-amber-500 mt-2">42 tickets</p>
+                  <p className="text-3xl font-extrabold text-amber-500 mt-2">
+                    42 tickets
+                  </p>
                   <p className="text-[11px] text-muted-foreground mt-1">
                     Total lifetime compliance runs
                   </p>
@@ -158,16 +172,22 @@ export function VendorDetails() {
           <div className="lg:col-span-4 space-y-6">
             {/* Linked Contract Awards */}
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
-              <h3 className="text-[14px] font-bold text-card-foreground">Linked Contract Awards</h3>
+              <h3 className="text-[14px] font-bold text-card-foreground">
+                Linked Contract Awards
+              </h3>
               <div className="space-y-3">
                 <div className="rounded-xl border border-border/60 bg-muted/30 p-3 flex justify-between items-center">
                   <div>
                     <p className="text-[13px] font-bold text-foreground">
                       24/7 Elevator Preventive Maint.
                     </p>
-                    <p className="text-[11px] text-muted-foreground font-mono">CON-1192</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      CON-1192
+                    </p>
                   </div>
-                  <span className="text-[13px] font-extrabold text-amber-500">$3,800/mo</span>
+                  <span className="text-[13px] font-extrabold text-amber-500">
+                    $3,800/mo
+                  </span>
                 </div>
 
                 <div className="rounded-xl border border-border/60 bg-muted/30 p-3 flex justify-between items-center">
@@ -175,34 +195,46 @@ export function VendorDetails() {
                     <p className="text-[13px] font-bold text-foreground">
                       ASME Regulatory Annual Inspection
                     </p>
-                    <p className="text-[11px] text-muted-foreground font-mono">CON-4029</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      CON-4029
+                    </p>
                   </div>
-                  <span className="text-[13px] font-extrabold text-amber-500">$12,400/yr</span>
+                  <span className="text-[13px] font-extrabold text-amber-500">
+                    $12,400/yr
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Relationship Timeline */}
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
-              <h3 className="text-[14px] font-bold text-card-foreground">Relationship Timeline</h3>
+              <h3 className="text-[14px] font-bold text-card-foreground">
+                Relationship Timeline
+              </h3>
               <div className="space-y-4 text-[13px]">
                 <div className="relative pl-4 border-l-2 border-amber-500 space-y-0.5">
                   <p className="font-semibold text-foreground">
                     Vendor updated response plan for WO-4112
                   </p>
-                  <p className="text-[11px] text-muted-foreground">By: Marcus Vance • 1h ago</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    By: Marcus Vance • 1h ago
+                  </p>
                 </div>
                 <div className="relative pl-4 border-l-2 border-border space-y-0.5">
                   <p className="font-semibold text-foreground">
                     New contract CON-1192 signed and active
                   </p>
-                  <p className="text-[11px] text-muted-foreground">By: Samuel Dane • 1d ago</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    By: Samuel Dane • 1d ago
+                  </p>
                 </div>
                 <div className="relative pl-4 border-l-2 border-border space-y-0.5">
                   <p className="font-semibold text-foreground">
                     First application bid submitted for ASME inspections
                   </p>
-                  <p className="text-[11px] text-muted-foreground">By: System • 2w ago</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    By: System • 2w ago
+                  </p>
                 </div>
               </div>
             </div>
@@ -229,7 +261,10 @@ export function VendorDetails() {
             <Button variant="outline" onClick={() => setShowMsg(false)}>
               Cancel
             </Button>
-            <Button disabled title="Partner messaging is not available for this workspace">
+            <Button
+              disabled
+              title="Partner messaging is not available for this workspace"
+            >
               Send Message
             </Button>
           </DialogFooter>

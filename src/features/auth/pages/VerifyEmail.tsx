@@ -1,10 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { MailCheck, RefreshCw, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import {
+  MailCheck,
+  RefreshCw,
+  Loader2,
+  CheckCircle2,
+  XCircle,
+  Clock,
+} from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { FeedbackAlert } from "@/components/feedback/FeedbackAlert";
 import { FormBanner } from "@/components/feedback/FormBanner";
 import { BrandLogo } from "@/components/brand/BrandLogo";
@@ -17,7 +30,12 @@ import {
 import { useVerificationLinkStore } from "@/features/auth/store/verificationLink.store";
 import { getErrorMessage } from "@/lib/get-error-message";
 
-type ViewState = "prompt" | "verifying" | "success" | "error_invalid" | "error_expired";
+type ViewState =
+  | "prompt"
+  | "verifying"
+  | "success"
+  | "error_invalid"
+  | "error_expired";
 
 const REGENERATE_COOLDOWN = 300; // 5 minutes in seconds
 
@@ -176,7 +194,9 @@ export function VerifyEmail() {
                 <div className="flex justify-center">
                   <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 </div>
-                <CardTitle className="text-2xl">Verifying your email…</CardTitle>
+                <CardTitle className="text-2xl">
+                  Verifying your email…
+                </CardTitle>
                 <CardDescription>Please wait a moment.</CardDescription>
               </CardHeader>
             </>
@@ -195,7 +215,10 @@ export function VerifyEmail() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" onClick={() => navigate("/", { replace: true })}>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate("/", { replace: true })}
+                >
                   Go to dashboard
                 </Button>
               </CardContent>
@@ -209,16 +232,20 @@ export function VerifyEmail() {
                 <div className="flex justify-center">
                   <XCircle className="h-10 w-10 text-destructive" />
                 </div>
-                <CardTitle className="text-2xl">Invalid verification link</CardTitle>
+                <CardTitle className="text-2xl">
+                  Invalid verification link
+                </CardTitle>
                 <CardDescription>
-                  This link is not valid. It may have already been used or copied incorrectly.
-                  Request a fresh link below.
+                  This link is not valid. It may have already been used or
+                  copied incorrectly. Request a fresh link below.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {userEmail && (
                   <>
-                    {regenerateMutation.error && <FormBanner error={regenerateMutation.error} />}
+                    {regenerateMutation.error && (
+                      <FormBanner error={regenerateMutation.error} />
+                    )}
                     {regenerateButton}
                   </>
                 )}
@@ -236,10 +263,12 @@ export function VerifyEmail() {
                 <div className="flex justify-center">
                   <XCircle className="h-10 w-10 text-amber-500" />
                 </div>
-                <CardTitle className="text-2xl">Verification link expired</CardTitle>
+                <CardTitle className="text-2xl">
+                  Verification link expired
+                </CardTitle>
                 <CardDescription>
-                  This link has expired — verification links are valid for 5 minutes. Request a
-                  fresh one below.
+                  This link has expired — verification links are valid for 5
+                  minutes. Request a fresh one below.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -247,8 +276,8 @@ export function VerifyEmail() {
                   <>
                     {regenerated && (
                       <FeedbackAlert variant="success">
-                        A new link has been sent to <strong>{userEmail}</strong>. Check your inbox —
-                        it expires in 5 minutes.
+                        A new link has been sent to <strong>{userEmail}</strong>
+                        . Check your inbox — it expires in 5 minutes.
                       </FeedbackAlert>
                     )}
                     {regenerateMutation.error && !regenerated && (
@@ -274,22 +303,26 @@ export function VerifyEmail() {
                 <CardTitle className="text-2xl">Check your email</CardTitle>
                 <CardDescription>
                   We sent a verification link to{" "}
-                  <strong>{userEmail || "your email address"}</strong>. Open it to activate your
-                  account. The link expires in <strong>5 minutes</strong>.
+                  <strong>{userEmail || "your email address"}</strong>. Open it
+                  to activate your account. The link expires in{" "}
+                  <strong>5 minutes</strong>.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {regenerated && (
                   <FeedbackAlert variant="success">
-                    A verification link has been sent to <strong>{userEmail}</strong>. Please check
-                    your inbox. The link expires in{" "}
+                    A verification link has been sent to{" "}
+                    <strong>{userEmail}</strong>. Please check your inbox. The
+                    link expires in{" "}
                     {formatTime(cooldown > 0 ? cooldown : REGENERATE_COOLDOWN)}.
                   </FeedbackAlert>
                 )}
 
                 {!regenerated && (
                   <>
-                    {regenerateMutation.error && <FormBanner error={regenerateMutation.error} />}
+                    {regenerateMutation.error && (
+                      <FormBanner error={regenerateMutation.error} />
+                    )}
                     <p className="text-center text-sm text-muted-foreground">
                       Didn&apos;t receive it? Check your spam folder or:
                     </p>

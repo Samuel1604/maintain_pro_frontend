@@ -13,7 +13,11 @@ export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
 export type AuthProvider = "local" | "google" | "linkedin" | "apple";
 
-export type AccountStatus = "pending_verification" | "active" | "suspended" | "deactivated";
+export type AccountStatus =
+  | "pending_verification"
+  | "active"
+  | "suspended"
+  | "deactivated";
 
 export interface User {
   id: string;
@@ -23,6 +27,8 @@ export interface User {
   vendorId?: string;
   vendorSlug?: string;
   facilityId?: string;
+  detectedCountry?: string;
+  displayCurrency?: string;
 
   firstName?: string;
   lastName?: string;

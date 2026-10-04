@@ -1,29 +1,29 @@
-import { useLayoutEffect, useEffect } from "react";
+import { useLayoutEffect, useEffect } from 'react'
 
-import { useThemeStore } from "@/app/theme.store";
+import { useThemeStore } from '@/app/theme.store'
 
 export function ThemeProvider() {
-  const theme = useThemeStore((state) => state.theme);
-  const checkAutoTheme = useThemeStore((state) => state.checkAutoTheme);
+  const theme = useThemeStore((state) => state.theme)
+  const checkAutoTheme = useThemeStore((state) => state.checkAutoTheme)
 
   useLayoutEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
+    document.documentElement.setAttribute('data-theme', theme)
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
     } else {
-      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.remove('dark')
     }
-  }, [theme]);
+  }, [theme])
 
   // Periodically check local time every minute to switch theme if day turns into night or vice versa
   useEffect(() => {
-    checkAutoTheme();
+    checkAutoTheme()
     const interval = setInterval(() => {
-      checkAutoTheme();
-    }, 60000);
+      checkAutoTheme()
+    }, 60000)
 
-    return () => clearInterval(interval);
-  }, [checkAutoTheme]);
+    return () => clearInterval(interval)
+  }, [checkAutoTheme])
 
-  return null;
+  return null
 }

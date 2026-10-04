@@ -9,24 +9,24 @@ interface ErrorMessageListProps {
 }
 
 const CATEGORY_ICON: Record<ErrorCategory, React.ElementType> = {
-  VALIDATION: AlertCircle,
-  AUTHENTICATION: ShieldAlert,
-  AUTHORIZATION: ShieldAlert,
-  NOT_FOUND: Info,
-  BUSINESS: Info,
-  NETWORK: WifiOff,
-  UNEXPECTED: ServerCrash,
+  VALIDATION:                  AlertCircle,
+  AUTHENTICATION:              ShieldAlert,
+  AUTHORIZATION:               ShieldAlert,
+  NOT_FOUND:                   Info,
+  BUSINESS:                    Info,
+  NETWORK:                     WifiOff,
+  UNEXPECTED:                  ServerCrash,
   EMAIL_VERIFICATION_REQUIRED: Info,
 };
 
 const CATEGORY_CLASS: Record<ErrorCategory, string> = {
-  VALIDATION: "text-destructive",
-  AUTHENTICATION: "text-destructive",
-  AUTHORIZATION: "text-amber-500",
-  NOT_FOUND: "text-muted-foreground",
-  BUSINESS: "text-amber-500",
-  NETWORK: "text-orange-500",
-  UNEXPECTED: "text-destructive",
+  VALIDATION:                  "text-destructive",
+  AUTHENTICATION:              "text-destructive",
+  AUTHORIZATION:               "text-amber-500",
+  NOT_FOUND:                   "text-muted-foreground",
+  BUSINESS:                    "text-amber-500",
+  NETWORK:                     "text-orange-500",
+  UNEXPECTED:                  "text-destructive",
   EMAIL_VERIFICATION_REQUIRED: "text-amber-500",
 };
 
@@ -39,7 +39,11 @@ export function ErrorMessageList({ error, fallback }: ErrorMessageListProps) {
   const cls = CATEGORY_CLASS[category];
 
   if (messages.length === 1) {
-    return <span className={cls}>{messages[0]}</span>;
+    return (
+      <span className={cls}>
+        {messages[0]}
+      </span>
+    );
   }
 
   return (

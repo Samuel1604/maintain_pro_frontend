@@ -1,12 +1,12 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const subscriptionResponseSchema = z.object({
   id: z.string(),
-  ownerType: z.enum(["organization", "vendor"]),
-  plan: z.enum(["free", "starter", "professional", "enterprise"]),
-  billingCycle: z.enum(["monthly", "annual"]).optional(),
-  status: z.enum(["trial", "active", "past_due", "cancelled", "expired"]),
-  provider: z.enum(["stripe", "paystack", "flutterwave"]).optional(),
+  ownerType: z.enum(['organization', 'vendor']),
+  plan: z.enum(['free', 'starter', 'professional', 'enterprise']),
+  billingCycle: z.enum(['monthly', 'annual']).optional(),
+  status: z.enum(['trial', 'active', 'past_due', 'cancelled', 'expired']),
+  provider: z.enum(['stripe', 'paystack', 'flutterwave']).optional(),
   trialEndsAt: z.string().optional(),
   startsAt: z.string(),
   endsAt: z.string().optional(),
@@ -22,17 +22,20 @@ export const checkoutResponseSchema = z.object({
 });
 
 export const planCatalogSchema = z.object({
-  audience: z.enum(["organization", "vendor"]),
+  audience: z.enum(['organization', 'vendor']),
   currency: z.string(),
+  displayCurrency: z.string().optional(),
+  baseCurrency: z.string().optional(),
+  exchangeRate: z.number().positive().optional(),
+  rateDate: z.string().optional(),
+  detectedCountry: z.string().optional(),
   annualDiscountPercent: z.number(),
-  plans: z.array(
-    z.object({
-      id: z.enum(["free", "starter", "professional", "enterprise"]),
-      monthlyPrice: z.number(),
-      annualPrice: z.number(),
-      trialDays: z.number(),
-    }),
-  ),
+  plans: z.array(z.object({
+    id: z.enum(['free', 'starter', 'professional', 'enterprise']),
+    monthlyPrice: z.number(),
+    annualPrice: z.number(),
+    trialDays: z.number(),
+  })),
 });
 
 export type SubscriptionResponseContract = z.infer<typeof subscriptionResponseSchema>;

@@ -31,7 +31,7 @@ export function PrivacyPolicyPage() {
           </div>
         </section>
       </main>
-      <PublicFooter />
+      <PublicFooter variant="contact" />
     </>
   )
 }

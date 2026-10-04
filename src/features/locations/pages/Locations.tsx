@@ -79,12 +79,7 @@ export function Locations() {
   }));
   const editableLocations: CommonLocation[] = apiLocations.map((location) => ({
     ...location,
-    createdAt: new Date(location.createdAt),
-    updatedAt: new Date(location.updatedAt),
-    type:
-      location.type.toLowerCase() === "area" || location.type.toLowerCase() === "zone"
-        ? "zone"
-        : (location.type.toLowerCase() as CommonLocation["type"]),
+    type: location.type.toLowerCase() === 'area' || location.type.toLowerCase() === 'zone' ? 'zone' : location.type.toLowerCase() as CommonLocation['type'],
     status: location.status,
   }));
 
@@ -124,11 +119,7 @@ export function Locations() {
         roomNumber: formRoomNumber.trim() || undefined,
         description: formDescription.trim() || undefined,
         status: "active",
-        parentId: formParentId.trim()
-          ? (editableLocations.find(
-              (location) => location.name.toLowerCase() === formParentId.trim().toLowerCase(),
-            )?.id ?? null)
-          : null,
+        parentId: formParentId.trim() ? editableLocations.find((location) => location.name.toLowerCase() === formParentId.trim().toLowerCase())?.id ?? null : null,
       });
       toast.success(`Location "${formName}" created successfully`);
       setFormName("");
@@ -266,30 +257,15 @@ export function Locations() {
                       </td>
                       <td className="px-6 py-4 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`${locationsPath}/${item.id}`)}
-                            className="h-8 rounded-md bg-muted px-3 text-[12px] font-semibold text-foreground hover:bg-accent"
-                          >
-                            View
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const selected =
-                                editableLocations.find((location) => location.id === item.id) ??
-                                null;
-                              setEditingLocation(selected);
-                              setEditLocationOpen(Boolean(selected));
-                            }}
-                            className="h-8 w-8 p-0 text-primary"
-                            title="Edit location"
-                            aria-label={`Edit ${item.name}`}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => navigate(`${locationsPath}/${item.id}`)}
+                          className="h-8 rounded-md bg-muted px-3 text-[12px] font-semibold text-foreground hover:bg-accent"
+                        >
+                          View
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => { const selected = editableLocations.find((location) => location.id === item.id) ?? null; setEditingLocation(selected); setEditLocationOpen(Boolean(selected)); }} className="h-8 w-8 p-0 text-primary" title="Edit location" aria-label={`Edit ${item.name}`}><Pencil className="h-3.5 w-3.5" /></Button>
                         </div>
                       </td>
                     </tr>
@@ -312,17 +288,9 @@ export function Locations() {
 
             <div className="flex items-center gap-1.5">
               <Pagination page={page} totalPages={pageCount} onPageChange={setPage} />
-            </div>
-            <EditLocationDialog
-              location={editingLocation}
-              locations={editableLocations}
-              open={editLocationOpen}
-              onOpenChange={(open) => {
-                setEditLocationOpen(open);
-                if (!open) setEditingLocation(null);
-              }}
-            />
-          </div>
+      </div>
+      <EditLocationDialog location={editingLocation} locations={editableLocations} open={editLocationOpen} onOpenChange={(open) => { setEditLocationOpen(open); if (!open) setEditingLocation(null); }} />
+    </div>
         </div>
       </div>
 
@@ -333,9 +301,7 @@ export function Locations() {
             <DialogTitle className="text-lg font-bold text-foreground">
               Add New Location
             </DialogTitle>
-            <p className="text-sm text-muted-foreground">
-              Define the facility area, level, and details so work can be assigned accurately.
-            </p>
+            <p className="text-sm text-muted-foreground">Define the facility area, level, and details so work can be assigned accurately.</p>
           </DialogHeader>
           <div className="space-y-4 py-2 text-[13px]">
             <div className="space-y-1.5">
@@ -388,48 +354,13 @@ export function Locations() {
               </div>
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-foreground">Location Code</Label>
-                <Input
-                  placeholder="e.g. SR-B"
-                  value={formCode}
-                  onChange={(e) => setFormCode(e.target.value)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-foreground">Room Number</Label>
-                <Input
-                  placeholder="e.g. 410"
-                  value={formRoomNumber}
-                  onChange={(e) => setFormRoomNumber(e.target.value)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-foreground">Parent Location</Label>
-                <Input
-                  list="parent-location-options"
-                  placeholder="e.g. Main Building (optional)"
-                  value={formParentId}
-                  onChange={(e) => setFormParentId(e.target.value)}
-                />
-                <datalist id="parent-location-options">
-                  {editableLocations.map((location) => (
-                    <option key={location.id} value={location.name} />
-                  ))}
-                </datalist>
-                <p className="text-[11px] text-muted-foreground">
-                  Leave blank for a top-level location.
-                </p>
-              </div>
+              <div className="space-y-1.5"><Label className="text-[12px] font-semibold text-foreground">Location Code</Label><Input placeholder="e.g. SR-B" value={formCode} onChange={(e) => setFormCode(e.target.value)} /></div>
+              <div className="space-y-1.5"><Label className="text-[12px] font-semibold text-foreground">Room Number</Label><Input placeholder="e.g. 410" value={formRoomNumber} onChange={(e) => setFormRoomNumber(e.target.value)} /></div>
+              <div className="space-y-1.5"><Label className="text-[12px] font-semibold text-foreground">Parent Location</Label><Input list="parent-location-options" placeholder="e.g. Main Building (optional)" value={formParentId} onChange={(e) => setFormParentId(e.target.value)} /><datalist id="parent-location-options">{editableLocations.map((location) => <option key={location.id} value={location.name} />)}</datalist><p className="text-[11px] text-muted-foreground">Leave blank for a top-level location.</p></div>
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-foreground">Description</Label>
-              <textarea
-                value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-                placeholder="Describe this location"
-                className="min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
-              />
+              <textarea value={formDescription} onChange={(e) => setFormDescription(e.target.value)} placeholder="Describe this location" className="min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground" />
             </div>
           </div>
           <DialogFooter>

@@ -1,14 +1,11 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { PublicNavbar } from "@/features/public/components/PublicNavbar";
 import { PublicFooter } from "@/features/public/components/PublicFooter";
 import { MaterialIcon } from "@/features/public/components/MaterialIcon";
 import { PUBLIC_ROUTES } from "@/features/public/constants/routes";
-import { SupportChat } from "@/components/navigation/SupportChat";
 
 export function LandingPage() {
-  const [chatOpen, setChatOpen] = useState(false);
   return (
     <>
       <PublicNavbar />
@@ -435,21 +432,19 @@ export function LandingPage() {
           </div>
         </section>
       </main>
-      <PublicFooter />
+      <PublicFooter variant="landing" />
 
       {/* Floating AI Assistant / Support FAB */}
-      <button
-        type="button"
-        onClick={() => setChatOpen(true)}
+      <Link
+        to={PUBLIC_ROUTES.CONTACT}
         className="group fixed bottom-8 right-8 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-on-primary shadow-2xl transition-all hover:scale-110 active:scale-95"
         aria-label="AI Assistant & Support"
       >
         <MaterialIcon name="smart_toy" className="text-3xl" />
-        <span className="absolute right-full mr-4 whitespace-nowrap rounded border border-border bg-popover px-3.5 py-1.5 text-xs text-popover-foreground shadow-md opacity-0 transition-opacity group-hover:opacity-100 font-label-sm">
+        <span className="absolute right-full mr-4 whitespace-nowrap rounded bg-on-surface px-3.5 py-1.5 text-xs text-surface-bright shadow-md opacity-0 transition-opacity group-hover:opacity-100 font-label-sm">
           AI Assistant &amp; Support
         </span>
-      </button>
-      <SupportChat open={chatOpen} onOpenChange={setChatOpen} publicMode />
+      </Link>
     </>
   );
 }

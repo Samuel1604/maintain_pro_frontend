@@ -32,7 +32,12 @@ import { displayLabel } from "@/utils/display-ids";
 import { useServiceRequests } from "../hooks/useServiceRequests";
 import type { ServiceRequestRecord } from "../services/serviceRequests.service";
 import { PageIntro } from "@/components/layout/PageIntro";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { CreateServiceRequest } from "./CreateServiceRequest";
 
 export function ServiceRequests() {
@@ -44,16 +49,19 @@ export function ServiceRequests() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-  const { data, total, totalPages, isLoading, isRefreshing, error, refetch } = useServiceRequests({
-    page,
-    limit: 20,
-    status,
-  });
+  const { data, total, totalPages, isLoading, isRefreshing, error, refetch } =
+    useServiceRequests({
+      page,
+      limit: 20,
+      status,
+    });
 
   const rows = data.filter(
     (item) =>
       !search ||
-      `${item.id} ${item.title} ${item.description}`.toLowerCase().includes(search.toLowerCase()),
+      `${item.id} ${item.title} ${item.description}`
+        .toLowerCase()
+        .includes(search.toLowerCase()),
   );
 
   const createButton = canSubmitServiceRequest ? (
@@ -71,10 +79,7 @@ export function ServiceRequests() {
       <AppHeader title="Service Requests" subtitle="Service Request" hideQuickCreate />
       <div className="bg-card px-8 py-5">
         <div className="flex items-center justify-between gap-4">
-          <PageIntro
-            title="Service Requests"
-            description="Capture maintenance needs, follow review progress, and connect approved requests to work orders."
-          />
+          <PageIntro title="Service Requests" description="Capture maintenance needs, follow review progress, and connect approved requests to work orders." />
           {createButton}
         </div>
       </div>
@@ -94,7 +99,11 @@ export function ServiceRequests() {
           <Select
             value={status ?? "all"}
             onValueChange={(value) => {
-              setStatus(value === "all" ? undefined : (value as ServiceRequestRecord["status"]));
+              setStatus(
+                value === "all"
+                  ? undefined
+                  : (value as ServiceRequestRecord["status"]),
+              );
               setPage(1);
             }}
           >
@@ -140,7 +149,11 @@ export function ServiceRequests() {
             title="No service requests found"
             description="Try changing the filters or submit a new request."
             actionLabel={canSubmitServiceRequest ? "Create Request" : undefined}
-            onAction={canSubmitServiceRequest ? () => navigate(`${path}/new`) : undefined}
+            onAction={
+              canSubmitServiceRequest
+                ? () => navigate(`${path}/new`)
+                : undefined
+            }
           />
         ) : (
           <div className="overflow-hidden rounded-xl border border-border bg-card">
@@ -171,7 +184,7 @@ export function ServiceRequests() {
                       onClick={() => navigate(`${path}/${item.id}`)}
                     >
                       <TableCell className="font-mono font-semibold">
-                        {displayReference("SR", item.id)}
+                        {displayReference('SR', item.id)}
                       </TableCell>
                       <TableCell>
                         <p className="font-semibold">{item.title}</p>
@@ -192,7 +205,7 @@ export function ServiceRequests() {
                         {new Date(item.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">
-                        {item.workOrderId ? displayReference("WO", item.workOrderId) : "—"}
+                        {item.workOrderId ? displayReference('WO', item.workOrderId) : "—"}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         <ChevronRight className="h-4 w-4" />
@@ -215,7 +228,7 @@ export function ServiceRequests() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-mono text-xs text-muted-foreground">
-                        {displayReference("SR", item.id)}
+                        {displayReference('SR', item.id)}
                       </p>
                       <p className="mt-1 font-semibold">{item.title}</p>
                     </div>
@@ -239,7 +252,11 @@ export function ServiceRequests() {
               <span>
                 Showing {rows.length} of {total} requests
               </span>
-              <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+              />
             </footer>
           </div>
         )}
@@ -249,7 +266,8 @@ export function ServiceRequests() {
           <DialogHeader className="shrink-0 border-b border-border pb-4">
             <DialogTitle>Create Service Request</DialogTitle>
             <p className="text-sm text-muted-foreground">
-              Describe the issue clearly so facilities can triage and assign the right response.
+              Describe the issue clearly so facilities can triage and assign the
+              right response.
             </p>
           </DialogHeader>
           <CreateServiceRequest

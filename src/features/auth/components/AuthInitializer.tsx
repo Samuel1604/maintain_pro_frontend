@@ -13,12 +13,8 @@ export function AuthInitializer() {
   const setHydrated = useAuthStore((state) => state.setHydrated);
 
   const moveLegacyRoute = (slug: string) => {
-    if (typeof window !== "undefined" && window.location.pathname.startsWith("/current/")) {
-      window.history.replaceState(
-        {},
-        "",
-        `/${slug}${window.location.pathname.slice("/current".length)}${window.location.search}${window.location.hash}`,
-      );
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/current/')) {
+      window.history.replaceState({}, '', `/${slug}${window.location.pathname.slice('/current'.length)}${window.location.search}${window.location.hash}`);
     }
   };
 
@@ -41,30 +37,24 @@ export function AuthInitializer() {
         }
 
         if (user.organizationId) {
-          organizationApi
-            .getCurrent()
-            .then((profile) => {
-              useAuthStore.getState().setOrganization(profile);
-              const slug = (profile as typeof profile & { slug?: string }).slug;
-              if (slug) {
-                localStorage.setItem("maintainpro_organization_slug", slug);
-                useAuthStore.getState().updateUser({ organizationSlug: slug });
-                moveLegacyRoute(slug);
-              }
-            })
-            .catch(() => undefined);
+          organizationApi.getCurrent().then((profile) => {
+            useAuthStore.getState().setOrganization(profile);
+            const slug = (profile as typeof profile & { slug?: string }).slug;
+            if (slug) {
+              localStorage.setItem("maintainpro_organization_slug", slug);
+              useAuthStore.getState().updateUser({ organizationSlug: slug });
+              moveLegacyRoute(slug);
+            }
+          }).catch(() => undefined);
         } else if (user.vendorId) {
-          vendorsApi
-            .getCurrent()
-            .then((profile) => {
-              const slug = (profile as typeof profile & { slug?: string }).slug;
-              if (slug) {
-                localStorage.setItem("maintainpro_vendor_slug", slug);
-                useAuthStore.getState().updateUser({ vendorSlug: slug });
-                moveLegacyRoute(slug);
-              }
-            })
-            .catch(() => undefined);
+          vendorsApi.getCurrent().then((profile) => {
+            const slug = (profile as typeof profile & { slug?: string }).slug;
+            if (slug) {
+              localStorage.setItem("maintainpro_vendor_slug", slug);
+              useAuthStore.getState().updateUser({ vendorSlug: slug });
+              moveLegacyRoute(slug);
+            }
+          }).catch(() => undefined);
         }
       }
       return;

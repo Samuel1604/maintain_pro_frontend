@@ -17,7 +17,7 @@ const EMAIL_NOT_VERIFIED_CODE = "EMAIL_NOT_VERIFIED";
 
 function sanitizeMessage(rawMessage?: string, defaultMessage?: string): string {
   if (!rawMessage) return defaultMessage || "An error occurred";
-
+  
   // Guard against exposing raw database, stack trace, or internal exception names
   const sensitivePatterns = [
     /mongo/i,
@@ -63,7 +63,7 @@ export function mapHttpToAppError(error: unknown): AppError {
     return new EmailVerificationRequiredError(
       sanitizeMessage(rawMessage, "Please verify your email address to continue."),
       status,
-      body?.errors,
+      body?.errors
     );
   }
 
@@ -73,31 +73,31 @@ export function mapHttpToAppError(error: unknown): AppError {
       return new ValidationError(
         sanitizeMessage(rawMessage, "Invalid input data provided."),
         status,
-        body?.errors,
+        body?.errors
       );
     case 401:
       return new AuthenticationError(
         sanitizeMessage(rawMessage, "Authentication failed. Please sign in again."),
         status,
-        body?.errors,
+        body?.errors
       );
     case 403:
       return new AuthorizationError(
         sanitizeMessage(rawMessage, "You do not have permission to perform this action."),
         status,
-        body?.errors,
+        body?.errors
       );
     case 404:
       return new NotFoundError(
         sanitizeMessage(rawMessage, "The requested resource was not found."),
         status,
-        body?.errors,
+        body?.errors
       );
     case 409:
       return new BusinessError(
         sanitizeMessage(rawMessage, "This action conflicts with existing data."),
         status,
-        body?.errors,
+        body?.errors
       );
     case 500:
     case 502:
@@ -106,13 +106,13 @@ export function mapHttpToAppError(error: unknown): AppError {
       return new UnexpectedError(
         "Something went wrong on our end. Please try again later.",
         status,
-        body?.errors,
+        body?.errors
       );
     default:
       return new UnexpectedError(
         sanitizeMessage(rawMessage, "An unexpected error occurred."),
         status,
-        body?.errors,
+        body?.errors
       );
   }
 }

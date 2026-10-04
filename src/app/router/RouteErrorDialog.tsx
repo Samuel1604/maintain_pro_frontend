@@ -1,4 +1,8 @@
-import { useNavigate, useRouteError, isRouteErrorResponse } from "react-router-dom";
+import {
+  useNavigate,
+  useRouteError,
+  isRouteErrorResponse,
+} from "react-router-dom";
 import { CircleAlert } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,8 +29,8 @@ export function RouteErrorDialog() {
   const message = isRouteErrorResponse(error)
     ? error.statusText || String(error.data || "Something went wrong. Please try again.")
     : error instanceof Error
-      ? error.message
-      : "Something went wrong. Please try again.";
+    ? error.message
+    : "Something went wrong. Please try again.";
 
   return (
     <Dialog open>

@@ -7,7 +7,7 @@ function uniqueMessages(messages: string[]): string[] {
 
 export function getErrorMessages(
   error: unknown,
-  fallback = "Something went wrong. Please try again.",
+  fallback = "Something went wrong. Please try again."
 ): string[] {
   if (!error) return [fallback];
 
@@ -19,7 +19,7 @@ export function getErrorMessages(
 
 export function getErrorMessage(
   error: unknown,
-  fallback = "Something went wrong. Please try again.",
+  fallback = "Something went wrong. Please try again."
 ): string {
   return getErrorMessages(error, fallback)[0] ?? fallback;
 }

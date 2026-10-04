@@ -28,7 +28,12 @@ export interface VendorWorkOrderRow {
   slaUrgent?: boolean;
   slaOverdue?: boolean;
   assignedTech: string;
-  status: "IN PROGRESS" | "SCHEDULED" | "COMPLETED" | "ON HOLD" | "PENDING COMPLETION";
+  status:
+    | "IN PROGRESS"
+    | "SCHEDULED"
+    | "COMPLETED"
+    | "ON HOLD"
+    | "PENDING COMPLETION";
 }
 
 export function VendorWorkOrders() {
@@ -55,23 +60,26 @@ export function VendorWorkOrders() {
           facility: item.locationName || "—",
           location: item.locationName || "—",
           assetTask: item.title,
-          priority: item.priority.toUpperCase() as VendorWorkOrderRow["priority"],
+          priority:
+            item.priority.toUpperCase() as VendorWorkOrderRow["priority"],
           slaDeadline: "—",
           assignedTech: item.assigneeName || "Unassigned",
           status:
             item.status === "completed"
               ? "COMPLETED"
               : item.status === "in_progress"
-                ? "IN PROGRESS"
-                : item.status === "on_hold"
-                  ? "ON HOLD"
-                  : item.status === "pending_completion"
-                    ? "PENDING COMPLETION"
-                    : "SCHEDULED",
+              ? "IN PROGRESS"
+              : item.status === "on_hold"
+              ? "ON HOLD"
+              : item.status === "pending_completion"
+              ? "PENDING COMPLETION"
+              : "SCHEDULED",
         })),
       );
     } catch (error) {
-      setApiError(error instanceof Error ? error.message : "Unable to load work orders");
+      setApiError(
+        error instanceof Error ? error.message : "Unable to load work orders",
+      );
     } finally {
       setApiLoading(false);
     }
@@ -85,18 +93,34 @@ export function VendorWorkOrders() {
         item.id.toLowerCase().includes(search.toLowerCase()) ||
         item.assetTask.toLowerCase().includes(search.toLowerCase()) ||
         item.facility.toLowerCase().includes(search.toLowerCase());
-      const matchFacility = facilityFilter === "all" || item.facility === facilityFilter;
+      const matchFacility =
+        facilityFilter === "all" || item.facility === facilityFilter;
       const matchPriority =
-        priorityFilter === "all" || item.priority.toLowerCase() === priorityFilter.toLowerCase();
+        priorityFilter === "all" ||
+        item.priority.toLowerCase() === priorityFilter.toLowerCase();
       const matchStatus =
         statusFilter === "all" ||
         item.status.toLowerCase().replace(/\s+/g, "") ===
           statusFilter.toLowerCase().replace(/\s+/g, "");
-      const matchTech = techFilter === "all" || item.assignedTech === techFilter;
+      const matchTech =
+        techFilter === "all" || item.assignedTech === techFilter;
 
-      return matchSearch && matchFacility && matchPriority && matchStatus && matchTech;
+      return (
+        matchSearch &&
+        matchFacility &&
+        matchPriority &&
+        matchStatus &&
+        matchTech
+      );
     });
-  }, [apiRows, search, facilityFilter, priorityFilter, statusFilter, techFilter]);
+  }, [
+    apiRows,
+    search,
+    facilityFilter,
+    priorityFilter,
+    statusFilter,
+    techFilter,
+  ]);
 
   if (apiLoading) return <PageLoader label="Loading vendor work orders..." />;
   if (apiError)
@@ -122,7 +146,8 @@ export function VendorWorkOrders() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <p className="text-[12px] text-muted-foreground mt-0.5">
-              Use list view for detailed records or Kanban to see dispatch flow at a glance.
+              Use list view for detailed records or Kanban to see dispatch flow
+              at a glance.
             </p>
           </div>
 
@@ -182,12 +207,18 @@ export function VendorWorkOrders() {
             <SelectContent>
               <SelectItem value="all">Facility: All Locations</SelectItem>
               <SelectItem value="Main HQ Office">Main HQ Office</SelectItem>
-              <SelectItem value="West Campus Shaft">West Campus Shaft</SelectItem>
+              <SelectItem value="West Campus Shaft">
+                West Campus Shaft
+              </SelectItem>
               <SelectItem value="North Logistics">North Logistics</SelectItem>
               <SelectItem value="East Warehouses">East Warehouses</SelectItem>
-              <SelectItem value="Silicon Valley Lab">Silicon Valley Lab</SelectItem>
+              <SelectItem value="Silicon Valley Lab">
+                Silicon Valley Lab
+              </SelectItem>
               <SelectItem value="HQ Office Tower">HQ Office Tower</SelectItem>
-              <SelectItem value="West Campus Lobby">West Campus Lobby</SelectItem>
+              <SelectItem value="West Campus Lobby">
+                West Campus Lobby
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -241,7 +272,9 @@ export function VendorWorkOrders() {
                   <tr className="border-b border-border bg-muted/40 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                     <th className="py-3.5 px-5">WO #</th>
                     <th className="py-3.5 px-5">Facility / Location</th>
-                    <th className="py-3.5 px-5">Asset &amp; Task Description</th>
+                    <th className="py-3.5 px-5">
+                      Asset &amp; Task Description
+                    </th>
                     <th className="py-3.5 px-5">Priority</th>
                     <th className="py-3.5 px-5">SLA Deadline</th>
                     <th className="py-3.5 px-5">Assigned Tech</th>
@@ -253,9 +286,12 @@ export function VendorWorkOrders() {
                   {filtered.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="p-12 text-center">
-                        <p className="font-semibold text-foreground">No assigned work orders</p>
+                        <p className="font-semibold text-foreground">
+                          No assigned work orders
+                        </p>
                         <p className="mt-1 text-sm text-muted-foreground">
-                          Work orders dispatched to your vendor team will appear here.
+                          Work orders dispatched to your vendor team will appear
+                          here.
                         </p>
                       </td>
                     </tr>
@@ -266,9 +302,15 @@ export function VendorWorkOrders() {
                         className="hover:bg-muted/20 transition-colors group cursor-pointer"
                         onClick={() => navigate(`${workOrdersPath}/${item.id}`)}
                       >
-                        <td className="py-4 px-5 font-bold text-indigo-500">{item.id}</td>
-                        <td className="py-4 px-5 font-bold text-foreground">{item.facility}</td>
-                        <td className="py-4 px-5 text-muted-foreground">{item.assetTask}</td>
+                        <td className="py-4 px-5 font-bold text-indigo-500">
+                          {item.id}
+                        </td>
+                        <td className="py-4 px-5 font-bold text-foreground">
+                          {item.facility}
+                        </td>
+                        <td className="py-4 px-5 text-muted-foreground">
+                          {item.assetTask}
+                        </td>
                         <td className="py-4 px-5">
                           <PriorityBadge priority={item.priority} />
                         </td>
@@ -276,13 +318,17 @@ export function VendorWorkOrders() {
                           {item.slaOverdue ? (
                             <span className="text-red-500">Overdue</span>
                           ) : item.slaUrgent ? (
-                            <span className="text-foreground">{item.slaDeadline}</span>
+                            <span className="text-foreground">
+                              {item.slaDeadline}
+                            </span>
                           ) : item.status === "COMPLETED" ? (
                             <span className="text-emerald-500 font-semibold">
                               {item.slaDeadline}
                             </span>
                           ) : (
-                            <span className="text-muted-foreground">{item.slaDeadline}</span>
+                            <span className="text-muted-foreground">
+                              {item.slaDeadline}
+                            </span>
                           )}
                         </td>
                         <td className="py-4 px-5 text-foreground font-medium">
@@ -312,58 +358,80 @@ export function VendorWorkOrders() {
             </div>
 
             <div className="border-t border-border px-5 py-3.5 text-[13px] text-muted-foreground">
-              Showing <span className="font-bold text-foreground">{filtered.length}</span> work
-              orders
+              Showing{" "}
+              <span className="font-bold text-foreground">
+                {filtered.length}
+              </span>{" "}
+              work orders
             </div>
           </div>
         ) : (
           /* Kanban Board View */
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {["SCHEDULED", "IN PROGRESS", "ON HOLD", "COMPLETED"].map((columnStatus) => {
-              const colItems = filtered.filter((item) => item.status === columnStatus);
-              return (
-                <div
-                  key={columnStatus}
-                  className="bg-card rounded-2xl border border-border p-4 flex flex-col gap-3 min-h-[500px]"
-                >
-                  <div className="flex items-center justify-between pb-2 border-b border-border">
-                    <h3 className="font-bold text-[13px] text-foreground">{columnStatus}</h3>
-                    <Badge variant="secondary" className="rounded-full text-[11px] font-bold">
-                      {colItems.length}
-                    </Badge>
-                  </div>
+            {["SCHEDULED", "IN PROGRESS", "ON HOLD", "COMPLETED"].map(
+              (columnStatus) => {
+                const colItems = filtered.filter(
+                  (item) => item.status === columnStatus,
+                );
+                return (
+                  <div
+                    key={columnStatus}
+                    className="bg-card rounded-2xl border border-border p-4 flex flex-col gap-3 min-h-[500px]"
+                  >
+                    <div className="flex items-center justify-between pb-2 border-b border-border">
+                      <h3 className="font-bold text-[13px] text-foreground">
+                        {columnStatus}
+                      </h3>
+                      <Badge
+                        variant="secondary"
+                        className="rounded-full text-[11px] font-bold"
+                      >
+                        {colItems.length}
+                      </Badge>
+                    </div>
 
-                  <div className="space-y-3 flex-1 overflow-y-auto">
-                    {colItems.length === 0 ? (
-                      <p className="rounded-xl border border-dashed border-border p-5 text-center text-xs text-muted-foreground">
-                        No work orders in this stage.
-                      </p>
-                    ) : (
-                      colItems.map((item) => (
-                        <div
-                          key={item.id}
-                          onClick={() => navigate(`${workOrdersPath}/${item.id}`)}
-                          className="p-4 rounded-xl border border-border bg-background hover:bg-muted/30 hover:shadow-md transition-all cursor-pointer space-y-2.5"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-indigo-500 text-[12px]">{item.id}</span>
-                            <span className="text-[11px] font-semibold text-muted-foreground">
-                              {item.priority}
-                            </span>
+                    <div className="space-y-3 flex-1 overflow-y-auto">
+                      {colItems.length === 0 ? (
+                        <p className="rounded-xl border border-dashed border-border p-5 text-center text-xs text-muted-foreground">
+                          No work orders in this stage.
+                        </p>
+                      ) : (
+                        colItems.map((item) => (
+                          <div
+                            key={item.id}
+                            onClick={() =>
+                              navigate(`${workOrdersPath}/${item.id}`)
+                            }
+                            className="p-4 rounded-xl border border-border bg-background hover:bg-muted/30 hover:shadow-md transition-all cursor-pointer space-y-2.5"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-indigo-500 text-[12px]">
+                                {item.id}
+                              </span>
+                              <span className="text-[11px] font-semibold text-muted-foreground">
+                                {item.priority}
+                              </span>
+                            </div>
+                            <p className="font-bold text-[13px] text-foreground">
+                              {item.assetTask}
+                            </p>
+                            <p className="text-[12px] text-muted-foreground">
+                              {item.facility}
+                            </p>
+                            <div className="pt-2 flex items-center justify-between border-t border-border/60 text-[11px] text-muted-foreground">
+                              <span>{item.assignedTech}</span>
+                              <span className="font-bold text-foreground">
+                                {item.slaDeadline}
+                              </span>
+                            </div>
                           </div>
-                          <p className="font-bold text-[13px] text-foreground">{item.assetTask}</p>
-                          <p className="text-[12px] text-muted-foreground">{item.facility}</p>
-                          <div className="pt-2 flex items-center justify-between border-t border-border/60 text-[11px] text-muted-foreground">
-                            <span>{item.assignedTech}</span>
-                            <span className="font-bold text-foreground">{item.slaDeadline}</span>
-                          </div>
-                        </div>
-                      ))
-                    )}
+                        ))
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              },
+            )}
           </div>
         )}
       </div>

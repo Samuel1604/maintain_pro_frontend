@@ -35,7 +35,9 @@ const VARIANT_CONTENT = {
   },
 } as const;
 
-export function AuthBrandingPanel({ variant = "login" }: AuthBrandingPanelProps) {
+export function AuthBrandingPanel({
+  variant = "login",
+}: AuthBrandingPanelProps) {
   const content = VARIANT_CONTENT[variant];
 
   return (
@@ -43,8 +45,12 @@ export function AuthBrandingPanel({ variant = "login" }: AuthBrandingPanelProps)
       <AuthLogoLink variant="panel" />
 
       <div className="space-y-6">
-        <h1 className="text-4xl font-bold leading-tight text-balance">{content.title}</h1>
-        <p className="text-lg text-primary-foreground/80 text-pretty">{content.description}</p>
+        <h1 className="text-4xl font-bold leading-tight text-balance">
+          {content.title}
+        </h1>
+        <p className="text-lg text-primary-foreground/80 text-pretty">
+          {content.description}
+        </p>
 
         {variant === "login" && (
           <div className="grid gap-3 pt-4">
@@ -70,14 +76,20 @@ export function AuthBrandingPanel({ variant = "login" }: AuthBrandingPanelProps)
           </div>
         )}
 
-        {(variant === "organization" || variant === "vendor") && (
+        {(variant === "organization" ||
+      
+          variant === "vendor") && (
           <div className="space-y-4 pt-4">
             <Step
               number={1}
               title="Create your account"
               description="Set up credentials and profile"
             />
-            <Step number={2} title="Start working" description="Access your dedicated portal" />
+            <Step
+              number={2}
+              title="Start working"
+              description="Access your dedicated portal"
+            />
           </div>
         )}
       </div>

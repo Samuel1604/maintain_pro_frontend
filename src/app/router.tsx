@@ -26,23 +26,8 @@ function lazyNamed<TModule, TKey extends keyof TModule>(
   exportName: TKey,
 ) {
   return lazy(async () => {
-    try {
-      const module = await loader();
-      sessionStorage.removeItem("maintainpro:chunk-reload");
-      return { default: module[exportName] as ComponentType };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      const isChunkLoadFailure =
-        message.includes("Failed to fetch dynamically imported module") ||
-        message.includes("Importing a module script failed");
-
-      if (isChunkLoadFailure && !sessionStorage.getItem("maintainpro:chunk-reload")) {
-        sessionStorage.setItem("maintainpro:chunk-reload", "1");
-        window.location.reload();
-      }
-
-      throw error;
-    }
+    const module = await loader();
+    return { default: module[exportName] as ComponentType };
   });
 }
 
@@ -51,12 +36,18 @@ function lazyPage(element: ReactNode) {
 }
 
 const Login = lazyNamed(() => import("@/features/auth/pages/Login"), "Login");
-const SignupHub = lazyNamed(() => import("@/features/auth/pages/SignupHub"), "SignupHub");
+const SignupHub = lazyNamed(
+  () => import("@/features/auth/pages/SignupHub"),
+  "SignupHub",
+);
 const SignupOrganization = lazyNamed(
   () => import("@/features/auth/pages/SignupOrganization"),
   "SignupOrganization",
 );
-const SignupVendor = lazyNamed(() => import("@/features/auth/pages/SignupVendor"), "SignupVendor");
+const SignupVendor = lazyNamed(
+  () => import("@/features/auth/pages/SignupVendor"),
+  "SignupVendor",
+);
 const ForgotPassword = lazyNamed(
   () => import("@/features/auth/pages/ForgotPassword"),
   "ForgotPassword",
@@ -65,19 +56,54 @@ const ResetPassword = lazyNamed(
   () => import("@/features/auth/pages/ResetPassword"),
   "ResetPassword",
 );
-const AcceptInvite = lazyNamed(() => import("@/features/auth/pages/AcceptInvite"), "AcceptInvite");
-const VerifyEmailPage = lazyNamed(() => import("@/features/auth/pages/VerifyEmail"), "VerifyEmail");
-const OAuthSuccess = lazyNamed(() => import("@/features/auth/pages/OAuthSuccess"), "OAuthSuccess");
-const UnauthorizedPage = lazy(() => import("@/features/auth/pages/UnauthorizedPage"));
+const AcceptInvite = lazyNamed(
+  () => import("@/features/auth/pages/AcceptInvite"),
+  "AcceptInvite",
+);
+const VerifyEmailPage = lazyNamed(
+  () => import("@/features/auth/pages/VerifyEmail"),
+  "VerifyEmail",
+);
+const OAuthSuccess = lazyNamed(
+  () => import("@/features/auth/pages/OAuthSuccess"),
+  "OAuthSuccess",
+);
+const UnauthorizedPage = lazy(
+  () => import("@/features/auth/pages/UnauthorizedPage"),
+);
 
-import { AboutPage } from "@/features/public/pages/AboutPage";
-import { ContactPage } from "@/features/public/pages/ContactPage";
-import { FeaturesPage } from "@/features/public/pages/FeaturesPage";
-import { PricingPage } from "@/features/public/pages/PricingPage";
-import { CheckoutPage } from "@/features/public/pages/CheckoutPage";
-import { PrivacyPolicyPage } from "@/features/public/pages/PrivacyPolicyPage";
-import { LandingPage } from "@/features/public/pages/LandingPage";
-import { TermsOfServicePage } from "@/features/public/pages/TermsOfServicePage";
+const AboutPage = lazyNamed(
+  () => import("@/features/public/pages/AboutPage"),
+  "AboutPage",
+);
+const ContactPage = lazyNamed(
+  () => import("@/features/public/pages/ContactPage"),
+  "ContactPage",
+);
+const FeaturesPage = lazyNamed(
+  () => import("@/features/public/pages/FeaturesPage"),
+  "FeaturesPage",
+);
+const PricingPage = lazyNamed(
+  () => import("@/features/public/pages/PricingPage"),
+  "PricingPage",
+);
+const CheckoutPage = lazyNamed(
+  () => import("@/features/public/pages/CheckoutPage"),
+  "CheckoutPage",
+);
+const PrivacyPolicyPage = lazyNamed(
+  () => import("@/features/public/pages/PrivacyPolicyPage"),
+  "PrivacyPolicyPage",
+);
+const PublicHomeRoute = lazyNamed(
+  () => import("@/features/public/pages/LandingPage"),
+  "LandingPage",
+);
+const TermsOfServicePage = lazyNamed(
+  () => import("@/features/public/pages/TermsOfServicePage"),
+  "TermsOfServicePage",
+);
 
 /** Legacy segments that used to be bare /dashboard etc. */
 const LEGACY_SEGMENTS = [
@@ -128,16 +154,16 @@ export const router = createBrowserRouter([
       {
         element: <PublicLayout />,
         children: [
-          { path: "/", element: <LandingPage /> },
-          { path: "/features", element: <FeaturesPage /> },
-          { path: "/pricing", element: <PricingPage /> },
-          { path: "/checkout", element: <CheckoutPage /> },
-          { path: "/about", element: <AboutPage /> },
-          { path: "/contact", element: <ContactPage /> },
-          { path: "/privacy-policy", element: <PrivacyPolicyPage /> },
+          { path: "/", element: lazyPage(<PublicHomeRoute />) },
+          { path: "/features", element: lazyPage(<FeaturesPage />) },
+          { path: "/pricing", element: lazyPage(<PricingPage />) },
+          { path: "/checkout", element: lazyPage(<CheckoutPage />) },
+          { path: "/about", element: lazyPage(<AboutPage />) },
+          { path: "/contact", element: lazyPage(<ContactPage />) },
+          { path: "/privacy-policy", element: lazyPage(<PrivacyPolicyPage />) },
           {
             path: "/terms-of-service",
-            element: <TermsOfServicePage />,
+            element: lazyPage(<TermsOfServicePage />),
           },
         ],
       },
@@ -183,7 +209,9 @@ export const router = createBrowserRouter([
             </PortalRoute>
           </ProtectedRoute>
         ),
-        children: [...orgPortalRoutes],
+        children: [
+          ...orgPortalRoutes,
+        ],
       },
 
       /* VENDOR PORTAL — /vendor/:roleSegment/* */
@@ -196,7 +224,9 @@ export const router = createBrowserRouter([
             </PortalRoute>
           </ProtectedRoute>
         ),
-        children: [...vendorPortalRoutes],
+        children: [
+          ...vendorPortalRoutes,
+        ],
       },
 
       /* LEGACY /app/* REDIRECTS → new URL structure */

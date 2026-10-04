@@ -30,13 +30,10 @@ export function useWorkOrders(initialFilters: WorkOrderFilters = {}) {
           : workOrdersService.list(filters));
         const locations = await locationsApi.list().catch(() => []);
         const locationNames = new Map(locations.map((location) => [location.id, location.name]));
-        setWorkOrders(
-          result.data.map((order) => ({
-            ...order,
-            locationName:
-              order.locationName || locationNames.get(order.locationId) || order.locationId,
-          })),
-        );
+        setWorkOrders(result.data.map((order) => ({
+          ...order,
+          locationName: order.locationName || locationNames.get(order.locationId) || order.locationId,
+        })));
         setPagination({
           total: result.total,
           page: result.page,
@@ -44,7 +41,11 @@ export function useWorkOrders(initialFilters: WorkOrderFilters = {}) {
           totalPages: result.totalPages,
         });
       } catch (cause) {
-        setError(cause instanceof Error ? cause : new Error("Unable to load work orders"));
+        setError(
+          cause instanceof Error
+            ? cause
+            : new Error("Unable to load work orders"),
+        );
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);

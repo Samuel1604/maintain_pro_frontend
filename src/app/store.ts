@@ -1,7 +1,10 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-import { resolvePortalForRole, type Portal } from "@/app/portal.config";
+import {
+  resolvePortalForRole,
+  type Portal,
+} from "@/app/portal.config";
 import type { User } from "@/types/user.types";
 import type { OrganizationProfile } from "@/features/organization/types/organization.types";
 
@@ -110,6 +113,6 @@ export const useAuthStore = create<AuthStore>()(
       onRehydrateStorage: () => () => {
         /* Session user is restored from /auth/me, not localStorage. */
       },
-    },
-  ),
+    }
+  )
 );

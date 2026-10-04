@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { AlertCircle, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from 'react'
+import { AlertCircle, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import {
   Dialog,
@@ -9,17 +9,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import type { VendorInvoice } from "@/types/common.types";
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import type { VendorInvoice } from '@/types/common.types'
 
 interface DisputeInvoiceDialogProps {
-  invoice: VendorInvoice | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onDispute: (invoiceId: string, reason: string) => void;
+  invoice: VendorInvoice | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onDispute: (invoiceId: string, reason: string) => void
 }
 
 export function DisputeInvoiceDialog({
@@ -28,25 +28,25 @@ export function DisputeInvoiceDialog({
   onOpenChange,
   onDispute,
 }: DisputeInvoiceDialogProps) {
-  const [reason, setReason] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [reason, setReason] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!invoice || !reason.trim()) {
-      toast.error("Please enter a reason for disputing this invoice.");
-      return;
+      toast.error('Please enter a reason for disputing this invoice.')
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
     try {
-      onDispute(invoice.id, reason.trim());
-      setReason("");
-      onOpenChange(false);
+      onDispute(invoice.id, reason.trim())
+      setReason('')
+      onOpenChange(false)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -57,18 +57,13 @@ export function DisputeInvoiceDialog({
               <AlertCircle className="h-5 w-5" /> Dispute Invoice
             </DialogTitle>
             <DialogDescription>
-              Disputing invoice{" "}
-              <span className="font-mono font-medium text-foreground">
-                {invoice?.invoiceNumber || invoice?.id}
-              </span>{" "}
-              ({invoice?.vendorName}).
+              Disputing invoice <span className="font-mono font-medium text-foreground">{invoice?.invoiceNumber || invoice?.id}</span> ({invoice?.vendorName}).
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-600 dark:text-amber-400">
-              Disputing an invoice will pause payment processing and notify the vendor to provide
-              clarification or a revised invoice.
+              Disputing an invoice will pause payment processing and notify the vendor to provide clarification or a revised invoice.
             </div>
 
             <div className="space-y-2">
@@ -89,7 +84,11 @@ export function DisputeInvoiceDialog({
           </div>
 
           <DialogFooter className="gap-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button
@@ -105,5 +104,5 @@ export function DisputeInvoiceDialog({
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

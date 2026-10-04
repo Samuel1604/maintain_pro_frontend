@@ -1,60 +1,8 @@
-export type BackendAssetStatus = "active" | "inactive" | "under_maintenance" | "retired";
-export type BackendAssetCategory = "hardware" | "software" | "infrastructure" | "other";
-export type BackendAssetCriticality = "low" | "medium" | "high" | "critical";
-export type BackendAssetCondition = "good" | "fair" | "poor";
-export type BackendAssetOwnership = "owned" | "rented" | "leased";
-export interface BackendAsset {
-  id: string;
-  organizationId?: string;
-  facilityId?: string;
-  locationId?: string;
-  assetTag: string;
-  qrCode: string;
-  name: string;
-  description?: string;
-  category: BackendAssetCategory;
-  manufacturer?: string;
-  modelNumber?: string;
-  serialNumber?: string;
-  purchaseDate?: string;
-  installationDate?: string;
-  warrantyExpiry?: string;
-  status: BackendAssetStatus;
-  criticality?: BackendAssetCriticality;
-  condition: BackendAssetCondition;
-  ownership: BackendAssetOwnership;
-  lastMaintenanceDate?: string;
-  nextMaintenanceDate?: string;
-  estimatedValue?: number;
-  currency?: string;
-  notes?: string;
-  createdBy?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-export interface CreateBackendAssetPayload {
-  facilityId?: string;
-  locationId: string;
-  assetTag: string;
-  name: string;
-  description?: string;
-  category?: BackendAssetCategory;
-  manufacturer?: string;
-  modelNumber?: string;
-  serialNumber?: string;
-  purchaseDate?: string;
-  installationDate?: string;
-  warrantyExpiry?: string;
-  status?: BackendAssetStatus;
-  criticality?: BackendAssetCriticality;
-  condition?: BackendAssetCondition;
-  ownership?: BackendAssetOwnership;
-  lastMaintenanceDate?: string;
-  nextMaintenanceDate?: string;
-  estimatedValue?: number;
-  currency?: string;
-  notes?: string;
-}
-export type UpdateBackendAssetPayload = Partial<Omit<CreateBackendAssetPayload, "locationId">> & {
-  locationId?: string;
-};
+export type BackendAssetStatus = 'active' | 'inactive' | 'under_maintenance' | 'retired';
+export type BackendAssetCategory = 'hardware' | 'software' | 'infrastructure' | 'other';
+export type BackendAssetCriticality = 'low' | 'medium' | 'high' | 'critical';
+export type BackendAssetCondition = 'good' | 'fair' | 'poor';
+export type BackendAssetOwnership = 'owned' | 'rented' | 'leased';
+export interface BackendAsset { id: string; organizationId?: string; facilityId?: string; locationId?: string; assetTag: string; qrCode: string; name: string; description?: string; category: BackendAssetCategory; manufacturer?: string; modelNumber?: string; serialNumber?: string; purchaseDate?: string; installationDate?: string; warrantyExpiry?: string; status: BackendAssetStatus; criticality?: BackendAssetCriticality; condition: BackendAssetCondition; ownership: BackendAssetOwnership; lastMaintenanceDate?: string; nextMaintenanceDate?: string; estimatedValue?: number; estimatedValueMinor?: number; currency?: string; notes?: string; createdBy?: string; createdAt?: string; updatedAt?: string }
+export interface CreateBackendAssetPayload { facilityId?: string; locationId: string; assetTag: string; name: string; description?: string; category?: BackendAssetCategory; manufacturer?: string; modelNumber?: string; serialNumber?: string; purchaseDate?: string; installationDate?: string; warrantyExpiry?: string; status?: BackendAssetStatus; criticality?: BackendAssetCriticality; condition?: BackendAssetCondition; ownership?: BackendAssetOwnership; lastMaintenanceDate?: string; nextMaintenanceDate?: string; estimatedValue?: number; currency?: string; notes?: string }
+export type UpdateBackendAssetPayload = Partial<Omit<CreateBackendAssetPayload, 'locationId'>> & { locationId?: string };

@@ -51,11 +51,8 @@ export function WorkOrderDetails() {
   const [resolvedAssetName, setResolvedAssetName] = useState<string | undefined>();
   const [resolvedFacilityName, setResolvedFacilityName] = useState<string | undefined>();
   const [resolvedAssigneeName, setResolvedAssigneeName] = useState<string | undefined>();
-  const statusOptions: Array<"in_progress" | "on_hold" | "pending_completion"> = [
-    "in_progress",
-    "on_hold",
-    "pending_completion",
-  ];
+  const statusOptions: Array<"in_progress" | "on_hold" | "pending_completion"> =
+    ["in_progress", "on_hold", "pending_completion"];
 
   const { canManageWorkOrders, canAssignWorkOrder, isWorkOrderReadOnly } = useRoleAccess();
 
@@ -71,42 +68,20 @@ export function WorkOrderDetails() {
       setResolvedAssetName(item.assetName || undefined);
       setResolvedFacilityName(undefined);
       setResolvedAssigneeName(item.assigneeName || undefined);
-      if (item.locationId)
-        void locationsApi
-          .get(item.locationId)
-          .then((location) => setResolvedLocationName(location.name))
-          .catch(() => undefined);
-      if (item.facilityId)
-        void facilitiesApi
-          .get(item.facilityId)
-          .then((facility) => setResolvedFacilityName(facility.name))
-          .catch(() => undefined);
-      if (item.assetId)
-        void assetsApi
-          .list({ limit: 100 })
-          .then((result) =>
-            setResolvedAssetName(
-              result.data.find(
-                (asset) => asset.id === item.assetId || asset.assetTag === item.assetId,
-              )?.name,
-            ),
-          )
-          .catch(() => undefined);
-      if (item.assigneeId)
-        void workOrdersService
-          .technicianCandidates(id)
-          .then((result) =>
-            setResolvedAssigneeName(
-              result.data.find((technician) => technician.id === item.assigneeId)?.name,
-            ),
-          )
-          .catch(() => undefined);
+      if (item.locationId) void locationsApi.get(item.locationId).then((location) => setResolvedLocationName(location.name)).catch(() => undefined);
+      if (item.facilityId) void facilitiesApi.get(item.facilityId).then((facility) => setResolvedFacilityName(facility.name)).catch(() => undefined);
+      if (item.assetId) void assetsApi.list({ limit: 100 }).then((result) => setResolvedAssetName(result.data.find((asset) => asset.id === item.assetId || asset.assetTag === item.assetId)?.name)).catch(() => undefined);
+      if (item.assigneeId) void workOrdersService.technicianCandidates(id).then((result) => setResolvedAssigneeName(result.data.find((technician) => technician.id === item.assigneeId)?.name)).catch(() => undefined);
       const result = await workOrdersService.comments(id);
       setComments(result);
       const events = await workOrdersService.activity(id);
       setActivity(events);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to load this work order.");
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Unable to load this work order.",
+      );
     } finally {
       setLoading(false);
     }
@@ -136,7 +111,9 @@ export function WorkOrderDetails() {
       );
       setWorkOrder(updated);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to update status.");
+      setError(
+        cause instanceof Error ? cause.message : "Unable to update status.",
+      );
     } finally {
       setSaving(false);
     }
@@ -151,7 +128,9 @@ export function WorkOrderDetails() {
       setComments((current) => [...current, result]);
       setComment("");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to add comment.");
+      setError(
+        cause instanceof Error ? cause.message : "Unable to add comment.",
+      );
     } finally {
       setSaving(false);
     }
@@ -160,46 +139,20 @@ export function WorkOrderDetails() {
   return (
     <div className="min-h-full bg-background text-foreground">
       <AppHeader
-        title={workOrder ? displayReference("WO", workOrder.id) : "Work Orders"}
+        title={workOrder ? displayReference('WO', workOrder.id) : "Work Orders"}
         subtitle="Work Order Detail"
         hideQuickCreate
       />
-      <div className="border-b border-border bg-card px-8 py-5">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <PageIntro
-              title={workOrder?.title ?? "Work Order"}
-              description="Review work order details, assignment, progress, and activity."
-            />
-          </div>
-          {workOrder ? (
-            <div className="flex flex-wrap items-center gap-2">
-              <PriorityBadge priority={workOrder.priority} />
-              <StatusBadge status={workOrder.status} />
-              {canAssignWorkOrder && !isWorkOrderReadOnly && (
-                <Button variant="outline" onClick={() => setAssignOpen(true)} className="gap-2">
-                  <UserPlus className="h-4 w-4" />
-                  Assign technician
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                onClick={() => void load()}
-                disabled={loading}
-                className="gap-2"
-              >
-                <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
-                Refresh
-              </Button>
-            </div>
-          ) : null}
-        </div>
-      </div>
+      <div className="border-b border-border bg-card px-8 py-5"><div className="flex items-center justify-between gap-4"><div><PageIntro title={workOrder?.title ?? "Work Order"} description="Review work order details, assignment, progress, and activity." /></div>{workOrder ? <div className="flex flex-wrap items-center gap-2"><PriorityBadge priority={workOrder.priority} /><StatusBadge status={workOrder.status} />{canAssignWorkOrder && !isWorkOrderReadOnly && <Button variant="outline" onClick={() => setAssignOpen(true)} className="gap-2"><UserPlus className="h-4 w-4" />Assign technician</Button>}<Button variant="outline" onClick={() => void load()} disabled={loading} className="gap-2"><RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />Refresh</Button></div> : null}</div></div>
 
       <main className="space-y-6 p-8">
         {/* Back navigation */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Button variant="ghost" size="sm" onClick={() => navigate(workOrdersPath)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(workOrdersPath)}
+          >
             <ArrowLeft className="mr-1 h-4 w-4" />
             Back
           </Button>
@@ -222,7 +175,11 @@ export function WorkOrderDetails() {
         ) : !workOrder ? (
           <div className="rounded-xl border border-border bg-card p-12 text-center">
             <p className="font-semibold">Work order not found</p>
-            <Button variant="outline" className="mt-4" onClick={() => navigate(workOrdersPath)}>
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => navigate(workOrdersPath)}
+            >
               Back to Work Orders
             </Button>
           </div>
@@ -246,49 +203,50 @@ export function WorkOrderDetails() {
                   </p>
                   <dl className="mt-6 grid gap-4 border-t border-border pt-5 sm:grid-cols-2">
                     <div>
-                      <dt className="text-xs uppercase text-muted-foreground">Category</dt>
+                      <dt className="text-xs uppercase text-muted-foreground">
+                        Category
+                      </dt>
                       <dd className="mt-1 font-medium">{displayLabel(workOrder.category)}</dd>
                     </div>
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Origin</dt>
-                      <dd className="mt-1 font-medium capitalize">
-                        {workOrder.sourceType?.replace("_", " ") || "Manual"}
-                      </dd>
+                      <dd className="mt-1 font-medium capitalize">{workOrder.sourceType?.replace('_', ' ') || 'Manual'}</dd>
                     </div>
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Facility</dt>
+                      <dd className="mt-1 font-medium">{resolvedFacilityName || workOrder.facilityId || "Not specified"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs uppercase text-muted-foreground">
+                        Location
+                      </dt>
                       <dd className="mt-1 font-medium">
-                        {resolvedFacilityName || workOrder.facilityId || "Not specified"}
+                        {resolvedLocationName || workOrder.locationName || workOrder.locationId || "Not specified"}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs uppercase text-muted-foreground">Location</dt>
+                      <dt className="text-xs uppercase text-muted-foreground">
+                        Asset
+                      </dt>
                       <dd className="mt-1 font-medium">
-                        {resolvedLocationName ||
-                          workOrder.locationName ||
-                          workOrder.locationId ||
-                          "Not specified"}
+                        {resolvedAssetName || workOrder.assetName || workOrder.assetId || "Not specified"}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs uppercase text-muted-foreground">Asset</dt>
-                      <dd className="mt-1 font-medium">
-                        {resolvedAssetName ||
-                          workOrder.assetName ||
-                          workOrder.assetId ||
-                          "Not specified"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs uppercase text-muted-foreground">Assigned</dt>
+                      <dt className="text-xs uppercase text-muted-foreground">
+                        Assigned
+                      </dt>
                       <dd className="mt-1 font-medium">
                         {resolvedAssigneeName || workOrder.assigneeName || "Unassigned"}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs uppercase text-muted-foreground">Due date</dt>
+                      <dt className="text-xs uppercase text-muted-foreground">
+                        Due date
+                      </dt>
                       <dd className="mt-1 font-medium">
-                        {workOrder.dueDate?.toLocaleDateString() || "Not scheduled"}
+                        {workOrder.dueDate?.toLocaleDateString() ||
+                          "Not scheduled"}
                       </dd>
                     </div>
                   </dl>
@@ -299,10 +257,15 @@ export function WorkOrderDetails() {
                   <h2 className="text-lg font-semibold">Comments</h2>
                   <div className="mt-4 space-y-3">
                     {comments.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">No comments yet.</p>
+                      <p className="text-sm text-muted-foreground">
+                        No comments yet.
+                      </p>
                     ) : (
                       comments.map((item) => (
-                        <div key={item._id} className="rounded-lg bg-muted/40 p-3">
+                        <div
+                          key={item._id}
+                          className="rounded-lg bg-muted/40 p-3"
+                        >
                           <p className="text-sm">{item.content}</p>
                           <p className="mt-2 text-xs text-muted-foreground">
                             {new Date(item.createdAt).toLocaleString()}
@@ -349,28 +312,29 @@ export function WorkOrderDetails() {
                   onAssigned={(updated) => {
                     setWorkOrder(updated);
                     setAssignOpen(false);
-                    toast.success("Work order assignment updated");
+                    toast.success('Work order assignment updated');
                   }}
                 />
 
                 {canManageWorkOrders && !isWorkOrderReadOnly && (
                   <section className="rounded-xl border border-border bg-card p-5">
                     <h2 className="text-lg font-semibold">Change Status</h2>
-                    {!workOrder.assigneeId && (
-                      <p className="mt-3 rounded-lg bg-muted/40 p-3 text-sm text-muted-foreground">
-                        Assign a technician before moving this work order into progress.
-                      </p>
-                    )}
+                    {!workOrder.assigneeId && <p className="mt-3 rounded-lg bg-muted/40 p-3 text-sm text-muted-foreground">Assign a technician before moving this work order into progress.</p>}
                     <Select
                       value={
                         statusOptions.includes(
-                          status as "in_progress" | "on_hold" | "pending_completion",
+                          status as
+                            | "in_progress"
+                            | "on_hold"
+                            | "pending_completion",
                         )
                           ? status
                           : "in_progress"
                       }
                       disabled={!workOrder.assigneeId}
-                      onValueChange={(value) => setStatus(value as WorkOrderStatus)}
+                      onValueChange={(value) =>
+                        setStatus(value as WorkOrderStatus)
+                      }
                     >
                       <SelectTrigger className="mt-4">
                         <SelectValue />
@@ -378,7 +342,9 @@ export function WorkOrderDetails() {
                       <SelectContent>
                         <SelectItem value="in_progress">In progress</SelectItem>
                         <SelectItem value="on_hold">On hold</SelectItem>
-                        <SelectItem value="pending_completion">Pending completion</SelectItem>
+                        <SelectItem value="pending_completion">
+                          Pending completion
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <Button
@@ -396,7 +362,9 @@ export function WorkOrderDetails() {
                   <h2 className="text-lg font-semibold">Activity</h2>
                   <div className="mt-3 space-y-3">
                     {activity.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">No audit activity recorded.</p>
+                      <p className="text-sm text-muted-foreground">
+                        No audit activity recorded.
+                      </p>
                     ) : (
                       activity.map((event) => (
                         <div

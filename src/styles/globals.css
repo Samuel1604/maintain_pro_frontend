@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 /*
  * Single mechanism for theme-scoped styling app-wide: the `data-theme`
@@ -139,8 +139,7 @@
 }
 
 /* Dark theme overrides — applied when data-theme="dark" or class "dark" is set on <html> */
-[data-theme="dark"],
-.dark {
+[data-theme='dark'], .dark {
   --background: oklch(0.18 0.025 255);
   --foreground: oklch(0.96 0.005 255);
   --surface: oklch(0.22 0.025 255);
@@ -202,8 +201,8 @@
 }
 
 @theme inline {
-  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
@@ -281,31 +280,11 @@
     font-feature-settings: "cv11", "ss01";
   }
 
-  ::selection {
-    background: color-mix(in oklch, var(--primary) 28%, transparent);
-    color: var(--foreground);
-  }
-  :focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
-  }
-  input,
-  textarea,
-  select {
-    font: inherit;
-  }
-  input::placeholder,
-  textarea::placeholder {
-    color: var(--muted-foreground);
-    opacity: 0.8;
-  }
-  button,
-  a,
-  input,
-  textarea,
-  select {
-    transition-duration: var(--transition-fast);
-  }
+  ::selection { background: color-mix(in oklch, var(--primary) 28%, transparent); color: var(--foreground); }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  input, textarea, select { font: inherit; }
+  input::placeholder, textarea::placeholder { color: var(--muted-foreground); opacity: .8; }
+  button, a, input, textarea, select { transition-duration: var(--transition-fast); }
 
   #root {
     @apply min-h-full;
@@ -326,16 +305,8 @@
   /* Give the operational shell a quiet sense of depth while keeping cards readable. */
   .app-portal {
     background:
-      radial-gradient(
-        circle at 92% -8%,
-        color-mix(in oklch, var(--primary) 9%, transparent),
-        transparent 30rem
-      ),
-      radial-gradient(
-        circle at 8% 110%,
-        color-mix(in oklch, var(--info) 6%, transparent),
-        transparent 26rem
-      ),
+      radial-gradient(circle at 92% -8%, color-mix(in oklch, var(--primary) 9%, transparent), transparent 30rem),
+      radial-gradient(circle at 8% 110%, color-mix(in oklch, var(--info) 6%, transparent), transparent 26rem),
       var(--background);
   }
 
@@ -390,155 +361,62 @@
   }
 
   button:not(:disabled),
-  [type="button"]:not(:disabled),
-  [type="submit"]:not(:disabled),
-  [type="reset"]:not(:disabled),
-  [role="button"]:not([aria-disabled="true"]) {
+  [type='button']:not(:disabled),
+  [type='submit']:not(:disabled),
+  [type='reset']:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
     cursor: pointer;
   }
 
   button:disabled,
-  [type="button"]:disabled,
-  [type="submit"]:disabled,
-  [type="reset"]:disabled,
-  [role="button"][aria-disabled="true"] {
+  [type='button']:disabled,
+  [type='submit']:disabled,
+  [type='reset']:disabled,
+  [role='button'][aria-disabled='true'] {
     cursor: not-allowed;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
 
 /* Quiet, consistent application chrome. */
 @layer components {
-  .app-portal ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  .app-portal ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .app-portal ::-webkit-scrollbar-thumb {
-    background: color-mix(in oklch, var(--muted-foreground) 25%, transparent);
-    border: 3px solid transparent;
-    background-clip: padding-box;
-    border-radius: 999px;
-  }
-  .app-portal ::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in oklch, var(--muted-foreground) 42%, transparent);
-    background-clip: padding-box;
-  }
-  .surface-section {
-    @apply rounded-2xl border border-border/80 bg-card shadow-sm transition-shadow duration-200 hover:shadow-md;
-  }
-  .eyebrow {
-    @apply text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground;
-  }
-  .table-scroll-hint {
-    @apply relative overflow-x-auto overscroll-x-contain;
-  }
+  .app-portal ::-webkit-scrollbar { width: 10px; height: 10px; }
+  .app-portal ::-webkit-scrollbar-track { background: transparent; }
+  .app-portal ::-webkit-scrollbar-thumb { background: color-mix(in oklch, var(--muted-foreground) 25%, transparent); border: 3px solid transparent; background-clip: padding-box; border-radius: 999px; }
+  .app-portal ::-webkit-scrollbar-thumb:hover { background: color-mix(in oklch, var(--muted-foreground) 42%, transparent); background-clip: padding-box; }
+  .surface-section { @apply rounded-2xl border border-border/80 bg-card shadow-sm transition-shadow duration-200 hover:shadow-md; }
+  .eyebrow { @apply text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground; }
+  .table-scroll-hint { @apply relative overflow-x-auto overscroll-x-contain; }
 
   /* Scoped bridge for Figma-derived dashboard utilities during semantic migration. */
-  .dashboard-page {
-    background: var(--background);
-    color: var(--text-primary);
-  }
-  .dashboard-page [class~="bg-white"] {
-    background-color: var(--surface) !important;
-  }
-  .dashboard-page [class~="bg-[#f8fafc]"],
-  .dashboard-page [class~="bg-[#f1f5f9]"] {
-    background-color: var(--surface-muted) !important;
-  }
-  .dashboard-page [class~="text-[#0f172a]"] {
-    color: var(--text-primary) !important;
-  }
-  .dashboard-page [class~="text-[#475569]"],
-  .dashboard-page [class~="text-[#64748b]"] {
-    color: var(--text-secondary) !important;
-  }
-  .dashboard-page [class~="text-[#94a3b8]"] {
-    color: var(--text-muted) !important;
-  }
-  .dashboard-page [class~="border-[#e2e8f0]"],
-  .dashboard-page [class~="border-[#f1f5f9]"],
-  .dashboard-page [class~="border-[#cbd5e1]"] {
-    border-color: var(--border) !important;
-  }
-  .dashboard-page [class*="hover:bg-[#f8fafc]"]:hover,
-  .dashboard-page [class*="hover:bg-[#f1f5f9]"]:hover {
-    background-color: var(--surface-muted) !important;
-  }
+  .dashboard-page { background: var(--background); color: var(--text-primary); }
+  .dashboard-page [class~='bg-white'] { background-color: var(--surface) !important; }
+  .dashboard-page [class~='bg-[#f8fafc]'], .dashboard-page [class~='bg-[#f1f5f9]'] { background-color: var(--surface-muted) !important; }
+  .dashboard-page [class~='text-[#0f172a]'] { color: var(--text-primary) !important; }
+  .dashboard-page [class~='text-[#475569]'], .dashboard-page [class~='text-[#64748b]'] { color: var(--text-secondary) !important; }
+  .dashboard-page [class~='text-[#94a3b8]'] { color: var(--text-muted) !important; }
+  .dashboard-page [class~='border-[#e2e8f0]'], .dashboard-page [class~='border-[#f1f5f9]'], .dashboard-page [class~='border-[#cbd5e1]'] { border-color: var(--border) !important; }
+  .dashboard-page [class*='hover:bg-[#f8fafc]']:hover, .dashboard-page [class*='hover:bg-[#f1f5f9]']:hover { background-color: var(--surface-muted) !important; }
 
   /* Same bridge for all authenticated portals: operations, vendor, finance, reports and settings. */
-  .app-portal [class~="bg-white"] {
-    background-color: var(--surface) !important;
-  }
-  .app-portal [class~="bg-[#f8fafc]"],
-  .app-portal [class~="bg-[#f1f5f9]"] {
-    background-color: var(--surface-muted) !important;
-  }
-  .app-portal [class~="text-[#0f172a]"] {
-    color: var(--text-primary) !important;
-  }
-  .app-portal [class~="text-[#475569]"],
-  .app-portal [class~="text-[#64748b]"] {
-    color: var(--text-secondary) !important;
-  }
-  .app-portal [class~="text-[#94a3b8]"] {
-    color: var(--text-muted) !important;
-  }
-  .app-portal [class~="border-[#e2e8f0]"],
-  .app-portal [class~="border-[#f1f5f9]"],
-  .app-portal [class~="border-[#cbd5e1]"] {
-    border-color: var(--border) !important;
-  }
-  .app-portal [class*="hover:bg-[#f8fafc]"]:hover,
-  .app-portal [class*="hover:bg-[#f1f5f9]"]:hover {
-    background-color: var(--surface-muted) !important;
-  }
-  .app-portal [class~="bg-[#fee2e2]"],
-  .app-portal [class~="bg-[#fef2f2]"] {
-    background-color: var(--danger-muted) !important;
-  }
-  .app-portal [class~="text-[#ef4444]"],
-  .app-portal [class~="text-[#dc2626]"] {
-    color: var(--danger) !important;
-  }
-  .app-portal [class~="bg-[#fef3c7]"],
-  .app-portal [class~="bg-[#fffbeb]"] {
-    background-color: var(--warning-muted) !important;
-  }
-  .app-portal [class~="text-[#d97706]"],
-  .app-portal [class~="text-[#f59e0b]"] {
-    color: var(--warning) !important;
-  }
-  .app-portal [class~="bg-[#dcfce7]"],
-  .app-portal [class~="bg-[#f0fdf4]"] {
-    background-color: var(--success-muted) !important;
-  }
-  .app-portal [class~="text-[#16a34a]"],
-  .app-portal [class~="text-[#10b981]"] {
-    color: var(--success) !important;
-  }
-  .app-portal [class~="bg-[#dbeafe]"],
-  .app-portal [class~="bg-[#e0f2fe]"],
-  .app-portal [class~="bg-[#e0e7ff]"] {
-    background-color: var(--info-muted) !important;
-  }
-  .app-portal [class~="text-[#2563eb]"],
-  .app-portal [class~="text-[#0284c7]"],
-  .app-portal [class~="text-[#4f46e5]"] {
-    color: var(--info) !important;
-  }
+  .app-portal [class~='bg-white'] { background-color: var(--surface) !important; }
+  .app-portal [class~='bg-[#f8fafc]'], .app-portal [class~='bg-[#f1f5f9]'] { background-color: var(--surface-muted) !important; }
+  .app-portal [class~='text-[#0f172a]'] { color: var(--text-primary) !important; }
+  .app-portal [class~='text-[#475569]'], .app-portal [class~='text-[#64748b]'] { color: var(--text-secondary) !important; }
+  .app-portal [class~='text-[#94a3b8]'] { color: var(--text-muted) !important; }
+  .app-portal [class~='border-[#e2e8f0]'], .app-portal [class~='border-[#f1f5f9]'], .app-portal [class~='border-[#cbd5e1]'] { border-color: var(--border) !important; }
+  .app-portal [class*='hover:bg-[#f8fafc]']:hover, .app-portal [class*='hover:bg-[#f1f5f9]']:hover { background-color: var(--surface-muted) !important; }
+  .app-portal [class~='bg-[#fee2e2]'], .app-portal [class~='bg-[#fef2f2]'] { background-color: var(--danger-muted) !important; }
+  .app-portal [class~='text-[#ef4444]'], .app-portal [class~='text-[#dc2626]'] { color: var(--danger) !important; }
+  .app-portal [class~='bg-[#fef3c7]'], .app-portal [class~='bg-[#fffbeb]'] { background-color: var(--warning-muted) !important; }
+  .app-portal [class~='text-[#d97706]'], .app-portal [class~='text-[#f59e0b]'] { color: var(--warning) !important; }
+  .app-portal [class~='bg-[#dcfce7]'], .app-portal [class~='bg-[#f0fdf4]'] { background-color: var(--success-muted) !important; }
+  .app-portal [class~='text-[#16a34a]'], .app-portal [class~='text-[#10b981]'] { color: var(--success) !important; }
+  .app-portal [class~='bg-[#dbeafe]'], .app-portal [class~='bg-[#e0f2fe]'], .app-portal [class~='bg-[#e0e7ff]'] { background-color: var(--info-muted) !important; }
+  .app-portal [class~='text-[#2563eb]'], .app-portal [class~='text-[#0284c7]'], .app-portal [class~='text-[#4f46e5]'] { color: var(--info) !important; }
 }
 
 /*
@@ -551,24 +429,12 @@
   border-left-width: 3px;
   border-left-style: solid;
 }
-.status-rail-critical {
-  border-left-color: var(--status-critical);
-}
-.status-rail-high {
-  border-left-color: var(--status-high);
-}
-.status-rail-active {
-  border-left-color: var(--status-active);
-}
-.status-rail-completed {
-  border-left-color: var(--status-completed);
-}
-.status-rail-pending {
-  border-left-color: var(--status-pending);
-}
-.status-rail-none {
-  border-left-color: transparent;
-}
+.status-rail-critical { border-left-color: var(--status-critical); }
+.status-rail-high { border-left-color: var(--status-high); }
+.status-rail-active { border-left-color: var(--status-active); }
+.status-rail-completed { border-left-color: var(--status-completed); }
+.status-rail-pending { border-left-color: var(--status-pending); }
+.status-rail-none { border-left-color: transparent; }
 
 /* Motion — restrained, confirmation-oriented, not decorative */
 @keyframes fade-in-up {
@@ -593,30 +459,14 @@
 }
 
 @keyframes wave-hand {
-  0% {
-    transform: rotate(0deg);
-  }
-  10% {
-    transform: rotate(14deg);
-  }
-  20% {
-    transform: rotate(-8deg);
-  }
-  30% {
-    transform: rotate(14deg);
-  }
-  40% {
-    transform: rotate(-4deg);
-  }
-  50% {
-    transform: rotate(10deg);
-  }
-  60% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
 }
 
 .animate-wave {
@@ -634,10 +484,7 @@
 
 /* Opt-in hover affordance for clickable cards/rows (KPI cards, list items) */
 .card-interactive {
-  transition:
-    transform 0.15s ease-out,
-    box-shadow 0.15s ease-out,
-    border-color 0.15s ease-out;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, border-color 0.15s ease-out;
 }
 .card-interactive:hover {
   transform: translateY(-1px);
@@ -651,9 +498,7 @@
     animation: none;
   }
   .card-interactive {
-    transition:
-      box-shadow 0.15s ease-out,
-      border-color 0.15s ease-out;
+    transition: box-shadow 0.15s ease-out, border-color 0.15s ease-out;
   }
   .card-interactive:hover {
     transform: none;

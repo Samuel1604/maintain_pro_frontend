@@ -23,15 +23,15 @@ import { organizationApi } from "@/features/organization/api/organization.api";
 import { vendorsApi } from "@/features/vendors/api/vendors.api";
 import type { User } from "@/types/user.types";
 
-export const EMAIL_VERIFICATION_OTP_TTL_SECONDS = 10 * 60;
-
 function useApplyAuthenticatedSession() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const setUser = useAuthStore((state) => state.setUser);
   const setOrganization = useAuthStore((state) => state.setOrganization);
   const updateUser = useAuthStore((state) => state.updateUser);
-  const openVerificationModal = useVerificationModalStore((state) => state.open);
+  const openVerificationModal = useVerificationModalStore(
+    (state) => state.open,
+  );
 
   return async (
     user: NonNullable<Awaited<ReturnType<typeof authService.me>>>,
@@ -50,34 +50,28 @@ function useApplyAuthenticatedSession() {
 
       // Also call the endpoints to fetch profile / update store organization/vendor as needed
       if (user.organizationId) {
-        await organizationApi
-          .getCurrent()
-          .then((profile) => {
-            setOrganization(profile);
-            const slug = (profile as typeof profile & { slug?: string }).slug;
-            if (slug) {
-              localStorage.setItem("maintainpro_organization_slug", slug);
-              updateUser({ organizationSlug: slug });
-            }
-          })
-          .catch(() => undefined);
+        await organizationApi.getCurrent().then((profile) => {
+          setOrganization(profile);
+          const slug = (profile as typeof profile & { slug?: string }).slug;
+          if (slug) {
+            localStorage.setItem("maintainpro_organization_slug", slug);
+            updateUser({ organizationSlug: slug });
+          }
+        }).catch(() => undefined);
       } else if (user.vendorId) {
-        await vendorsApi
-          .getCurrent()
-          .then((profile) => {
-            const slug = (profile as typeof profile & { slug?: string }).slug;
-            if (slug) {
-              localStorage.setItem("maintainpro_vendor_slug", slug);
-              updateUser({ vendorSlug: slug });
-            }
-          })
-          .catch(() => undefined);
+        await vendorsApi.getCurrent().then((profile) => {
+          const slug = (profile as typeof profile & { slug?: string }).slug;
+          if (slug) {
+            localStorage.setItem("maintainpro_vendor_slug", slug);
+            updateUser({ vendorSlug: slug });
+          }
+        }).catch(() => undefined);
       }
     }
     queryClient.setQueryData(authKeys.me, user);
 
     if (user.isVerified === false) {
-      openVerificationModal("combined", EMAIL_VERIFICATION_OTP_TTL_SECONDS);
+      openVerificationModal("combined", 15);
       return;
     }
 
@@ -100,11 +94,14 @@ export function useRegisterOrganization() {
   return useMutation({
     mutationFn: (
       input:
-        RegisterOrganizationRequest | { payload: RegisterOrganizationRequest; targetPath?: string },
+        | RegisterOrganizationRequest
+        | { payload: RegisterOrganizationRequest; targetPath?: string },
     ) => {
       const payload = "payload" in input ? input.payload : input;
       const targetPath = "targetPath" in input ? input.targetPath : undefined;
-      return authService.registerOrganization(payload).then((data) => ({ data, targetPath }));
+      return authService
+        .registerOrganization(payload)
+        .then((data) => ({ data, targetPath }));
     },
     onSuccess: ({ data, targetPath }: { data: { user: User }; targetPath?: string }) =>
       applyAuthenticatedSession(data.user, targetPath),
@@ -116,11 +113,15 @@ export function useRegisterVendor() {
 
   return useMutation({
     mutationFn: (
-      input: RegisterVendorRequest | { payload: RegisterVendorRequest; targetPath?: string },
+      input:
+        | RegisterVendorRequest
+        | { payload: RegisterVendorRequest; targetPath?: string },
     ) => {
       const payload = "payload" in input ? input.payload : input;
       const targetPath = "targetPath" in input ? input.targetPath : undefined;
-      return authService.registerVendor(payload).then((data) => ({ data, targetPath }));
+      return authService
+        .registerVendor(payload)
+        .then((data) => ({ data, targetPath }));
     },
     onSuccess: ({ data, targetPath }: { data: { user: User }; targetPath?: string }) =>
       applyAuthenticatedSession(data.user, targetPath),
@@ -216,8 +217,7 @@ export function useVerifyEmailLink() {
 
 export function useRegenerateVerificationLink() {
   return useMutation({
-    mutationFn: (payload: RegenerateVerificationRequest) =>
-      authService.regenerateVerificationLink(payload),
+    mutationFn: (payload: RegenerateVerificationRequest) => authService.regenerateVerificationLink(payload),
   });
 }
 

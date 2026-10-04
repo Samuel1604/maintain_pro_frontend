@@ -1,22 +1,48 @@
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, KeyRound } from "lucide-react";
-import { useVerifyEmail, useResendVerification } from "../hooks/useAuthQueries";
+import {
+  MailCheck,
+  RefreshCw,
+  CheckCircle2,
+  KeyRound,
+  ArrowLeft,
+} from "lucide-react";
+import {
+  useRegenerateVerificationLink,
+  useVerifyEmail,
+  useResendVerification,
+} from "../hooks/useAuthQueries";
 import { useAuthStore } from "@/app/store";
 import { useVerificationModalStore } from "../store/useVerificationModalStore";
+import { useVerificationLinkStore } from "../store/verificationLink.store";
 import { authService } from "@/services/auth.service";
+import { notify } from "@/components/feedback/toast";
+import { getErrorMessage } from "@/lib/get-error-message";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 
 export function EmailVerificationModal() {
   const isOpen = useVerificationModalStore((s) => s.isModalOpen);
-  const autoDismissSeconds = useVerificationModalStore((s) => s.autoDismissSeconds);
+  const mode = useVerificationModalStore((s) => s.mode);
+  const autoDismissSeconds = useVerificationModalStore(
+    (s) => s.autoDismissSeconds,
+  );
   const closeModal = useVerificationModalStore((s) => s.closeModal);
+  const open = useVerificationModalStore((s) => s.open);
 
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
   const email = user?.email ?? "";
+
+  const [activeTab, setActiveTab] = useState<"link" | "otp">("link");
+  const [isRegenerated, setIsRegenerated] = useState(false);
 
   const [otpState, setOtpState] = useState({
     code: "",
@@ -26,15 +52,25 @@ export function EmailVerificationModal() {
 
   const [otpVerified, setOtpVerified] = useState(false);
   const [dismissProgress, setDismissProgress] = useState(100);
+  const [timerCancelled, setTimerCancelled] = useState(false);
 
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const dismissTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const { isPending: isRegeneratingLink } = useRegenerateVerificationLink();
   const { mutate: verifyOtp, isPending: isVerifyingOtp } = useVerifyEmail();
-  const { mutate: resendOtp, isPending: isResendingOtp } = useResendVerification();
+  const { mutate: resendOtp, isPending: isResendingOtp } =
+    useResendVerification();
+  const { forceGenerate, expiresAt } = useVerificationLinkStore();
 
   useEffect(() => {
-    if (!isOpen || !autoDismissSeconds) {
+    if (mode === "otp") setActiveTab("otp");
+    else setActiveTab("link");
+  }, [mode]);
+
+  useEffect(() => {
+    if (!isOpen || !autoDismissSeconds || timerCancelled) {
       if (dismissTimerRef.current) clearInterval(dismissTimerRef.current);
       return;
     }
@@ -57,19 +93,51 @@ export function EmailVerificationModal() {
     return () => {
       if (dismissTimerRef.current) clearInterval(dismissTimerRef.current);
     };
-  }, [isOpen, autoDismissSeconds, closeModal]);
+  }, [isOpen, autoDismissSeconds, timerCancelled, closeModal]);
 
   useEffect(() => {
     return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
       if (dismissTimerRef.current) clearInterval(dismissTimerRef.current);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
+  function startCooldown(seconds: number) {
+    if (timerRef.current) clearInterval(timerRef.current as any);
+    timerRef.current = setInterval(() => {
+      if (!expiresAt || Date.now() >= expiresAt) {
+        if (timerRef.current) {
+          clearInterval(timerRef.current as any);
+          timerRef.current = null;
+        }
+      }
+    }, 1000);
+  }
+
+  function handleRegenerateLink() {
+    if (!email || isRegeneratingLink) return;
+    setTimerCancelled(true);
+    setIsRegenerated(true);
+
+    forceGenerate(email, 15)
+      .then((data) => {
+        const secs = data?.expiresInSeconds ?? 15;
+        startCooldown(secs);
+        timeoutRef.current = setTimeout(() => setIsRegenerated(false), 5000);
+      })
+      .catch((err) => {
+        notify.error(getErrorMessage(err));
+        setIsRegenerated(false);
+      });
+  }
+
   function handleVerifyOtp(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !otpState.code || otpState.code.length < 6 || isVerifyingOtp) return;
+    if (!email || !otpState.code || otpState.code.length < 6 || isVerifyingOtp)
+      return;
 
+    setTimerCancelled(true);
     setOtpState((prev) => ({ ...prev, error: null }));
 
     verifyOtp(
@@ -87,7 +155,10 @@ export function EmailVerificationModal() {
           timeoutRef.current = setTimeout(() => closeModal(), 1200);
         },
         onError: (err: any) => {
-          const msg = err.response?.data?.message || err.message || "Invalid or expired OTP code";
+          const msg =
+            err.response?.data?.message ||
+            err.message ||
+            "Invalid or expired OTP code";
           setOtpState((prev) => ({ ...prev, error: msg }));
         },
       },
@@ -96,6 +167,7 @@ export function EmailVerificationModal() {
 
   function handleResendOtp() {
     if (!email || isResendingOtp) return;
+    setTimerCancelled(true);
 
     resendOtp(
       { email },
@@ -111,16 +183,18 @@ export function EmailVerificationModal() {
     );
   }
 
-  const canDismiss = otpVerified || !autoDismissSeconds;
-
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && canDismiss && closeModal()}>
-      <DialogContent className="!max-w-xl min-h-[32rem] sm:min-h-[38rem] max-h-[calc(100dvh-2rem)] overflow-y-auto p-0">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
+      <DialogContent className="!max-w-xl max-h-[calc(100dvh-2rem)] overflow-y-auto p-0">
         <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4">
               <div className="rounded-2xl bg-white/15 p-3 text-white ring-1 ring-white/10">
-                <KeyRound size={20} />
+                {activeTab === "link" ? (
+                  <MailCheck size={20} />
+                ) : (
+                  <KeyRound size={20} />
+                )}
               </div>
               <div>
                 <DialogTitle className="text-white">Verify your email</DialogTitle>
@@ -129,13 +203,66 @@ export function EmailVerificationModal() {
                 </DialogDescription>
               </div>
             </div>
-            <div className="flex items-center gap-2"></div>
+            <div className="flex items-center gap-2">
+              {mode !== "combined" && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => open("picker")}
+                  className="text-white hover:bg-white/10"
+                  type="button"
+                  aria-label="Back to sign-in options"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="bg-background px-6 pb-6 pt-5">
+          {mode === "combined" && (
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "link" | "otp")}>
+              <TabsList className="mb-5">
+                <TabsTrigger value="link">Instant Link</TabsTrigger>
+                <TabsTrigger value="otp">Enter OTP</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
+
           <div className="space-y-5">
-            <div>
+            {activeTab === "link" && (
+              <div className="space-y-5">
+                <div className="rounded-2xl border border-border bg-muted p-5 text-sm text-muted-foreground leading-6">
+                  Check your email. We've sent a verification link to <strong>{email}</strong>. Click the link in the message to complete verification.
+                </div>
+
+                <div className="space-y-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleRegenerateLink}
+                    disabled={isRegeneratingLink}
+                    className="w-full sm:w-auto"
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-2 ${isRegeneratingLink ? "animate-spin" : ""}`} />
+                    {isRegeneratingLink
+                      ? "Resending..."
+                      : isRegenerated
+                      ? "Link Resent"
+                      : "Resend Verification Email"}
+                  </Button>
+
+                  {isRegenerated && (
+                    <p className="text-sm text-emerald-600">
+                      A fresh verification link has been sent to your email.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "otp" && (
               <div>
                 {otpVerified ? (
                   <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-center text-emerald-700">
@@ -197,9 +324,9 @@ export function EmailVerificationModal() {
                   </form>
                 )}
               </div>
-            </div>
+            )}
 
-            {autoDismissSeconds ? (
+            {autoDismissSeconds && !timerCancelled ? (
               <div className="space-y-3 pt-4">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>Auto closing soon</span>

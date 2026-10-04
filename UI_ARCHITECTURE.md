@@ -50,19 +50,19 @@ src/
 
 ## Reference implementations
 
-| Concern                          | Reference                                                                        |
-| -------------------------------- | -------------------------------------------------------------------------------- |
-| Organization dashboard           | `src/features/dashboard/views/AdminDashboard.tsx`                                |
-| Facility dashboard               | `src/features/dashboard/views/FacilityManagerDashboard.tsx`                      |
-| Technician dashboard             | `src/features/dashboard/views/TechnicianDashboard.tsx`                           |
-| Vendor dashboard                 | `src/features/dashboard/views/VendorDashboard.tsx`                               |
-| Work-order list/detail           | `src/features/work-orders/pages/WorkOrders.tsx`, `WorkOrderDetails.tsx`          |
-| Forms                            | `src/features/work-orders/components/EditWorkOrderDialog.tsx`, settings forms    |
-| Settings                         | `src/features/settings/pages/Settings.tsx`, `UserProfile.tsx`                    |
-| Tables and pagination            | work-order, asset, inventory, and vendor pages                                   |
-| Confirmation/destructive actions | `src/components/feedback/ConfirmDialog.tsx`                                      |
-| Public/authentication            | `src/features/public`, `src/features/auth`                                       |
-| Reports and charts               | `src/features/reports`, `src/features/dashboard/components/DashboardWidgets.tsx` |
+| Concern | Reference |
+| --- | --- |
+| Organization dashboard | `src/features/dashboard/views/AdminDashboard.tsx` |
+| Facility dashboard | `src/features/dashboard/views/FacilityManagerDashboard.tsx` |
+| Technician dashboard | `src/features/dashboard/views/TechnicianDashboard.tsx` |
+| Vendor dashboard | `src/features/dashboard/views/VendorDashboard.tsx` |
+| Work-order list/detail | `src/features/work-orders/pages/WorkOrders.tsx`, `WorkOrderDetails.tsx` |
+| Forms | `src/features/work-orders/components/EditWorkOrderDialog.tsx`, settings forms |
+| Settings | `src/features/settings/pages/Settings.tsx`, `UserProfile.tsx` |
+| Tables and pagination | work-order, asset, inventory, and vendor pages |
+| Confirmation/destructive actions | `src/components/feedback/ConfirmDialog.tsx` |
+| Public/authentication | `src/features/public`, `src/features/auth` |
+| Reports and charts | `src/features/reports`, `src/features/dashboard/components/DashboardWidgets.tsx` |
 
 The newest implementation is not automatically authoritative. The selected reference is the one with the clearest states, accessibility, responsive behavior, and backend integration.
 

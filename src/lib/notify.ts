@@ -34,18 +34,15 @@ function buildErrorToast(appError: AppError, fallback?: string) {
 }
 
 export const notify = {
-  success: (message: string, options?: ToastOptions): ToastId =>
-    sonnerToast.success(message, options),
+  success: (message: string, options?: ToastOptions): ToastId => sonnerToast.success(message, options),
 
   error: (message: string, options?: ToastOptions): ToastId => sonnerToast.error(message, options),
 
-  warning: (message: string, options?: ToastOptions): ToastId =>
-    sonnerToast.warning(message, options),
+  warning: (message: string, options?: ToastOptions): ToastId => sonnerToast.warning(message, options),
 
   info: (message: string, options?: ToastOptions): ToastId => sonnerToast.info(message, options),
 
-  loading: (message: string, options?: ToastOptions): ToastId =>
-    sonnerToast.loading(message, options),
+  loading: (message: string, options?: ToastOptions): ToastId => sonnerToast.loading(message, options),
 
   dismiss: (id?: ToastId) => sonnerToast.dismiss(id),
 

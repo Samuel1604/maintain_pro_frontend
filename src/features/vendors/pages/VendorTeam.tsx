@@ -36,15 +36,7 @@ const MEMBER_ROLES = [
   { label: "Vendor Technician", value: "vendor_technician" },
   { label: "Vendor Manager", value: "vendor_manager" },
 ];
-type VendorTeamMember = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  isTeamLead?: boolean;
-  invitationId?: string;
-};
+type VendorTeamMember = { id: string; name: string; email: string; role: string; status: string; isTeamLead?: boolean; invitationId?: string };
 
 function initials(name: string) {
   return name
@@ -129,28 +121,39 @@ export function VendorTeam() {
                 id: member.id ?? member._id ?? member.email,
                 name:
                   member.name ??
-                  (`${member.firstName ?? ""} ${member.lastName ?? ""}`.trim() || member.email),
+                  (`${member.firstName ?? ""} ${
+                    member.lastName ?? ""
+                  }`.trim() ||
+                    member.email),
                 email: member.email,
                 role: member.role,
                 status: member.isActive === false ? "inactive" : "active",
                 isTeamLead: member.role === "vendor_lead",
-              }) as VendorTeamMember,
+              } as VendorTeamMember),
           ),
         );
       })
       .catch(() => toast.error("Unable to load vendor team"));
   }, []);
 
-  const handleReInvite = async (member: VendorTeamMember & { invitationId?: string }) => {
+  const handleReInvite = async (
+    member: VendorTeamMember & { invitationId?: string },
+  ) => {
     const existing = activeInvitations[member.email.toLowerCase()];
-    const isWithin15Mins = existing && Date.now() - existing.createdAt < 15 * 60 * 1000;
+    const isWithin15Mins =
+      existing && Date.now() - existing.createdAt < 15 * 60 * 1000;
 
     // If credentials are still within 15 mins, just pop up the existing modal
     if (isWithin15Mins && existing) {
-      const minsLeft = Math.ceil((15 * 60 * 1000 - (Date.now() - existing.createdAt)) / 60000);
+      const minsLeft = Math.ceil(
+        (15 * 60 * 1000 - (Date.now() - existing.createdAt)) / 60000,
+      );
       setForm({
         firstName: existing.firstName || member.name.split(" ")[0] || "User",
-        lastName: existing.lastName || member.name.split(" ").slice(1).join(" ") || "Member",
+        lastName:
+          existing.lastName ||
+          member.name.split(" ").slice(1).join(" ") ||
+          "Member",
         email: member.email,
         role: existing.role || MEMBER_ROLES[0].value,
       });
@@ -171,11 +174,14 @@ export function VendorTeam() {
     const firstName = nameParts[0] || "User";
     const lastName = nameParts.slice(1).join(" ") || "Member";
     const roleValue =
-      MEMBER_ROLES.find((r) => r.label === member.role)?.value || MEMBER_ROLES[0].value;
+      MEMBER_ROLES.find((r) => r.label === member.role)?.value ||
+      MEMBER_ROLES[0].value;
 
     try {
       setIsSubmitting(true);
-      let result: Awaited<ReturnType<typeof invitationService.resendInvitation>>;
+      let result: Awaited<
+        ReturnType<typeof invitationService.resendInvitation>
+      >;
       if (invId) {
         result = await invitationService.resendInvitation(invId);
       } else {
@@ -189,7 +195,9 @@ export function VendorTeam() {
 
       const generatedUrl =
         result.invitationUrl ||
-        `${window.location.origin}/accept-invitation?token=${result.invitationToken || ""}`;
+        `${window.location.origin}/accept-invitation?token=${
+          result.invitationToken || ""
+        }`;
       const tempPassword = result.temporaryPassword;
       const emailSent = result.emailSent ?? false;
 
@@ -218,7 +226,8 @@ export function VendorTeam() {
       setDialogOpen(true);
       toast.success(`Fresh 15-minute invitation generated for ${member.email}`);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to re-invite";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to re-invite";
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -230,7 +239,9 @@ export function VendorTeam() {
     setFormError(null);
     if (!form.firstName || !form.email) return;
     const name = `${form.firstName} ${form.lastName}`.trim();
-    const exists = allMembers.some((m) => m.email.toLowerCase() === form.email.toLowerCase());
+    const exists = allMembers.some(
+      (m) => m.email.toLowerCase() === form.email.toLowerCase(),
+    );
     if (exists && !inviteResultData) {
       setFormError({
         message: "A team member with this email already exists",
@@ -281,17 +292,7 @@ export function VendorTeam() {
         emailSent,
       });
 
-      setApiMembers((current) => [
-        ...current,
-        {
-          id: invitationId || `invited-${Date.now()}`,
-          invitationId,
-          name,
-          email: form.email,
-          role: form.role,
-          status: "invited",
-        },
-      ]);
+      setApiMembers((current) => [...current, { id: invitationId || `invited-${Date.now()}`, invitationId, name, email: form.email, role: form.role, status: "invited" }]);
 
       if (emailSent) {
         toast.success(`Invitation email sent to ${form.email}`);
@@ -308,7 +309,8 @@ export function VendorTeam() {
         );
       }
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to send invitation";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to send invitation";
       setFormError({ message: errorMessage, variant: "error" });
     } finally {
       setIsSubmitting(false);
@@ -354,30 +356,39 @@ export function VendorTeam() {
         {/* ── Permission Scopes Cards ── */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="rounded-xl border border-border bg-card p-4">
-            <h3 className="text-[13px] font-bold text-foreground">Vendor Lead</h3>
+            <h3 className="text-[13px] font-bold text-foreground">
+              Vendor Lead
+            </h3>
             <p className="mt-1 text-[12px] text-muted-foreground leading-relaxed">
-              Primary tenant owner. Full access to marketplace, bids, and financial operations.
+              Primary tenant owner. Full access to marketplace, bids, and
+              financial operations.
             </p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4">
-            <h3 className="text-[13px] font-bold text-foreground">Vendor Manager</h3>
+            <h3 className="text-[13px] font-bold text-foreground">
+              Vendor Manager
+            </h3>
             <p className="mt-1 text-[12px] text-muted-foreground leading-relaxed">
-              Operations and assignment head. Can assign work orders and dispatch technicians.
+              Operations and assignment head. Can assign work orders and
+              dispatch technicians.
             </p>
           </div>
           <div className="rounded-xl border border-border bg-card p-4">
-            <h3 className="text-[13px] font-bold text-foreground">Vendor Technician</h3>
+            <h3 className="text-[13px] font-bold text-foreground">
+              Vendor Technician
+            </h3>
             <p className="mt-1 text-[12px] text-muted-foreground leading-relaxed">
-              Field execution roles. Access restricted specifically to assigned dispatches and
-              safety protocols.
+              Field execution roles. Access restricted specifically to assigned
+              dispatches and safety protocols.
             </p>
           </div>
         </div>
 
         {/* ── Info Notice ── */}
         <div className="flex items-start gap-2 rounded-xl border border-blue-500/30 bg-blue-500/10 px-4 py-3 text-[13px] text-blue-400 dark:text-blue-300">
-          <span className="font-semibold">Invitation Flow:</span> Vendor Lead/Manager can invite
-          Vendor Managers and Technicians. Invites are dispatched via email sign-off.
+          <span className="font-semibold">Invitation Flow:</span> Vendor
+          Lead/Manager can invite Vendor Managers and Technicians. Invites are
+          dispatched via email sign-off.
         </div>
 
         {/* ── Team Table ── */}
@@ -387,23 +398,34 @@ export function VendorTeam() {
               <thead className="border-b border-border bg-muted/40 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 <tr>
                   <th className="px-6 py-3.5">Name</th>
-                  <th className="hidden px-6 py-3.5 sm:table-cell">Email Address</th>
+                  <th className="hidden px-6 py-3.5 sm:table-cell">
+                    Email Address
+                  </th>
                   <th className="px-6 py-3.5">System Role</th>
                   <th className="px-3 py-3.5 sm:px-6">Status</th>
-                  <th className="hidden px-6 py-3.5 lg:table-cell">Active WOs</th>
-                  <th className="hidden px-6 py-3.5 lg:table-cell">Joined Date</th>
+                  <th className="hidden px-6 py-3.5 lg:table-cell">
+                    Active WOs
+                  </th>
+                  <th className="hidden px-6 py-3.5 lg:table-cell">
+                    Joined Date
+                  </th>
                   <th className="px-6 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
                 {allMembers.map((member, idx) => {
-                  const activeInv = activeInvitations[member.email.toLowerCase()];
+                  const activeInv =
+                    activeInvitations[member.email.toLowerCase()];
                   const isWithin15Mins =
-                    activeInv && Date.now() - activeInv.createdAt < 15 * 60 * 1000;
+                    activeInv &&
+                    Date.now() - activeInv.createdAt < 15 * 60 * 1000;
                   const isInvited = member.status === "invited";
 
                   return (
-                    <tr key={member.id} className="hover:bg-muted/20 transition-colors">
+                    <tr
+                      key={member.id}
+                      className="hover:bg-muted/20 transition-colors"
+                    >
                       <td className="px-3 py-4 font-semibold text-foreground sm:px-6">
                         {member.name}
                       </td>
@@ -434,14 +456,20 @@ export function VendorTeam() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="vendor_manager">Vendor Manager</SelectItem>
-                              <SelectItem value="vendor_technician">Vendor Technician</SelectItem>
+                              <SelectItem value="vendor_manager">
+                                Vendor Manager
+                              </SelectItem>
+                              <SelectItem value="vendor_technician">
+                                Vendor Technician
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         )}
                       </td>
                       <td className="px-3 py-4 sm:px-6">
-                        <StatusBadge status={isInvited ? "PENDING" : "ACTIVE"} />
+                        <StatusBadge
+                          status={isInvited ? "PENDING" : "ACTIVE"}
+                        />
                       </td>
                       <td className="hidden px-6 py-4 text-muted-foreground lg:table-cell">
                         {isInvited ? "—" : `${idx % 3} assigned`}
@@ -499,7 +527,9 @@ export function VendorTeam() {
           </DialogHeader>
           <form onSubmit={handleInvite} className="space-y-3 pt-1">
             {formError && (
-              <FeedbackAlert variant={formError.variant}>{formError.message}</FeedbackAlert>
+              <FeedbackAlert variant={formError.variant}>
+                {formError.message}
+              </FeedbackAlert>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -507,7 +537,9 @@ export function VendorTeam() {
                 <Input
                   placeholder="Jane"
                   value={form.firstName}
-                  onChange={(e) => setForm((p) => ({ ...p, firstName: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, firstName: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -516,7 +548,9 @@ export function VendorTeam() {
                 <Input
                   placeholder="Smith"
                   value={form.lastName}
-                  onChange={(e) => setForm((p) => ({ ...p, lastName: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, lastName: e.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -526,13 +560,18 @@ export function VendorTeam() {
                 type="email"
                 placeholder="jane@yourcompany.com"
                 value={form.email}
-                onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, email: e.target.value }))
+                }
                 required
               />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Role</Label>
-              <Select value={form.role} onValueChange={(v) => setForm((p) => ({ ...p, role: v }))}>
+              <Select
+                value={form.role}
+                onValueChange={(v) => setForm((p) => ({ ...p, role: v }))}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -548,8 +587,9 @@ export function VendorTeam() {
             <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2">
               <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
               <p className="text-xs text-muted-foreground">
-                An invitation email will be dispatched. If no mail provider is wired, on-screen
-                credentials will be displayed here (valid for 15 minutes).
+                An invitation email will be dispatched. If no mail provider is
+                wired, on-screen credentials will be displayed here (valid for
+                15 minutes).
               </p>
             </div>
 
@@ -585,7 +625,9 @@ export function VendorTeam() {
                           size="sm"
                           className="h-6 px-2 text-[11px]"
                           onClick={async () => {
-                            await navigator.clipboard.writeText(inviteResultData.tempPassword!);
+                            await navigator.clipboard.writeText(
+                              inviteResultData.tempPassword!,
+                            );
                             toast.success("Temporary password copied!");
                           }}
                         >
@@ -597,7 +639,9 @@ export function VendorTeam() {
 
                   {inviteResultData.url && (
                     <div className="flex flex-col gap-1 pt-2 border-t border-border/40">
-                      <span className="text-muted-foreground">Accept Link:</span>
+                      <span className="text-muted-foreground">
+                        Accept Link:
+                      </span>
                       <div className="flex gap-1.5">
                         <Input
                           readOnly
@@ -610,7 +654,9 @@ export function VendorTeam() {
                           size="sm"
                           className="bg-amber-600 hover:bg-amber-700 text-white text-[11px] h-7 px-2"
                           onClick={async () => {
-                            await navigator.clipboard.writeText(inviteResultData.url!);
+                            await navigator.clipboard.writeText(
+                              inviteResultData.url!,
+                            );
                             toast.success("Invitation link copied!");
                           }}
                         >
@@ -624,11 +670,22 @@ export function VendorTeam() {
             )}
 
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDialogOpen(false)}
+              >
                 {inviteResultData ? "Done" : "Cancel"}
               </Button>
-              <Button type="submit" disabled={!form.firstName || !form.email || isSubmitting}>
-                {isSubmitting ? "Sending..." : inviteResultData ? "Invite Another" : "Send Invite"}
+              <Button
+                type="submit"
+                disabled={!form.firstName || !form.email || isSubmitting}
+              >
+                {isSubmitting
+                  ? "Sending..."
+                  : inviteResultData
+                  ? "Invite Another"
+                  : "Send Invite"}
               </Button>
             </DialogFooter>
           </form>

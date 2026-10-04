@@ -6,11 +6,7 @@ import { PageLoader } from "@/components/feedback/PageLoader";
 
 import { FacilityManagerDashboard } from "../views/FacilityManagerDashboard";
 import { TechnicianDashboard } from "../views/TechnicianDashboard";
-import {
-  VendorLeadDashboard,
-  VendorManagerDashboard,
-  VendorTechnicianDashboard,
-} from "../views/VendorDashboard";
+import { VendorLeadDashboard, VendorManagerDashboard, VendorTechnicianDashboard } from "../views/VendorDashboard";
 import { FinanceDashboard } from "../views/FinanceDashboard";
 import { AdminDashboard } from "../views/AdminDashboard";
 import { StaffDashboard } from "../views/StaffDashboard";

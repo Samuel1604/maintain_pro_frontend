@@ -1,25 +1,25 @@
-import { AlertCircle, RefreshCw } from "lucide-react";
+import { AlertCircle, RefreshCw } from 'lucide-react'
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/utils/helpers";
+import { Button } from '@/components/ui/button'
+import { cn } from '@/utils/helpers'
 
 interface PageErrorProps {
-  title?: string;
-  message?: string;
-  onRetry?: () => void;
-  className?: string;
+  title?: string
+  message?: string
+  onRetry?: () => void
+  className?: string
 }
 
 export function PageError({
-  title = "Something went wrong",
-  message = "We could not load this page. Please try again.",
+  title = 'Something went wrong',
+  message = 'We could not load this page. Please try again.',
   onRetry,
   className,
 }: PageErrorProps) {
   return (
     <div
       className={cn(
-        "flex min-h-[240px] flex-col items-center justify-center gap-3 px-4 text-center",
+        'flex min-h-[240px] flex-col items-center justify-center gap-3 px-4 text-center',
         className,
       )}
       role="alert"
@@ -34,5 +34,5 @@ export function PageError({
         </Button>
       ) : null}
     </div>
-  );
+  )
 }
