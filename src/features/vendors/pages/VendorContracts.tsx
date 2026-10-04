@@ -95,17 +95,17 @@ export function VendorContracts() {
           subtitle={isOrganizationView ? "Organization contract awards" : "My Service Contracts"}
           hideQuickCreate
         />
+        <div className="border-b border-border bg-card px-8 py-5">
+          <PageIntro
+            title={isOrganizationView ? "Contracts" : "My Service Contracts"}
+            description={
+              isOrganizationView
+                ? "Review awarded vendor contracts, terms, and operational commitments."
+                : "Review your active service contracts, scope, and renewal dates."
+            }
+          />
+        </div>
         <main className="px-6 py-8 lg:px-8">
-          <div className="border-b border-border bg-card px-8 py-5">
-            <PageIntro
-              title={isOrganizationView ? "Contracts" : "My Service Contracts"}
-              description={
-                isOrganizationView
-                  ? "Review awarded vendor contracts, terms, and operational commitments."
-                  : "Review your active service contracts, scope, and renewal dates."
-              }
-            />
-          </div>
           <div className="h-6" />
           <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
             {isOrganizationView
@@ -131,17 +131,17 @@ export function VendorContracts() {
         hideQuickCreate
       />
 
+      <div className="border-b border-border bg-card px-8 py-5">
+        <PageIntro
+          title={isOrganizationView ? "Contracts" : "My Service Contracts"}
+          description={
+            isOrganizationView
+              ? "Review awarded vendor contracts, terms, and operational commitments."
+              : "Review your active service contracts, scope, and renewal dates."
+          }
+        />
+      </div>
       <div className="px-8 py-6 space-y-6">
-        <div className="border-b border-border bg-card px-8 py-5">
-          <PageIntro
-            title={isOrganizationView ? "Contracts" : "My Service Contracts"}
-            description={
-              isOrganizationView
-                ? "Review awarded vendor contracts, terms, and operational commitments."
-                : "Review your active service contracts, scope, and renewal dates."
-            }
-          />
-        </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Contracts List (7 cols) */}
           <div className="lg:col-span-7 space-y-4">
