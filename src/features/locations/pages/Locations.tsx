@@ -81,6 +81,8 @@ export function Locations() {
     ...location,
     type: location.type.toLowerCase() === 'area' || location.type.toLowerCase() === 'zone' ? 'zone' : location.type.toLowerCase() as CommonLocation['type'],
     status: location.status,
+    createdAt: new Date(location.createdAt),
+    updatedAt: new Date(location.updatedAt),
   }));
 
   const filtered = displayedLocations.filter((item: (typeof displayedLocations)[number]) => {
