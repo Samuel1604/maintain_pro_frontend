@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { apiClient } from "@/api/client";
 import { PageLoader } from "@/components/feedback/PageLoader";
 import { PageError } from "@/components/feedback/PageError";
-import { PageHeader } from "@/components/ui/page-header";
+import { PageIntro } from "@/components/layout/PageIntro";
 import { ConfirmDialog } from "@/components/feedback/ConfirmDialog";
 
 interface QuotationItem {
@@ -18,7 +18,8 @@ interface QuotationItem {
   serviceRequested: string;
   totalAmount: string;
   revisions: string;
-  status: "submitted" | "under_review" | "accepted" | "rejected" | "withdrawn" | "expired" | "draft";
+  status:
+    "submitted" | "under_review" | "accepted" | "rejected" | "withdrawn" | "expired" | "draft";
   dateSubmitted: string;
 }
 
@@ -150,18 +151,14 @@ export function VendorQuotations() {
           id: item.quotationNumber || item._id,
           vendorPartner: item.vendorId,
           serviceRequested: `Work order ${item.workOrderId}`,
-          totalAmount: `${item.currency} ${(
-            item.totalMinor / 100
-          ).toLocaleString()}`,
+          totalAmount: `${item.currency} ${(item.totalMinor / 100).toLocaleString()}`,
           revisions: `v${item.currentRevision}`,
           status: item.status as QuotationItem["status"],
           dateSubmitted: new Date(item.createdAt).toLocaleDateString(),
         })),
       );
     } catch (error) {
-      setLoadError(
-        error instanceof Error ? error.message : "Unable to load quotations",
-      );
+      setLoadError(error instanceof Error ? error.message : "Unable to load quotations");
       setLiveQuotes([]);
     }
   };
@@ -169,8 +166,7 @@ export function VendorQuotations() {
     void loadQuotes();
   }, [isVendorPortal]);
 
-  if (liveQuotes === null)
-    return <PageLoader label="Loading quotations..." />;
+  if (liveQuotes === null) return <PageLoader label="Loading quotations..." />;
   if (loadError)
     return (
       <PageError
@@ -186,7 +182,6 @@ export function VendorQuotations() {
       q.serviceRequested.toLowerCase().includes(search.toLowerCase()),
   );
 
-
   const handleAwardContract = (vendor: string, quoteId: string) => {
     toast.info(
       `Contract awards for ${vendor} (${quoteId}) are managed through the Contract Awards workflow.`,
@@ -201,17 +196,17 @@ export function VendorQuotations() {
         hideQuickCreate
       />
 
-      <div className="px-8 py-6 space-y-8">
-        <PageHeader
-          className="rounded-xl border border-border"
+      <div className="border-b border-border bg-card px-8 py-5">
+        <PageIntro
           title="Quotations"
-          subtitle={
+          description={
             isVendorPortal
               ? "Review submitted quotations and revision iterations."
               : "Evaluate vendor bids, compare revisions, and progress procurement decisions."
           }
         />
-
+      </div>
+      <div className="space-y-8 px-8 py-6">
         {/* Quotations Table */}
         <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
           <div className="p-4 border-b border-border flex justify-between items-center">
@@ -238,26 +233,15 @@ export function VendorQuotations() {
               </thead>
               <tbody className="divide-y divide-border/60">
                 {filteredQuotes.map((q) => (
-                  <tr
-                    key={q.id}
-                    className="hover:bg-muted/20 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-bold text-indigo-500 font-mono">
-                      {q.id}
+                  <tr key={q.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="px-6 py-4 font-bold text-indigo-500 font-mono">{q.id}</td>
+                    <td className="px-6 py-4 font-bold text-foreground">{q.vendorPartner}</td>
+                    <td className="px-6 py-4 text-muted-foreground">{q.serviceRequested}</td>
+                    <td className="px-6 py-4 font-bold text-foreground">{q.totalAmount}</td>
+                    <td className="px-6 py-4 text-muted-foreground font-mono">{q.revisions}</td>
+                    <td className="px-6 py-4">
+                      <StatusBadge status={q.status} />
                     </td>
-                    <td className="px-6 py-4 font-bold text-foreground">
-                      {q.vendorPartner}
-                    </td>
-                    <td className="px-6 py-4 text-muted-foreground">
-                      {q.serviceRequested}
-                    </td>
-                    <td className="px-6 py-4 font-bold text-foreground">
-                      {q.totalAmount}
-                    </td>
-                    <td className="px-6 py-4 text-muted-foreground font-mono">
-                      {q.revisions}
-                    </td>
-                    <td className="px-6 py-4"><StatusBadge status={q.status} /></td>
                     <td className="px-6 py-4 text-right text-muted-foreground">
                       {q.dateSubmitted}
                     </td>
@@ -271,8 +255,8 @@ export function VendorQuotations() {
         {/* Comparison details remain unavailable until the live quotation API exposes bid comparisons. */}
         {true ? (
           <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">
-            Bid comparison details will appear here when the live quotation
-            response includes competing bids.
+            Bid comparison details will appear here when the live quotation response includes
+            competing bids.
           </div>
         ) : (
           <div className="space-y-4">
@@ -281,8 +265,7 @@ export function VendorQuotations() {
                 Active Bid Comparison: ASME Annual Elevator Inspection
               </h2>
               <p className="text-[13px] text-muted-foreground">
-                Comparing standard metrics, support commitments, and certified
-                pricing
+                Comparing standard metrics, support commitments, and certified pricing
               </p>
             </div>
 
@@ -320,9 +303,7 @@ export function VendorQuotations() {
                       </div>
 
                       <div>
-                        <p className="text-3xl font-extrabold text-foreground">
-                          {bid.amount}
-                        </p>
+                        <p className="text-3xl font-extrabold text-foreground">{bid.amount}</p>
                       </div>
 
                       <div className="space-y-2 pt-2 text-[13px] border-t border-border/60">
@@ -358,9 +339,7 @@ export function VendorQuotations() {
                             : "bg-muted/50 hover:bg-muted text-foreground"
                         }`}
                       >
-                        {bid.isRecommended
-                          ? "Accept and Award Contract"
-                          : "Select Bid"}
+                        {bid.isRecommended ? "Accept and Award Contract" : "Select Bid"}
                       </Button>
                     </div>
                   </div>
@@ -383,8 +362,7 @@ export function VendorQuotations() {
         }
         confirmLabel="Award Contract"
         onConfirm={() => {
-          if (awardTarget)
-            handleAwardContract(awardTarget.vendorPartner, awardTarget.id);
+          if (awardTarget) handleAwardContract(awardTarget.vendorPartner, awardTarget.id);
           setAwardTarget(null);
         }}
       />
