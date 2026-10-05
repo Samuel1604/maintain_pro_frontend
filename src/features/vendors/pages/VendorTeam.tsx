@@ -55,7 +55,7 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function VendorTeam() {
+export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
   const user = useAuthStore((s) => s.user);
   const { requestConfirm, ActionConfirmDialog } = useActionConfirm();
 
@@ -343,7 +343,7 @@ export function VendorTeam() {
   return (
     <div className="min-h-full bg-background text-foreground">
       {ActionConfirmDialog}
-      <Navbar title="Team Management" hideQuickCreate />
+      {!embedded && <Navbar title="Team Management" hideQuickCreate />}
 
       <div className="px-4 sm:px-8 py-6 space-y-6">
         <PageHeader
