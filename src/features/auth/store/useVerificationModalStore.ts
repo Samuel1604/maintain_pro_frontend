@@ -23,5 +23,5 @@ export const useVerificationModalStore = create<VerificationModalState>((set) =>
       autoDismissSeconds,
     }),
 
-  closeModal: () => set({ isModalOpen: false, autoDismissSeconds: null, mode: 'picker' }),
+  closeModal: () => set({ isModalOpen: false, autoDismissSeconds: null, mode: "picker" }),
 }));

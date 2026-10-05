@@ -178,12 +178,7 @@ export function ServiceRequestAdvancedFiltersDialog({
         </div>
 
         <DialogFooter className="flex-row gap-2 border-t border-border px-6 py-4 sm:justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1 sm:flex-none"
-            onClick={reset}
-          >
+          <Button type="button" variant="outline" className="flex-1 sm:flex-none" onClick={reset}>
             <RotateCcw className="mr-2 h-4 w-4" />
             Reset
           </Button>

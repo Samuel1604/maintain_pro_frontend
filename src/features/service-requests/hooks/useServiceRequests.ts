@@ -39,11 +39,7 @@ export function useServiceRequests(
           totalPages: result.totalPages,
         });
       } catch (cause) {
-        setError(
-          cause instanceof Error
-            ? cause
-            : new Error("Unable to load service requests"),
-        );
+        setError(cause instanceof Error ? cause : new Error("Unable to load service requests"));
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);

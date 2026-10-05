@@ -1,20 +1,20 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet } from "react-router-dom";
 
-import type { Portal } from '@/app/portal.config'
-import { getPortalForRole } from '@/app/portal.config'
-import { AppSidebar as Sidebar } from '@/components/navigation/Sidebar'
-import { EmailVerificationBanner } from '@/features/auth/components/EmailVerificationBanner'
-import { useAuthStore } from '@/app/store'
+import type { Portal } from "@/app/portal.config";
+import { getPortalForRole } from "@/app/portal.config";
+import { AppSidebar as Sidebar } from "@/components/navigation/Sidebar";
+import { EmailVerificationBanner } from "@/features/auth/components/EmailVerificationBanner";
+import { useAuthStore } from "@/app/store";
 
 interface MainLayoutProps {
-  portal: Portal
+  portal: Portal;
 }
 
-import { KeyboardShortcutsModal } from '@/components/navigation/KeyboardShortcutsModal'
+import { KeyboardShortcutsModal } from "@/components/navigation/KeyboardShortcutsModal";
 
 export function MainLayout({ portal }: MainLayoutProps) {
-  const user = useAuthStore((state) => state.user)
-  const activePortal = user ? getPortalForRole(user.role) : portal
+  const user = useAuthStore((state) => state.user);
+  const activePortal = user ? getPortalForRole(user.role) : portal;
 
   return (
     <div className="app-portal flex h-dvh max-h-dvh overflow-hidden bg-background text-foreground">
@@ -32,5 +32,5 @@ export function MainLayout({ portal }: MainLayoutProps) {
       </div>
       <KeyboardShortcutsModal />
     </div>
-  )
+  );
 }

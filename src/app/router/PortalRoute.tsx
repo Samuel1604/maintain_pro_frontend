@@ -29,15 +29,21 @@ export default function PortalRoute({ portal, children }: PortalRouteProps) {
 
   const roleSegment = parseRoleSegmentFromPath(location.pathname);
   const activePortal = roleSegment
-    ? (resolveRoleFromSegment("vendor", roleSegment) ? "vendor" : "org")
-    : (user ? getPortalForRole(user.role) : portal);
+    ? resolveRoleFromSegment("vendor", roleSegment)
+      ? "vendor"
+      : "org"
+    : user
+      ? getPortalForRole(user.role)
+      : portal;
 
   if (!isHydrated) {
     return null;
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ message: "Please log in to access this page." }} replace />;
+    return (
+      <Navigate to="/login" state={{ message: "Please log in to access this page." }} replace />
+    );
   }
 
   if (!isRoleAllowedInPortal(user.role, activePortal)) {
@@ -116,13 +122,7 @@ export function LegacyPortalRedirect({ segment }: LegacyPortalRedirectProps) {
   const path = segment.startsWith("/") ? segment : `/${segment}`;
 
   return (
-    <Navigate
-      to={`${getDefaultPathForRole(user.role).replace(
-        "/dashboard",
-        "",
-      )}${path}`}
-      replace
-    />
+    <Navigate to={`${getDefaultPathForRole(user.role).replace("/dashboard", "")}${path}`} replace />
   );
 }
 

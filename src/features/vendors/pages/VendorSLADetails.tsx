@@ -39,10 +39,9 @@ const hours = (value?: number) =>
   value == null
     ? "Not configured"
     : value < 1
-    ? `${Math.round(value * 60)} min`
-    : `${value} hr${value === 1 ? "" : "s"}`;
-const label =
-  "text-[11px] font-medium uppercase tracking-wide text-muted-foreground";
+      ? `${Math.round(value * 60)} min`
+      : `${value} hr${value === 1 ? "" : "s"}`;
+const label = "text-[11px] font-medium uppercase tracking-wide text-muted-foreground";
 
 function TargetCard({
   name,
@@ -59,11 +58,7 @@ function TargetCard({
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center justify-between gap-2">
         <h3 className="font-semibold">{name}</h3>
-        <span
-          className={`rounded px-2 py-0.5 text-[10px] font-semibold ${tone}`}
-        >
-          TARGET
-        </span>
+        <span className={`rounded px-2 py-0.5 text-[10px] font-semibold ${tone}`}>TARGET</span>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-3">
         <div>
@@ -83,9 +78,7 @@ export function VendorSLADetails() {
   const { slaId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const [sla, setSla] = useState<Sla | null>(
-    (location.state as { sla?: Sla } | null)?.sla ?? null,
-  );
+  const [sla, setSla] = useState<Sla | null>((location.state as { sla?: Sla } | null)?.sla ?? null);
   const [editOpen, setEditOpen] = useState(false);
   const [nextStatus, setNextStatus] = useState("");
   const workOrders: string[][] = [];
@@ -93,16 +86,14 @@ export function VendorSLADetails() {
     if (!sla && slaId)
       void apiClient
         .get<Sla[]>("/sla-agreements/mine")
-        .then((items) =>
-          setSla(items.find((item) => item._id === slaId) ?? null),
-        )
+        .then((items) => setSla(items.find((item) => item._id === slaId) ?? null))
         .catch((error) =>
-          toast.error(
-            error instanceof Error ? error.message : "Unable to load SLA",
-          ),
+          toast.error(error instanceof Error ? error.message : "Unable to load SLA"),
         );
   }, [sla, slaId]);
-  const slaNotes = sla?.notes ?? "Full unit replacement requests, duct modifications exceeding 10 meters, and works subcontracted out to third parties without prior authorization.";
+  const slaNotes =
+    sla?.notes ??
+    "Full unit replacement requests, duct modifications exceeding 10 meters, and works subcontracted out to third parties without prior authorization.";
   const base = location.pathname.split("/").slice(0, 3).join("/");
   return (
     <div className="min-h-full bg-background text-foreground">
@@ -113,11 +104,7 @@ export function VendorSLADetails() {
           title={`Vendor SLA: ${slaId ?? ""}`}
           subtitle="Define and monitor service-level expectations for Lagos HVAC Services."
           breadcrumbs={
-            <Button
-              variant="ghost"
-              className="px-0"
-              onClick={() => navigate(`${base}/slas`)}
-            >
+            <Button variant="ghost" className="px-0" onClick={() => navigate(`${base}/slas`)}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to SLAs
             </Button>
@@ -161,9 +148,7 @@ export function VendorSLADetails() {
                 </div>
                 <div>
                   <p className={label}>Contract ID</p>
-                  <b className="text-orange-500">
-                    {sla.contractId ?? "Not linked"}
-                  </b>
+                  <b className="text-orange-500">{sla.contractId ?? "Not linked"}</b>
                 </div>
                 <div>
                   <p className={label}>Effective date</p>
@@ -184,9 +169,7 @@ export function VendorSLADetails() {
               </div>
             </section>
             <section>
-              <h2 className="mb-3 text-lg font-bold">
-                Service Response &amp; Resolution Targets
-              </h2>
+              <h2 className="mb-3 text-lg font-bold">Service Response &amp; Resolution Targets</h2>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <TargetCard
                   name="Configured target"
@@ -217,8 +200,7 @@ export function VendorSLADetails() {
                   </>
                 ) : (
                   <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground sm:col-span-1 lg:col-span-3">
-                    Priority-specific targets are not provided by the live SLA
-                    endpoint.
+                    Priority-specific targets are not provided by the live SLA endpoint.
                   </div>
                 )}
               </div>
@@ -226,9 +208,7 @@ export function VendorSLADetails() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
               <div className="space-y-6 lg:col-span-3">
                 <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-                  <h2 className="text-lg font-bold">
-                    SLA Coverage Rules &amp; Parameters
-                  </h2>
+                  <h2 className="text-lg font-bold">SLA Coverage Rules &amp; Parameters</h2>
                   {false ? (
                     <>
                       <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -238,9 +218,7 @@ export function VendorSLADetails() {
                         </div>
                         <div>
                           <p className={label}>Operating hours</p>
-                          <p>
-                            24/7 (Critical/High) • Business hrs (Medium/Low)
-                          </p>
+                          <p>24/7 (Critical/High) • Business hrs (Medium/Low)</p>
                         </div>
                         <div>
                           <p className={label}>Covered facilities</p>
@@ -253,9 +231,7 @@ export function VendorSLADetails() {
                       </div>
                       <div className="mt-5 border-t border-border pt-4">
                         <p className={label}>Explicit SLA exclusions</p>
-                        <p className="text-sm text-muted-foreground">
-                          {slaNotes}
-                        </p>
+                        <p className="text-sm text-muted-foreground">{slaNotes}</p>
                       </div>
                     </>
                   ) : (
@@ -278,9 +254,7 @@ export function VendorSLADetails() {
                           <th className="p-3">ID</th>
                           <th className="p-3">Title</th>
                           <th className="p-3">Priority</th>
-                          <th className="hidden p-3 sm:table-cell">
-                            Resp. (Act)
-                          </th>
+                          <th className="hidden p-3 sm:table-cell">Resp. (Act)</th>
                           <th className="hidden p-3 sm:table-cell">Actual</th>
                           <th className="p-3">SLA Status</th>
                         </tr>
@@ -288,21 +262,13 @@ export function VendorSLADetails() {
                       <tbody>
                         {workOrders.map((row) => (
                           <tr key={row[0]} className="border-b last:border-0">
-                            <td className="p-3 font-semibold text-orange-500">
-                              {row[0]}
-                            </td>
-                            <td className="max-w-[220px] truncate p-3">
-                              {row[1]}
-                            </td>
+                            <td className="p-3 font-semibold text-orange-500">{row[0]}</td>
+                            <td className="max-w-[220px] truncate p-3">{row[1]}</td>
                             <td className="p-3">
                               <PriorityBadge priority={row[2]} />
                             </td>
-                            <td className="hidden p-3 sm:table-cell">
-                              {row[3]}
-                            </td>
-                            <td className="hidden p-3 sm:table-cell">
-                              {row[4]}
-                            </td>
+                            <td className="hidden p-3 sm:table-cell">{row[3]}</td>
+                            <td className="hidden p-3 sm:table-cell">{row[4]}</td>
                             <td className="p-3">
                               <span className="text-xs font-medium text-muted-foreground">
                                 {row[5]}
@@ -325,9 +291,7 @@ export function VendorSLADetails() {
                         <span>
                           <b>75% Target Elapsed</b>
                           <br />
-                          <span className="text-muted-foreground">
-                            Vendor Manager Alert
-                          </span>
+                          <span className="text-muted-foreground">Vendor Manager Alert</span>
                           <br />
                           <small className="text-muted-foreground">
                             Automated trigger notifying Lagos HVAC Dispatcher.
@@ -339,13 +303,10 @@ export function VendorSLADetails() {
                         <span>
                           <b>90% Target Elapsed</b>
                           <br />
-                          <span className="text-muted-foreground">
-                            Facility Manager Alert
-                          </span>
+                          <span className="text-muted-foreground">Facility Manager Alert</span>
                           <br />
                           <small className="text-muted-foreground">
-                            SLA approaching breach. High-priority dispatch
-                            trigger.
+                            SLA approaching breach. High-priority dispatch trigger.
                           </small>
                         </span>
                       </p>
@@ -354,21 +315,17 @@ export function VendorSLADetails() {
                         <span>
                           <b>SLA Target Breached</b>
                           <br />
-                          <span className="text-muted-foreground">
-                            Organization Admin Alert
-                          </span>
+                          <span className="text-muted-foreground">Organization Admin Alert</span>
                           <br />
                           <small className="text-muted-foreground">
-                            Breach logged automatically. Requires admin contract
-                            review.
+                            Breach logged automatically. Requires admin contract review.
                           </small>
                         </span>
                       </p>
                     </div>
                   ) : (
                     <p className="mt-4 text-sm text-muted-foreground">
-                      Escalation rules are not included in the live SLA
-                      response.
+                      Escalation rules are not included in the live SLA response.
                     </p>
                   )}
                 </section>
@@ -377,34 +334,24 @@ export function VendorSLADetails() {
                   <div className="mt-5 grid grid-cols-2 gap-5">
                     <div>
                       <p className={label}>SLA compliance</p>
-                      <p className="text-2xl font-bold text-emerald-500">
-                        {"—"}
-                      </p>
+                      <p className="text-2xl font-bold text-emerald-500">{"—"}</p>
                     </div>
                     <div>
                       <p className={label}>Avg response time</p>
-                      <p className="text-2xl font-bold">
-                        {"—"}
-                      </p>
+                      <p className="text-2xl font-bold">{"—"}</p>
                     </div>
                     <div>
                       <p className={label}>Breached WOs</p>
-                      <p className="text-2xl font-bold text-red-500">
-                        {"—"}
-                      </p>
+                      <p className="text-2xl font-bold text-red-500">{"—"}</p>
                     </div>
                     <div>
                       <p className={label}>Approaching breach</p>
-                      <p className="text-2xl font-bold text-orange-500">
-                        {"—"}
-                      </p>
+                      <p className="text-2xl font-bold text-orange-500">{"—"}</p>
                     </div>
                   </div>
                 </section>
                 <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-                  <h2 className="text-lg font-bold">
-                    SLA Timeline &amp; History
-                  </h2>
+                  <h2 className="text-lg font-bold">SLA Timeline &amp; History</h2>
                   {false ? (
                     <div className="mt-5 space-y-5 text-sm">
                       <p className="flex gap-3">
@@ -423,8 +370,7 @@ export function VendorSLADetails() {
                           <b>SLA breached on WO-4135</b>
                           <br />
                           <span className="text-muted-foreground">
-                            High Vibration diagnostics resolution target elapsed
-                            limit.
+                            High Vibration diagnostics resolution target elapsed limit.
                           </span>
                         </span>
                       </p>
@@ -460,8 +406,7 @@ export function VendorSLADetails() {
             </DialogHeader>
             <div className="space-y-2 py-3">
               <p className="text-sm text-muted-foreground">
-                Status changes are recorded in the SLA history and may affect
-                contract operations.
+                Status changes are recorded in the SLA history and may affect contract operations.
               </p>
               <Select value={nextStatus} onValueChange={setNextStatus}>
                 <SelectTrigger>
@@ -478,9 +423,7 @@ export function VendorSLADetails() {
                     "rejected",
                   ].map((status) => (
                     <SelectItem key={status} value={status}>
-                      {status
-                        .replace("_", " ")
-                        .replace(/^./, (value) => value.toUpperCase())}
+                      {status.replace("_", " ").replace(/^./, (value) => value.toUpperCase())}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -504,9 +447,7 @@ export function VendorSLADetails() {
                     toast.success("SLA status updated");
                   } catch (error) {
                     toast.error(
-                      error instanceof Error
-                        ? error.message
-                        : "Unable to update SLA status",
+                      error instanceof Error ? error.message : "Unable to update SLA status",
                     );
                   }
                 }}

@@ -1,31 +1,37 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Plus, Search, RefreshCw, ChevronRight } from 'lucide-react'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Search, RefreshCw, ChevronRight } from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { cn } from '@/utils/helpers'
-import { Input } from '@/components/ui/input'
-import { PriorityBadge, StatusBadge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { EmptyState } from '@/components/feedback/EmptyState'
-import { SkeletonTable } from '@/components/feedback/Skeletons'
-import { AppHeader } from '@/components/navigation/Navbar'
-import { useRoleAccess } from '@/hooks/useRoleAccess'
-import { usePortalPath } from '@/hooks/usePortal'
-import { useWorkOrders } from '../hooks/useWorkOrders'
-import type { WorkOrderFilters } from '../types/workOrder.types'
-import { PageIntro } from '@/components/layout/PageIntro'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { CreateWorkOrder } from './CreateWorkOrder'
-import { displayReference } from '@/utils/display-ids'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/utils/helpers";
+import { Input } from "@/components/ui/input";
+import { PriorityBadge, StatusBadge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { EmptyState } from "@/components/feedback/EmptyState";
+import { SkeletonTable } from "@/components/feedback/Skeletons";
+import { AppHeader } from "@/components/navigation/Navbar";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
+import { usePortalPath } from "@/hooks/usePortal";
+import { useWorkOrders } from "../hooks/useWorkOrders";
+import type { WorkOrderFilters } from "../types/workOrder.types";
+import { PageIntro } from "@/components/layout/PageIntro";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CreateWorkOrder } from "./CreateWorkOrder";
+import { displayReference } from "@/utils/display-ids";
 
 export function WorkOrders() {
-  const navigate = useNavigate()
-  const workOrdersPath = usePortalPath('work-orders')
-  const newWorkOrderPath = usePortalPath('work-orders/new')
-  const { canCreateWorkOrder } = useRoleAccess()
-  const [showCreate, setShowCreate] = useState(false)
-  const [filters, setFilters] = useState<WorkOrderFilters>({ page: 1, limit: 20 })
+  const navigate = useNavigate();
+  const workOrdersPath = usePortalPath("work-orders");
+  const newWorkOrderPath = usePortalPath("work-orders/new");
+  const { canCreateWorkOrder } = useRoleAccess();
+  const [showCreate, setShowCreate] = useState(false);
+  const [filters, setFilters] = useState<WorkOrderFilters>({ page: 1, limit: 20 });
   const {
     workOrders,
     total,
@@ -36,24 +42,30 @@ export function WorkOrders() {
     error,
     setFilters: updateFilters,
     refetch,
-  } = useWorkOrders(filters)
+  } = useWorkOrders(filters);
 
   const setFilter = (patch: Partial<WorkOrderFilters>) =>
-    updateFilters((current) => ({ ...current, ...patch, page: 1 }))
+    updateFilters((current) => ({ ...current, ...patch, page: 1 }));
 
   const createButton = canCreateWorkOrder ? (
-    <Button onClick={() => setShowCreate(true)} className="flex items-center gap-2 rounded-xl px-4 py-2 text-[13px] font-semibold">
+    <Button
+      onClick={() => setShowCreate(true)}
+      className="flex items-center gap-2 rounded-xl px-4 py-2 text-[13px] font-semibold"
+    >
       <Plus className="h-4 w-4" />
       Create Work Order
     </Button>
-  ) : null
+  ) : null;
 
   return (
     <div className="min-h-full bg-background text-foreground">
       <AppHeader title="Work Orders" subtitle="Work Order" hideQuickCreate />
       <div className="bg-card px-8 py-5">
         <div className="flex items-center justify-between gap-4">
-          <PageIntro title="Work Orders" description="Track maintenance work from assignment through completion, with clear ownership and status." />
+          <PageIntro
+            title="Work Orders"
+            description="Track maintenance work from assignment through completion, with clear ownership and status."
+          />
           {createButton}
         </div>
       </div>
@@ -64,7 +76,7 @@ export function WorkOrders() {
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              value={filters.search ?? ''}
+              value={filters.search ?? ""}
               onChange={(e) => setFilter({ search: e.target.value || undefined })}
               placeholder="Search work orders..."
               className="border-0 bg-muted/40 pl-9 shadow-none"
@@ -72,8 +84,8 @@ export function WorkOrders() {
           </div>
 
           <Select
-            value={filters.status ?? 'all'}
-            onValueChange={(value) => setFilter({ status: value === 'all' ? undefined : value })}
+            value={filters.status ?? "all"}
+            onValueChange={(value) => setFilter({ status: value === "all" ? undefined : value })}
           >
             <SelectTrigger className="w-full border-0 bg-muted/40 shadow-none sm:w-36">
               <SelectValue placeholder="Status" />
@@ -91,8 +103,8 @@ export function WorkOrders() {
           </Select>
 
           <Select
-            value={filters.priority ?? 'all'}
-            onValueChange={(value) => setFilter({ priority: value === 'all' ? undefined : value })}
+            value={filters.priority ?? "all"}
+            onValueChange={(value) => setFilter({ priority: value === "all" ? undefined : value })}
           >
             <SelectTrigger className="w-full sm:w-36">
               <SelectValue placeholder="Priority" />
@@ -115,7 +127,6 @@ export function WorkOrders() {
             <RefreshCw className={cn("h-4 w-4", (isLoading || isRefreshing) && "animate-spin")} />
             Refresh
           </Button>
-
         </div>
       </div>
 
@@ -128,7 +139,12 @@ export function WorkOrders() {
         ) : error ? (
           <div className="flex items-center gap-4 rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive">
             <span>{error.message}</span>
-          <Button variant="outline" size="sm" onClick={() => void refetch()} className="border-0 bg-muted/40 shadow-none">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void refetch()}
+              className="border-0 bg-muted/40 shadow-none"
+            >
               Try again
             </Button>
           </div>
@@ -137,7 +153,7 @@ export function WorkOrders() {
             icon={Search}
             title="No work orders found"
             description="Try changing the filters or create a new work order."
-            actionLabel={canCreateWorkOrder ? 'Create Work Order' : undefined}
+            actionLabel={canCreateWorkOrder ? "Create Work Order" : undefined}
             onAction={canCreateWorkOrder ? () => navigate(newWorkOrderPath) : undefined}
           />
         ) : (
@@ -147,13 +163,21 @@ export function WorkOrders() {
               <table className="w-full text-left text-sm">
                 <thead className="border-b border-border bg-muted/40 text-xs uppercase text-muted-foreground">
                   <tr>
-                    {['ID', 'Title', 'Origin', 'Priority', 'Status', 'Location', 'Assigned', 'Created', ''].map(
-                      (heading) => (
-                        <th key={heading} className="px-5 py-3">
-                          {heading}
-                        </th>
-                      ),
-                    )}
+                    {[
+                      "ID",
+                      "Title",
+                      "Origin",
+                      "Priority",
+                      "Status",
+                      "Location",
+                      "Assigned",
+                      "Created",
+                      "",
+                    ].map((heading) => (
+                      <th key={heading} className="px-5 py-3">
+                        {heading}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -163,18 +187,28 @@ export function WorkOrders() {
                       onClick={() => navigate(`${workOrdersPath}/${item.id}`)}
                       className="cursor-pointer hover:bg-accent/40"
                     >
-                      <td className="px-5 py-4 font-mono font-semibold">{displayReference('WO', item.id)}</td>
+                      <td className="px-5 py-4 font-mono font-semibold">
+                        {displayReference("WO", item.id)}
+                      </td>
                       <td className="px-5 py-4 font-semibold">{item.title}</td>
-                      <td className="px-5 py-4 text-muted-foreground">{item.sourceType === 'preventive_maintenance' ? 'Preventive Maintenance' : item.sourceType === 'service_request' ? 'Service Request' : 'Manual'}</td>
+                      <td className="px-5 py-4 text-muted-foreground">
+                        {item.sourceType === "preventive_maintenance"
+                          ? "Preventive Maintenance"
+                          : item.sourceType === "service_request"
+                            ? "Service Request"
+                            : "Manual"}
+                      </td>
                       <td className="px-5 py-4">
                         <PriorityBadge priority={item.priority} />
                       </td>
                       <td className="px-5 py-4">
                         <StatusBadge status={item.status} />
                       </td>
-                      <td className="px-5 py-4 text-muted-foreground">{item.locationName || '—'}</td>
                       <td className="px-5 py-4 text-muted-foreground">
-                        {item.assigneeName || 'Unassigned'}
+                        {item.locationName || "—"}
+                      </td>
+                      <td className="px-5 py-4 text-muted-foreground">
+                        {item.assigneeName || "Unassigned"}
                       </td>
                       <td className="px-5 py-4 text-muted-foreground">
                         {item.createdAt.toLocaleDateString()}
@@ -199,7 +233,9 @@ export function WorkOrders() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-mono text-xs text-muted-foreground">{displayReference('WO', item.id)}</p>
+                      <p className="font-mono text-xs text-muted-foreground">
+                        {displayReference("WO", item.id)}
+                      </p>
                       <p className="mt-1 font-semibold">{item.title}</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -209,9 +245,19 @@ export function WorkOrders() {
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <StatusBadge status={item.status} />
-                    <span className="text-xs text-muted-foreground">{item.sourceType === 'preventive_maintenance' ? 'Preventive Maintenance' : item.sourceType === 'service_request' ? 'Service Request' : 'Manual'}</span>
-                    <span className="text-xs text-muted-foreground">{item.locationName || 'No location'}</span>
-                    <span className="text-xs text-muted-foreground">{item.assigneeName || 'Unassigned'}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {item.sourceType === "preventive_maintenance"
+                        ? "Preventive Maintenance"
+                        : item.sourceType === "service_request"
+                          ? "Service Request"
+                          : "Manual"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {item.locationName || "No location"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {item.assigneeName || "Unassigned"}
+                    </span>
                   </div>
                 </button>
               ))}
@@ -247,7 +293,23 @@ export function WorkOrders() {
           </div>
         )}
       </main>
-      <Dialog open={showCreate} onOpenChange={setShowCreate}><DialogContent className="!max-w-4xl w-[calc(100vw-2rem)] !h-[calc(100dvh-2rem)] !max-h-[calc(100dvh-2rem)] overflow-hidden"><DialogHeader className="shrink-0 border-b border-border pb-4"><DialogTitle>Create Work Order</DialogTitle><p className="text-sm text-muted-foreground">Capture the issue, location, and execution path so the team can dispatch it correctly.</p></DialogHeader><CreateWorkOrder embedded onComplete={() => { setShowCreate(false); void refetch() }} /></DialogContent></Dialog>
+      <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <DialogContent className="!max-w-4xl w-[calc(100vw-2rem)] !h-[calc(100dvh-2rem)] !max-h-[calc(100dvh-2rem)] overflow-hidden">
+          <DialogHeader className="shrink-0 border-b border-border pb-4">
+            <DialogTitle>Create Work Order</DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Capture the issue, location, and execution path so the team can dispatch it correctly.
+            </p>
+          </DialogHeader>
+          <CreateWorkOrder
+            embedded
+            onComplete={() => {
+              setShowCreate(false);
+              void refetch();
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
-  )
+  );
 }

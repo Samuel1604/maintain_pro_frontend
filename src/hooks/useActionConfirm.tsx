@@ -1,45 +1,45 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState } from "react";
 
-import { ConfirmDialog } from '@/components/feedback/ConfirmDialog'
+import { ConfirmDialog } from "@/components/feedback/ConfirmDialog";
 
 export interface ActionConfirmRequest {
-  title: string
-  description: string
-  confirmLabel?: string
-  cancelLabel?: string
-  destructive?: boolean
+  title: string;
+  description: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  destructive?: boolean;
   /** Show only the primary button (for acknowledgements). */
-  singleAction?: boolean
-  onConfirm: () => void
-  warning?: string
+  singleAction?: boolean;
+  onConfirm: () => void;
+  warning?: string;
 }
 
 export function useActionConfirm() {
-  const [pending, setPending] = useState<ActionConfirmRequest | null>(null)
+  const [pending, setPending] = useState<ActionConfirmRequest | null>(null);
 
   const requestConfirm = useCallback((request: ActionConfirmRequest) => {
-    setPending(request)
-  }, [])
+    setPending(request);
+  }, []);
 
   const ActionConfirmDialog = (
     <ConfirmDialog
       open={pending !== null}
       onOpenChange={(open) => {
-        if (!open) setPending(null)
+        if (!open) setPending(null);
       }}
-      title={pending?.title ?? 'Confirm'}
-      description={pending?.description ?? ''}
-      confirmLabel={pending?.confirmLabel ?? 'Continue'}
+      title={pending?.title ?? "Confirm"}
+      description={pending?.description ?? ""}
+      confirmLabel={pending?.confirmLabel ?? "Continue"}
       cancelLabel={pending?.cancelLabel}
       destructive={pending?.destructive}
       singleAction={pending?.singleAction}
       onConfirm={() => {
-        pending?.onConfirm()
-        setPending(null)
+        pending?.onConfirm();
+        setPending(null);
       }}
       warning={pending?.warning}
     />
-  )
+  );
 
-  return { requestConfirm, ActionConfirmDialog }
+  return { requestConfirm, ActionConfirmDialog };
 }

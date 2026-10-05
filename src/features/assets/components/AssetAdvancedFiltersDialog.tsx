@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react'
-import { Filter, RotateCcw } from 'lucide-react'
+import { useEffect, useState } from "react";
+import { Filter, RotateCcw } from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -18,35 +18,35 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { locationsApi } from '@/features/locations/api/locations.api'
-import type { Location } from '@/features/locations/types/location.types'
-import type { AssetFilters } from '../types/asset.types'
+} from "@/components/ui/dialog";
+import { locationsApi } from "@/features/locations/api/locations.api";
+import type { Location } from "@/features/locations/types/location.types";
+import type { AssetFilters } from "../types/asset.types";
 
 type AdvancedDraft = {
-  locationId?: string
-  manufacturer?: string
-  installDateFrom?: string
-  installDateTo?: string
-  warrantyStatus: 'all' | NonNullable<AssetFilters['warrantyStatus']>
-  maintenanceDue: 'all' | NonNullable<AssetFilters['maintenanceDue']>
-}
+  locationId?: string;
+  manufacturer?: string;
+  installDateFrom?: string;
+  installDateTo?: string;
+  warrantyStatus: "all" | NonNullable<AssetFilters["warrantyStatus"]>;
+  maintenanceDue: "all" | NonNullable<AssetFilters["maintenanceDue"]>;
+};
 
 const emptyAdvanced: AdvancedDraft = {
   locationId: undefined,
   manufacturer: undefined,
   installDateFrom: undefined,
   installDateTo: undefined,
-  warrantyStatus: 'all',
-  maintenanceDue: 'all',
-}
+  warrantyStatus: "all",
+  maintenanceDue: "all",
+};
 
 interface AssetAdvancedFiltersDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  filters: AssetFilters
-  onApply: (patch: Partial<AssetFilters>) => void
-  manufacturers: string[]
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  filters: AssetFilters;
+  onApply: (patch: Partial<AssetFilters>) => void;
+  manufacturers: string[];
 }
 
 export function AssetAdvancedFiltersDialog({
@@ -56,26 +56,29 @@ export function AssetAdvancedFiltersDialog({
   onApply,
   manufacturers,
 }: AssetAdvancedFiltersDialogProps) {
-  const [draft, setDraft] = useState<AdvancedDraft>(emptyAdvanced)
-  const [locations, setLocations] = useState<Location[]>([])
-  const [locationsError, setLocationsError] = useState<string | null>(null)
+  const [draft, setDraft] = useState<AdvancedDraft>(emptyAdvanced);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [locationsError, setLocationsError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!open) return
-    void locationsApi.list().then(setLocations).catch(() => setLocationsError('Unable to load locations'))
-  }, [open])
+    if (!open) return;
+    void locationsApi
+      .list()
+      .then(setLocations)
+      .catch(() => setLocationsError("Unable to load locations"));
+  }, [open]);
 
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
     setDraft({
       locationId: filters.locationId,
       manufacturer: filters.manufacturer,
       installDateFrom: filters.installDateFrom,
       installDateTo: filters.installDateTo,
-      warrantyStatus: filters.warrantyStatus ?? 'all',
-      maintenanceDue: filters.maintenanceDue ?? 'all',
-    })
-  }, [open, filters])
+      warrantyStatus: filters.warrantyStatus ?? "all",
+      maintenanceDue: filters.maintenanceDue ?? "all",
+    });
+  }, [open, filters]);
 
   const apply = () => {
     onApply({
@@ -83,14 +86,14 @@ export function AssetAdvancedFiltersDialog({
       manufacturer: draft.manufacturer?.trim() || undefined,
       installDateFrom: draft.installDateFrom || undefined,
       installDateTo: draft.installDateTo || undefined,
-      warrantyStatus: draft.warrantyStatus === 'all' ? undefined : draft.warrantyStatus,
-      maintenanceDue: draft.maintenanceDue === 'all' ? undefined : draft.maintenanceDue,
-    })
-    onOpenChange(false)
-  }
+      warrantyStatus: draft.warrantyStatus === "all" ? undefined : draft.warrantyStatus,
+      maintenanceDue: draft.maintenanceDue === "all" ? undefined : draft.maintenanceDue,
+    });
+    onOpenChange(false);
+  };
 
   const reset = () => {
-    setDraft(emptyAdvanced)
+    setDraft(emptyAdvanced);
     onApply({
       locationId: undefined,
       manufacturer: undefined,
@@ -98,9 +101,9 @@ export function AssetAdvancedFiltersDialog({
       installDateTo: undefined,
       warrantyStatus: undefined,
       maintenanceDue: undefined,
-    })
-    onOpenChange(false)
-  }
+    });
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -119,9 +122,9 @@ export function AssetAdvancedFiltersDialog({
           <div className="space-y-2">
             <Label>Location</Label>
             <Select
-              value={draft.locationId ?? 'all'}
+              value={draft.locationId ?? "all"}
               onValueChange={(v) =>
-                setDraft((d) => ({ ...d, locationId: v === 'all' ? undefined : v }))
+                setDraft((d) => ({ ...d, locationId: v === "all" ? undefined : v }))
               }
             >
               <SelectTrigger>
@@ -142,9 +145,9 @@ export function AssetAdvancedFiltersDialog({
           <div className="space-y-2">
             <Label>Manufacturer</Label>
             <Select
-              value={draft.manufacturer ?? 'all'}
+              value={draft.manufacturer ?? "all"}
               onValueChange={(v) =>
-                setDraft((d) => ({ ...d, manufacturer: v === 'all' ? undefined : v }))
+                setDraft((d) => ({ ...d, manufacturer: v === "all" ? undefined : v }))
               }
             >
               <SelectTrigger>
@@ -167,8 +170,10 @@ export function AssetAdvancedFiltersDialog({
               <Input
                 id="install-from"
                 type="date"
-                value={draft.installDateFrom ?? ''}
-                onChange={(e) => setDraft((d) => ({ ...d, installDateFrom: e.target.value || undefined }))}
+                value={draft.installDateFrom ?? ""}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, installDateFrom: e.target.value || undefined }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -176,8 +181,10 @@ export function AssetAdvancedFiltersDialog({
               <Input
                 id="install-to"
                 type="date"
-                value={draft.installDateTo ?? ''}
-                onChange={(e) => setDraft((d) => ({ ...d, installDateTo: e.target.value || undefined }))}
+                value={draft.installDateTo ?? ""}
+                onChange={(e) =>
+                  setDraft((d) => ({ ...d, installDateTo: e.target.value || undefined }))
+                }
               />
             </div>
           </div>
@@ -185,9 +192,9 @@ export function AssetAdvancedFiltersDialog({
           <div className="space-y-2">
             <Label>Warranty</Label>
             <Select
-              value={draft.warrantyStatus ?? 'all'}
+              value={draft.warrantyStatus ?? "all"}
               onValueChange={(v) =>
-                setDraft((d) => ({ ...d, warrantyStatus: v as AdvancedDraft['warrantyStatus'] }))
+                setDraft((d) => ({ ...d, warrantyStatus: v as AdvancedDraft["warrantyStatus"] }))
               }
             >
               <SelectTrigger>
@@ -205,9 +212,9 @@ export function AssetAdvancedFiltersDialog({
           <div className="space-y-2">
             <Label>Maintenance schedule</Label>
             <Select
-              value={draft.maintenanceDue ?? 'all'}
+              value={draft.maintenanceDue ?? "all"}
               onValueChange={(v) =>
-                setDraft((d) => ({ ...d, maintenanceDue: v as AdvancedDraft['maintenanceDue'] }))
+                setDraft((d) => ({ ...d, maintenanceDue: v as AdvancedDraft["maintenanceDue"] }))
               }
             >
               <SelectTrigger>
@@ -234,5 +241,5 @@ export function AssetAdvancedFiltersDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

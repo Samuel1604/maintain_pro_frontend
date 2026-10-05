@@ -2,7 +2,10 @@ import type {
   RegisterOrganizationRequest,
   RegisterVendorRequest,
 } from "@/features/auth/types/auth.types";
-import { registerOrganizationRequestSchema, registerVendorRequestSchema } from '@/api/contracts/auth.contract';
+import {
+  registerOrganizationRequestSchema,
+  registerVendorRequestSchema,
+} from "@/api/contracts/auth.contract";
 
 interface AddressFields {
   street: string;
@@ -45,7 +48,7 @@ function toAddress(fields: AddressFields): RegisterOrganizationRequest["address"
 }
 
 export function toRegisterOrganizationRequest(
-  form: OrganizationSignupForm
+  form: OrganizationSignupForm,
 ): RegisterOrganizationRequest {
   const candidate = {
     firstName: form.firstName.trim(),

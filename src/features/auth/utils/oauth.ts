@@ -1,9 +1,5 @@
 export type OAuthProvider = "google" | "linkedin";
-export type OAuthAction =
-  | "login"
-  | "register-org"
-  | "register-vendor"
-  | "accept-invitation";
+export type OAuthAction = "login" | "register-org" | "register-vendor" | "accept-invitation";
 
 export function oauthStartUrl(
   provider: OAuthProvider,

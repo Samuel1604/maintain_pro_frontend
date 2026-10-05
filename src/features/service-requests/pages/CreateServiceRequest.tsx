@@ -57,15 +57,9 @@ export function CreateServiceRequest({
   const path = usePortalPath("service-requests");
   const user = useAuthStore((state) => state.user);
 
-  const [facilities, setFacilities] = useState<
-    Array<{ id: string; name: string }>
-  >([]);
-  const [locations, setLocations] = useState<
-    Array<{ id: string; name: string }>
-  >([]);
-  const [assets, setAssets] = useState<
-    Array<{ id: string; name: string; assetTag: string }>
-  >([]);
+  const [facilities, setFacilities] = useState<Array<{ id: string; name: string }>>([]);
+  const [locations, setLocations] = useState<Array<{ id: string; name: string }>>([]);
+  const [assets, setAssets] = useState<Array<{ id: string; name: string; assetTag: string }>>([]);
   const [loading, setLoading] = useState(false);
   const [uploadingAttachments, setUploadingAttachments] = useState(false);
   const [loadError, setLoadError] = useState("");
@@ -88,7 +82,11 @@ export function CreateServiceRequest({
   useEffect(() => {
     void facilitiesApi
       .list({ page: 1, limit: 100 })
-      .then((result) => { setFacilities(result.data); if (result.data.length === 1) setForm((current) => ({ ...current, facilityId: result.data[0].id })) })
+      .then((result) => {
+        setFacilities(result.data);
+        if (result.data.length === 1)
+          setForm((current) => ({ ...current, facilityId: result.data[0].id }));
+      })
       .catch(() => setLoadError("Unable to load facilities."));
   }, []);
 
@@ -122,9 +120,7 @@ export function CreateServiceRequest({
       .catch(() => setLoadError("Unable to load assets."));
   }, [form.locationId]);
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -150,11 +146,7 @@ export function CreateServiceRequest({
       ]);
       toast.success(`Attached ${uploaded.length} file(s)`);
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Unable to upload attachment(s)",
-      );
+      toast.error(error instanceof Error ? error.message : "Unable to upload attachment(s)");
     } finally {
       setUploadingAttachments(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -173,10 +165,8 @@ export function CreateServiceRequest({
     if (!form.locationId) newErrors.locationId = "Please select a location.";
     if (!form.assetId) newErrors.assetId = "Please select the affected asset.";
     if (!form.title.trim()) newErrors.title = "Issue title is required.";
-    if (!form.serviceCategory)
-      newErrors.serviceCategory = "Please select a category.";
-    if (!form.description.trim())
-      newErrors.description = "Detailed description is required.";
+    if (!form.serviceCategory) newErrors.serviceCategory = "Please select a category.";
+    if (!form.description.trim()) newErrors.description = "Detailed description is required.";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -240,12 +230,10 @@ export function CreateServiceRequest({
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold tracking-tight">
-                Service Request Received!
-              </h1>
+              <h1 className="text-2xl font-bold tracking-tight">Service Request Received!</h1>
               <p className="text-sm text-muted-foreground">
-                Your maintenance request has been logged and assigned to the
-                facility management team for triage.
+                Your maintenance request has been logged and assigned to the facility management
+                team for triage.
               </p>
             </div>
 
@@ -265,12 +253,8 @@ export function CreateServiceRequest({
               </div>
 
               <div className="flex items-center justify-between border-t border-border pt-3">
-                <span className="text-xs uppercase font-medium text-muted-foreground">
-                  Title
-                </span>
-                <span className="text-sm font-semibold truncate max-w-[250px]">
-                  {form.title}
-                </span>
+                <span className="text-xs uppercase font-medium text-muted-foreground">Title</span>
+                <span className="text-sm font-semibold truncate max-w-[250px]">{form.title}</span>
               </div>
 
               <div className="flex items-center justify-between border-t border-border pt-3">
@@ -298,9 +282,7 @@ export function CreateServiceRequest({
             <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
               <Button
                 variant="outline"
-                onClick={() =>
-                  embedded && onComplete ? onComplete() : navigate(path)
-                }
+                onClick={() => (embedded && onComplete ? onComplete() : navigate(path))}
               >
                 View All Requests
               </Button>
@@ -340,18 +322,10 @@ export function CreateServiceRequest({
         />
       )}
       <main
-        className={
-          embedded
-            ? "min-h-0 overflow-y-auto p-0"
-            : "mx-auto max-w-3xl p-4 sm:p-6 lg:p-8"
-        }
+        className={embedded ? "min-h-0 overflow-y-auto p-0" : "mx-auto max-w-3xl p-4 sm:p-6 lg:p-8"}
       >
         {!embedded && (
-          <Button
-            variant="ghost"
-            className="mb-5 gap-2"
-            onClick={() => navigate(path)}
-          >
+          <Button variant="ghost" className="mb-5 gap-2" onClick={() => navigate(path)}>
             <ArrowLeft className="h-4 w-4" /> Back to requests
           </Button>
         )}
@@ -365,12 +339,10 @@ export function CreateServiceRequest({
           }
         >
           <div>
-            <h1 className="text-xl font-bold tracking-tight">
-              Report an Issue
-            </h1>
+            <h1 className="text-xl font-bold tracking-tight">Report an Issue</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Provide details about the issue so the facilities team can triage
-              and resolve it promptly.
+              Provide details about the issue so the facilities team can triage and resolve it
+              promptly.
             </p>
           </div>
 
@@ -400,10 +372,7 @@ export function CreateServiceRequest({
                   }));
                 }}
               >
-                <SelectTrigger
-                  id="select-facility"
-                  aria-invalid={!!errors.facilityId}
-                >
+                <SelectTrigger id="select-facility" aria-invalid={!!errors.facilityId}>
                   <SelectValue placeholder="Select facility" />
                 </SelectTrigger>
                 <SelectContent>
@@ -431,16 +400,9 @@ export function CreateServiceRequest({
                 }}
                 disabled={!form.facilityId}
               >
-                <SelectTrigger
-                  id="select-location"
-                  aria-invalid={!!errors.locationId}
-                >
+                <SelectTrigger id="select-location" aria-invalid={!!errors.locationId}>
                   <SelectValue
-                    placeholder={
-                      form.facilityId
-                        ? "Select location"
-                        : "Choose a facility first"
-                    }
+                    placeholder={form.facilityId ? "Select location" : "Choose a facility first"}
                   />
                 </SelectTrigger>
                 <SelectContent>
@@ -518,10 +480,7 @@ export function CreateServiceRequest({
                   setErrors((prev) => ({ ...prev, serviceCategory: "" }));
                 }}
               >
-                <SelectTrigger
-                  id="select-category"
-                  aria-invalid={!!errors.serviceCategory}
-                >
+                <SelectTrigger id="select-category" aria-invalid={!!errors.serviceCategory}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -540,10 +499,7 @@ export function CreateServiceRequest({
                   ))}
                 </SelectContent>
               </Select>
-              <FieldError
-                id="category-error"
-                message={errors.serviceCategory}
-              />
+              <FieldError id="category-error" message={errors.serviceCategory} />
             </div>
 
             <div className="space-y-2">
@@ -562,15 +518,9 @@ export function CreateServiceRequest({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">Low — Routine maintenance</SelectItem>
-                  <SelectItem value="medium">
-                    Medium — Operational impact
-                  </SelectItem>
-                  <SelectItem value="high">
-                    High — Urgent attention needed
-                  </SelectItem>
-                  <SelectItem value="critical">
-                    Critical — Emergency / Safety risk
-                  </SelectItem>
+                  <SelectItem value="medium">Medium — Operational impact</SelectItem>
+                  <SelectItem value="high">High — Urgent attention needed</SelectItem>
+                  <SelectItem value="critical">Critical — Emergency / Safety risk</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -578,9 +528,7 @@ export function CreateServiceRequest({
 
           <div className="space-y-2">
             <div className="flex justify-between">
-              <Label htmlFor="request-description">
-                Detailed Description *
-              </Label>
+              <Label htmlFor="request-description">Detailed Description *</Label>
               <span className="text-xs text-muted-foreground">
                 {form.description.length} / 1000 characters
               </span>
@@ -612,13 +560,9 @@ export function CreateServiceRequest({
             >
               <Upload className="h-8 w-8 text-muted-foreground mb-2" />
               <p className="text-sm font-medium">
-                {uploadingAttachments
-                  ? "Uploading files…"
-                  : "Click to upload photos or files"}
+                {uploadingAttachments ? "Uploading files…" : "Click to upload photos or files"}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                PNG, JPG, PDF up to 10MB each
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">PNG, JPG, PDF up to 10MB each</p>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -664,9 +608,7 @@ export function CreateServiceRequest({
             <Button
               type="button"
               variant="outline"
-              onClick={() =>
-                embedded && onComplete ? onComplete() : navigate(path)
-              }
+              onClick={() => (embedded && onComplete ? onComplete() : navigate(path))}
             >
               Cancel
             </Button>

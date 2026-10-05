@@ -1,40 +1,67 @@
-import React, { useMemo } from 'react'
-import { Link } from 'react-router-dom'
-import { AppHeader as Navbar } from '@/components/navigation/Navbar'
-import { KPICard } from '@/features/dashboard/components/StatCard'
-import { useAuthStore } from '@/app/store'
-import { useRoleDashboardDateRange } from '@/features/dashboard/hooks/useRoleDashboardDateRange'
-import { usePortalPath } from '@/hooks/usePortal'
-import type { WorkOrder } from '@/types/common.types'
-import { HandWaveGreeting } from '@/components/ui/HandWaveGreeting'
+import React, { useMemo } from "react";
+import { Link } from "react-router-dom";
+import { AppHeader as Navbar } from "@/components/navigation/Navbar";
+import { KPICard } from "@/features/dashboard/components/StatCard";
+import { useAuthStore } from "@/app/store";
+import { useRoleDashboardDateRange } from "@/features/dashboard/hooks/useRoleDashboardDateRange";
+import { usePortalPath } from "@/hooks/usePortal";
+import type { WorkOrder } from "@/types/common.types";
+import { HandWaveGreeting } from "@/components/ui/HandWaveGreeting";
 
-type DispatchedTicket = { id: string; location: string; title: string; asset: string; slaText: string; badge: string; badgeBg: string; badgeColor: string }
-type TimelineItem = { time: string; title: string; subtitle: string; status: string; statusBg: string; statusColor: string }
-type ActivityItem = { title: string; subtitle: string; time: string }
-type PreventiveMaintenanceItem = { date: string; desc: string; code: string }
+type DispatchedTicket = {
+  id: string;
+  location: string;
+  title: string;
+  asset: string;
+  slaText: string;
+  badge: string;
+  badgeBg: string;
+  badgeColor: string;
+};
+type TimelineItem = {
+  time: string;
+  title: string;
+  subtitle: string;
+  status: string;
+  statusBg: string;
+  statusColor: string;
+};
+type ActivityItem = { title: string; subtitle: string; time: string };
+type PreventiveMaintenanceItem = { date: string; desc: string; code: string };
 
-function SectionCard({ title, subtitle, children, noPadding }: { title: string; subtitle: string; children: React.ReactNode; noPadding?: boolean }) {
+function SectionCard({
+  title,
+  subtitle,
+  children,
+  noPadding,
+}: {
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+  noPadding?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-border bg-card shadow-none">
       <div className="border-b border-border px-5 py-4">
         <h2 className="text-[15px] font-semibold text-foreground">{title}</h2>
         <p className="mt-0.5 text-[12px] text-muted-foreground">{subtitle}</p>
       </div>
-      <div className={noPadding ? '' : 'p-5'}>{children}</div>
+      <div className={noPadding ? "" : "p-5"}>{children}</div>
     </div>
-  )
+  );
 }
 
 export function TechnicianDashboard() {
-  const user = useAuthStore((state) => state.user)
-  const { workOrdersInRange } = useRoleDashboardDateRange('30d')
-  const workOrdersPath = usePortalPath('work-orders')
+  const user = useAuthStore((state) => state.user);
+  const { workOrdersInRange } = useRoleDashboardDateRange("30d");
+  const workOrdersPath = usePortalPath("work-orders");
 
-  const assignedCount = workOrdersInRange.length
-  const criticalCount = workOrdersInRange.filter((w) => w.priority === 'critical').length
-  const dueTodayCount = workOrdersInRange.filter((w) => w.priority === 'high' || w.priority === 'critical').length
-  const completedCount = workOrdersInRange.filter((w) => w.status === 'completed').length
-
+  const assignedCount = workOrdersInRange.length;
+  const criticalCount = workOrdersInRange.filter((w) => w.priority === "critical").length;
+  const dueTodayCount = workOrdersInRange.filter(
+    (w) => w.priority === "high" || w.priority === "critical",
+  ).length;
+  const completedCount = workOrdersInRange.filter((w) => w.status === "completed").length;
 
   return (
     <>
@@ -112,7 +139,9 @@ export function TechnicianDashboard() {
 
                     <h3 className="mt-2 text-[16px] font-bold text-foreground">{ticket.title}</h3>
                     <p className="mt-1 text-[13px] text-muted-foreground">{ticket.asset}</p>
-                    <p className="mt-1 text-[12px] font-semibold text-destructive">{ticket.slaText}</p>
+                    <p className="mt-1 text-[12px] font-semibold text-destructive">
+                      {ticket.slaText}
+                    </p>
 
                     <div className="mt-4 flex items-center gap-3">
                       <Link
@@ -121,13 +150,18 @@ export function TechnicianDashboard() {
                       >
                         Start Work
                       </Link>
-                      <Link to={`${workOrdersPath}/${ticket.id}`} className="rounded-lg border border-border bg-card px-4 py-2 text-[13px] font-semibold text-foreground transition-colors hover:bg-muted">
+                      <Link
+                        to={`${workOrdersPath}/${ticket.id}`}
+                        className="rounded-lg border border-border bg-card px-4 py-2 text-[13px] font-semibold text-foreground transition-colors hover:bg-muted"
+                      >
                         View details
                       </Link>
                     </div>
                   </div>
                 ))}
-                <p className="text-sm text-muted-foreground">Assigned tickets are available in the Work Orders workspace.</p>
+                <p className="text-sm text-muted-foreground">
+                  Assigned tickets are available in the Work Orders workspace.
+                </p>
               </div>
             </SectionCard>
 
@@ -151,7 +185,10 @@ export function TechnicianDashboard() {
                     </span>
                   </div>
                 ))}
-                <p className="text-sm text-muted-foreground">Upcoming preventive-maintenance assignments are not included in the dashboard response.</p>
+                <p className="text-sm text-muted-foreground">
+                  Upcoming preventive-maintenance assignments are not included in the dashboard
+                  response.
+                </p>
               </div>
             </SectionCard>
           </div>
@@ -170,8 +207,12 @@ export function TechnicianDashboard() {
                       {item.time}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-foreground leading-tight">{item.title}</p>
-                      <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">{item.subtitle}</p>
+                      <p className="text-[13px] font-semibold text-foreground leading-tight">
+                        {item.title}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                        {item.subtitle}
+                      </p>
                     </div>
                     <span
                       className="shrink-0 rounded px-2 py-0.5 text-[10px] font-bold"
@@ -181,12 +222,18 @@ export function TechnicianDashboard() {
                     </span>
                   </div>
                 ))}
-                <p className="text-sm text-muted-foreground">Timeline data is not available from the dashboard API.</p>
+                <p className="text-sm text-muted-foreground">
+                  Timeline data is not available from the dashboard API.
+                </p>
               </div>
             </SectionCard>
 
             {/* Recent Activity Log */}
-            <SectionCard title="Recent Activity Log" subtitle="Recent sign-offs and status alerts" noPadding>
+            <SectionCard
+              title="Recent Activity Log"
+              subtitle="Recent sign-offs and status alerts"
+              noPadding
+            >
               <div className="divide-y divide-border">
                 {([] as ActivityItem[]).map((act, i) => (
                   <div key={i} className="px-5 py-3.5">
@@ -197,12 +244,14 @@ export function TechnicianDashboard() {
                     <p className="mt-0.5 text-[12px] text-muted-foreground">{act.subtitle}</p>
                   </div>
                 ))}
-                <p className="px-5 py-4 text-sm text-muted-foreground">Recent activity is not available from the dashboard API.</p>
+                <p className="px-5 py-4 text-sm text-muted-foreground">
+                  Recent activity is not available from the dashboard API.
+                </p>
               </div>
             </SectionCard>
           </div>
         </div>
       </div>
     </>
-  )
+  );
 }

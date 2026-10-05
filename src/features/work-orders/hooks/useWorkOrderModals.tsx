@@ -1,51 +1,51 @@
-import { useCallback, useState } from 'react'
-import { toast } from 'sonner'
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
 
-import { ConfirmDialog } from '@/components/feedback/ConfirmDialog'
-import { useAuthStore } from '@/app/store'
-import { appendNotification } from '@/features/notifications/services/notificationEvents'
-import { AssignWorkOrderDialog } from '@/features/work-orders/components/AssignWorkOrderDialog'
-import { EditWorkOrderDialog } from '@/features/work-orders/components/EditWorkOrderDialog'
-import { workOrdersService } from '@/features/work-orders/services/workOrders.service'
-import type { WorkOrder } from '@/types/common.types'
+import { ConfirmDialog } from "@/components/feedback/ConfirmDialog";
+import { useAuthStore } from "@/app/store";
+import { appendNotification } from "@/features/notifications/services/notificationEvents";
+import { AssignWorkOrderDialog } from "@/features/work-orders/components/AssignWorkOrderDialog";
+import { EditWorkOrderDialog } from "@/features/work-orders/components/EditWorkOrderDialog";
+import { workOrdersService } from "@/features/work-orders/services/workOrders.service";
+import type { WorkOrder } from "@/types/common.types";
 
 export function useWorkOrderModals() {
-  const [editOrder, setEditOrder] = useState<WorkOrder | null>(null)
-  const [assignOrder, setAssignOrder] = useState<WorkOrder | null>(null)
-  const [deleteOrder, setDeleteOrder] = useState<WorkOrder | null>(null)
-  const user = useAuthStore((s) => s.user)
+  const [editOrder, setEditOrder] = useState<WorkOrder | null>(null);
+  const [assignOrder, setAssignOrder] = useState<WorkOrder | null>(null);
+  const [deleteOrder, setDeleteOrder] = useState<WorkOrder | null>(null);
+  const user = useAuthStore((s) => s.user);
 
-  const openEdit = useCallback((order: WorkOrder) => setEditOrder(order), [])
-  const openAssign = useCallback((order: WorkOrder) => setAssignOrder(order), [])
-  const openDelete = useCallback((order: WorkOrder) => setDeleteOrder(order), [])
+  const openEdit = useCallback((order: WorkOrder) => setEditOrder(order), []);
+  const openAssign = useCallback((order: WorkOrder) => setAssignOrder(order), []);
+  const openDelete = useCallback((order: WorkOrder) => setDeleteOrder(order), []);
 
   const notifyAssignment = (updated: WorkOrder) => {
-    if (!user || !updated.assigneeId) return
-    appendNotification(updated.assigneeId, 'technician', {
-      type: 'work_order',
-      title: 'Work order assigned',
+    if (!user || !updated.assigneeId) return;
+    appendNotification(updated.assigneeId, "technician", {
+      type: "work_order",
+      title: "Work order assigned",
       message: `${updated.id} "${updated.title}" has been assigned to you`,
-      priority: updated.priority === 'critical' ? 'high' : 'normal',
+      priority: updated.priority === "critical" ? "high" : "normal",
       actionUrl: `work-orders/${updated.id}`,
-    })
+    });
     appendNotification(user.id, user.role, {
-      type: 'work_order',
-      title: 'Assignment updated',
-      message: `${updated.id} assigned to ${updated.assigneeName ?? 'technician'}`,
+      type: "work_order",
+      title: "Assignment updated",
+      message: `${updated.id} assigned to ${updated.assigneeName ?? "technician"}`,
       actionUrl: `work-orders/${updated.id}`,
-    })
-  }
+    });
+  };
 
   const handleDelete = async () => {
-    if (!deleteOrder) return
+    if (!deleteOrder) return;
     try {
-      await workOrdersService.delete(deleteOrder.id)
-      toast.success(`${deleteOrder.id} archived`)
-      setDeleteOrder(null)
+      await workOrdersService.delete(deleteOrder.id);
+      toast.success(`${deleteOrder.id} archived`);
+      setDeleteOrder(null);
     } catch {
-      toast.error('Unable to archive the work order')
+      toast.error("Unable to archive the work order");
     }
-  }
+  };
 
   const modals = (
     <>
@@ -54,7 +54,7 @@ export function useWorkOrderModals() {
         open={!!editOrder}
         onOpenChange={(open) => !open && setEditOrder(null)}
         onSaved={(updated) => {
-          setEditOrder(null)
+          setEditOrder(null);
         }}
       />
       <AssignWorkOrderDialog
@@ -62,8 +62,8 @@ export function useWorkOrderModals() {
         open={!!assignOrder}
         onOpenChange={(open) => !open && setAssignOrder(null)}
         onAssigned={(updated) => {
-          notifyAssignment(updated)
-          setAssignOrder(null)
+          notifyAssignment(updated);
+          setAssignOrder(null);
         }}
       />
       <ConfirmDialog
@@ -73,7 +73,7 @@ export function useWorkOrderModals() {
         description={
           deleteOrder
             ? `This will permanently remove ${deleteOrder.id} — "${deleteOrder.title}". This action cannot be undone.`
-            : ''
+            : ""
         }
         confirmLabel="Delete"
         warning="All associated comments, attachments, and activity history will be permanently removed."
@@ -81,7 +81,7 @@ export function useWorkOrderModals() {
         onConfirm={handleDelete}
       />
     </>
-  )
+  );
 
-  return { openEdit, openAssign, openDelete, modals }
+  return { openEdit, openAssign, openDelete, modals };
 }

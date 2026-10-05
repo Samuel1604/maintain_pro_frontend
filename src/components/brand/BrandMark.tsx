@@ -1,8 +1,8 @@
-import { cn } from '@/utils/helpers'
+import { cn } from "@/utils/helpers";
 
 interface BrandMarkProps {
-  size?: number
-  className?: string
+  size?: number;
+  className?: string;
 }
 
 /**
@@ -16,9 +16,9 @@ export function BrandMark({ size = 32, className }: BrandMarkProps) {
       alt=""
       width={size}
       height={size}
-      className={cn('shrink-0 rounded-lg object-contain', className)}
+      className={cn("shrink-0 rounded-lg object-contain", className)}
       style={{ width: size, height: size }}
       aria-hidden
     />
-  )
+  );
 }

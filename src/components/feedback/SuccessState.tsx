@@ -1,18 +1,18 @@
-import type { LucideIcon } from 'lucide-react'
-import { CheckCircle2 } from 'lucide-react'
+import type { LucideIcon } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { cn } from '@/utils/helpers'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/utils/helpers";
 
 interface SuccessStateProps {
-  icon?: LucideIcon
-  title: string
-  description?: React.ReactNode
-  actionLabel?: string
-  onAction?: () => void
-  secondaryLabel?: string
-  onSecondaryAction?: () => void
-  className?: string
+  icon?: LucideIcon;
+  title: string;
+  description?: React.ReactNode;
+  actionLabel?: string;
+  onAction?: () => void;
+  secondaryLabel?: string;
+  onSecondaryAction?: () => void;
+  className?: string;
 }
 
 /**
@@ -33,13 +33,15 @@ export function SuccessState({
     <div
       role="status"
       aria-live="polite"
-      className={cn('flex flex-col items-center gap-3 py-6 text-center', className)}
+      className={cn("flex flex-col items-center gap-3 py-6 text-center", className)}
     >
       <div className="rounded-full bg-status-completed/10 p-4">
         <Icon className="h-8 w-8 text-status-completed" aria-hidden />
       </div>
       <p className="text-lg font-semibold text-foreground">{title}</p>
-      {description ? <div className="max-w-sm text-sm text-muted-foreground">{description}</div> : null}
+      {description ? (
+        <div className="max-w-sm text-sm text-muted-foreground">{description}</div>
+      ) : null}
       {(actionLabel && onAction) || (secondaryLabel && onSecondaryAction) ? (
         <div className="mt-2 flex w-full flex-col gap-2">
           {actionLabel && onAction ? (
@@ -55,5 +57,5 @@ export function SuccessState({
         </div>
       ) : null}
     </div>
-  )
+  );
 }

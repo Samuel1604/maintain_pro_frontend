@@ -8,25 +8,25 @@ import {
   Settings2,
   Shield,
   Wrench,
-} from 'lucide-react'
+} from "lucide-react";
 
-import type { NotificationType } from '@/types/common.types'
-import type { UserRole } from '@/types/user.types'
-import { USER_ROLES } from '@/types/user.types'
+import type { NotificationType } from "@/types/common.types";
+import type { UserRole } from "@/types/user.types";
+import { USER_ROLES } from "@/types/user.types";
 
 export const NOTIFICATION_TYPE_CONFIG: Record<
   NotificationType,
   { icon: React.ElementType; color: string; label: string }
 > = {
-  work_order: { icon: Wrench, color: 'text-blue-400 bg-blue-400/10', label: 'Work Orders' },
-  maintenance: { icon: Clock, color: 'text-purple-400 bg-purple-400/10', label: 'Maintenance' },
-  inventory: { icon: Package, color: 'text-amber-400 bg-amber-400/10', label: 'Inventory' },
-  approval: { icon: DollarSign, color: 'text-emerald-400 bg-emerald-400/10', label: 'Approvals' },
-  system: { icon: Settings2, color: 'text-muted-foreground bg-muted', label: 'System' },
-  vendor: { icon: FileText, color: 'text-cyan-400 bg-cyan-400/10', label: 'Vendors' },
-  contract: { icon: Shield, color: 'text-orange-400 bg-orange-400/10', label: 'Contracts' },
-  escalation: { icon: AlertTriangle, color: 'text-red-400 bg-red-400/10', label: 'Escalations' },
-}
+  work_order: { icon: Wrench, color: "text-blue-400 bg-blue-400/10", label: "Work Orders" },
+  maintenance: { icon: Clock, color: "text-purple-400 bg-purple-400/10", label: "Maintenance" },
+  inventory: { icon: Package, color: "text-amber-400 bg-amber-400/10", label: "Inventory" },
+  approval: { icon: DollarSign, color: "text-emerald-400 bg-emerald-400/10", label: "Approvals" },
+  system: { icon: Settings2, color: "text-muted-foreground bg-muted", label: "System" },
+  vendor: { icon: FileText, color: "text-cyan-400 bg-cyan-400/10", label: "Vendors" },
+  contract: { icon: Shield, color: "text-orange-400 bg-orange-400/10", label: "Contracts" },
+  escalation: { icon: AlertTriangle, color: "text-red-400 bg-red-400/10", label: "Escalations" },
+};
 
 export const DEFAULT_NOTIFICATION_PREFS: Record<
   NotificationType,
@@ -40,48 +40,48 @@ export const DEFAULT_NOTIFICATION_PREFS: Record<
   vendor: { inApp: true, email: true, sms: false, push: false },
   contract: { inApp: true, email: true, sms: true, push: true },
   escalation: { inApp: true, email: true, sms: true, push: true },
-}
+};
 
 export const NOTIFICATION_TYPES_BY_ROLE: Record<UserRole, NotificationType[]> = {
   [USER_ROLES.ADMIN]: [
-    'work_order',
-    'maintenance',
-    'inventory',
-    'approval',
-    'system',
-    'vendor',
-    'contract',
-    'escalation',
+    "work_order",
+    "maintenance",
+    "inventory",
+    "approval",
+    "system",
+    "vendor",
+    "contract",
+    "escalation",
   ],
   [USER_ROLES.FACILITY_MANAGER]: [
-    'work_order',
-    'maintenance',
-    'inventory',
-    'approval',
-    'system',
-    'vendor',
-    'contract',
-    'escalation',
+    "work_order",
+    "maintenance",
+    "inventory",
+    "approval",
+    "system",
+    "vendor",
+    "contract",
+    "escalation",
   ],
-  [USER_ROLES.TECHNICIAN]: ['work_order', 'maintenance', 'system'],
-  [USER_ROLES.VENDOR_LEAD]: ['work_order', 'vendor', 'contract', 'approval'],
-  [USER_ROLES.VENDOR_MANAGER]: ['work_order', 'vendor', 'contract', 'approval'],
-  [USER_ROLES.VENDOR_TECHNICIAN]: ['work_order', 'vendor', 'system'],
-  [USER_ROLES.STAFF]: ['work_order', 'maintenance'],
-  [USER_ROLES.FINANCE]: ['approval', 'vendor', 'contract', 'work_order', 'inventory'],
-}
+  [USER_ROLES.TECHNICIAN]: ["work_order", "maintenance", "system"],
+  [USER_ROLES.VENDOR_LEAD]: ["work_order", "vendor", "contract", "approval"],
+  [USER_ROLES.VENDOR_MANAGER]: ["work_order", "vendor", "contract", "approval"],
+  [USER_ROLES.VENDOR_TECHNICIAN]: ["work_order", "vendor", "system"],
+  [USER_ROLES.STAFF]: ["work_order", "maintenance"],
+  [USER_ROLES.FINANCE]: ["approval", "vendor", "contract", "work_order", "inventory"],
+};
 
 export function getNotificationTypesForRole(role: UserRole): NotificationType[] {
-  return NOTIFICATION_TYPES_BY_ROLE[role] ?? NOTIFICATION_TYPES_BY_ROLE[USER_ROLES.STAFF]
+  return NOTIFICATION_TYPES_BY_ROLE[role] ?? NOTIFICATION_TYPES_BY_ROLE[USER_ROLES.STAFF];
 }
 
 export function canManageEscalationRules(role: UserRole): boolean {
-  return role === USER_ROLES.ADMIN || role === USER_ROLES.FACILITY_MANAGER
+  return role === USER_ROLES.ADMIN || role === USER_ROLES.FACILITY_MANAGER;
 }
 
 export function getNotificationsPageSubtitle(role: UserRole): string {
   if (canManageEscalationRules(role)) {
-    return 'Your alerts, channel preferences & escalation rules'
+    return "Your alerts, channel preferences & escalation rules";
   }
-  return 'Your alerts and notification preferences'
+  return "Your alerts and notification preferences";
 }

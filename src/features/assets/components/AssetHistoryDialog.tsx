@@ -1,24 +1,24 @@
-import { Wrench } from 'lucide-react'
+import { Wrench } from "lucide-react";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { formatDate } from '@/utils/formatDate'
-import type { Asset } from '@/types/common.types'
+} from "@/components/ui/dialog";
+import { formatDate } from "@/utils/formatDate";
+import type { Asset } from "@/types/common.types";
 
 interface AssetHistoryDialogProps {
-  asset: Asset | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  asset: Asset | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function AssetHistoryDialog({ asset, open, onOpenChange }: AssetHistoryDialogProps) {
-  const records = asset?.maintenanceHistory ?? []
+  const records = asset?.maintenanceHistory ?? [];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -27,7 +27,9 @@ export function AssetHistoryDialog({ asset, open, onOpenChange }: AssetHistoryDi
           <DialogTitle>Maintenance history — {asset?.name}</DialogTitle>
         </DialogHeader>
         {records.length === 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">No maintenance records yet.</p>
+          <p className="py-6 text-center text-sm text-muted-foreground">
+            No maintenance records yet.
+          </p>
         ) : (
           <ul className="max-h-64 space-y-3 overflow-y-auto text-sm">
             {records.map((r) => (
@@ -49,5 +51,5 @@ export function AssetHistoryDialog({ asset, open, onOpenChange }: AssetHistoryDi
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

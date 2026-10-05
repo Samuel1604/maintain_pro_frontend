@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
-import { Bell, Plus, Menu, Search, CircleHelp, ChevronDown, User, LogOut } from 'lucide-react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { Bell, Plus, Menu, Search, CircleHelp, ChevronDown, User, LogOut } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,29 +10,29 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { useUserNotifications } from '@/features/notifications/hooks/useUserNotifications'
-import { AppSidebar as Sidebar } from '@/components/navigation/Sidebar'
-import { GlobalSearchDialog } from '@/components/navigation/GlobalSearchDialog'
-import { usePortal, usePortalPath } from '@/hooks/usePortal'
-import { useRoleAccess } from '@/hooks/useRoleAccess'
-import { useAuthStore } from '@/app/store'
-import { useAuth } from '@/features/auth/hooks/useAuth'
-import { cn } from '@/utils/helpers'
-import { MarqueeText } from '@/components/ui/MarqueeText'
-import { PORTAL_NAV } from '@/app/navigation/portalNav.config'
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useUserNotifications } from "@/features/notifications/hooks/useUserNotifications";
+import { AppSidebar as Sidebar } from "@/components/navigation/Sidebar";
+import { GlobalSearchDialog } from "@/components/navigation/GlobalSearchDialog";
+import { usePortal, usePortalPath } from "@/hooks/usePortal";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
+import { useAuthStore } from "@/app/store";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { cn } from "@/utils/helpers";
+import { MarqueeText } from "@/components/ui/MarqueeText";
+import { PORTAL_NAV } from "@/app/navigation/portalNav.config";
 
 interface AppHeaderProps {
-  title: string
-  subtitle?: string
+  title: string;
+  subtitle?: string;
   /** Shown after the menu button (e.g. back navigation on detail pages) */
-  leading?: React.ReactNode
-  actions?: React.ReactNode
+  leading?: React.ReactNode;
+  actions?: React.ReactNode;
   /** Hide global Create dropdown (e.g. when the page has its own primary create action) */
-  hideQuickCreate?: boolean
+  hideQuickCreate?: boolean;
 }
 
 export function AppHeader({
@@ -42,62 +42,60 @@ export function AppHeader({
   actions,
   hideQuickCreate = false,
 }: AppHeaderProps) {
-  const { pathname } = useLocation()
-  const portal = usePortal()
-  const navigate = useNavigate()
-  const [navOpen, setNavOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
+  const { pathname } = useLocation();
+  const portal = usePortal();
+  const navigate = useNavigate();
+  const [navOpen, setNavOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  const isDashboard = /\/dashboard\/?$/.test(pathname)
-  const routeParts = pathname.split('/').filter(Boolean)
-  const routeSegment = routeParts.slice(2).join('/')
-  const navigationItem = PORTAL_NAV[portal].primary.find((item) => routeSegment === item.segment || routeSegment.startsWith(`${item.segment}/`))
-  const breadcrumbSection = navigationItem?.name ?? subtitle
-  const isTopLevelNavigationPage = navigationItem ? routeSegment === navigationItem.segment : false
-  const showQuickCreate = !hideQuickCreate && !isDashboard
-  const newAssetPath = usePortalPath('assets/new')
-  const newVendorPath = usePortalPath('vendors/new')
-  const dashboardPath = usePortalPath('dashboard')
-  const breadcrumbPath = usePortalPath(navigationItem?.segment ?? 'dashboard')
-  const pmPath = usePortalPath('preventive-maintenance')
-  const notificationsPath = usePortalPath('notifications')
-  const profilePath = usePortalPath('profile')
-  const loginPath = '/login'
-  const signupPath = '/signup'
+  const isDashboard = /\/dashboard\/?$/.test(pathname);
+  const routeParts = pathname.split("/").filter(Boolean);
+  const routeSegment = routeParts.slice(2).join("/");
+  const navigationItem = PORTAL_NAV[portal].primary.find(
+    (item) => routeSegment === item.segment || routeSegment.startsWith(`${item.segment}/`),
+  );
+  const breadcrumbSection = navigationItem?.name ?? subtitle;
+  const isTopLevelNavigationPage = navigationItem ? routeSegment === navigationItem.segment : false;
+  const showQuickCreate = !hideQuickCreate && !isDashboard;
+  const newAssetPath = usePortalPath("assets/new");
+  const newVendorPath = usePortalPath("vendors/new");
+  const dashboardPath = usePortalPath("dashboard");
+  const breadcrumbPath = usePortalPath(navigationItem?.segment ?? "dashboard");
+  const pmPath = usePortalPath("preventive-maintenance");
+  const notificationsPath = usePortalPath("notifications");
+  const profilePath = usePortalPath("profile");
+  const loginPath = "/login";
+  const signupPath = "/signup";
 
   const handleQuickCreate = () => {
-    if (canManageAssets) return navigate(newAssetPath)
-    if (canManageVendors) return navigate(newVendorPath)
-    if (canManagePm) return navigate(pmPath)
-  }
+    if (canManageAssets) return navigate(newAssetPath);
+    if (canManageVendors) return navigate(newVendorPath);
+    if (canManagePm) return navigate(pmPath);
+  };
 
-  const { notifications, unreadCount, markAllRead } = useUserNotifications()
+  const { notifications, unreadCount, markAllRead } = useUserNotifications();
 
-  const user = useAuthStore((state) => state.user)
-  const { logout } = useAuth()
-  const {
-    canManageAssets,
-    canManageVendors,
-    canManagePm,
-  } = useRoleAccess()
+  const user = useAuthStore((state) => state.user);
+  const { logout } = useAuth();
+  const { canManageAssets, canManageVendors, canManagePm } = useRoleAccess();
 
   useEffect(() => {
-    setNavOpen(false)
-  }, [pathname])
+    setNavOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault()
-        setSearchOpen(true)
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
       }
-    }
-    window.addEventListener('keydown', handleShortcut)
-    return () => window.removeEventListener('keydown', handleShortcut)
-  }, [])
+    };
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, []);
 
-  const hasMobileToolbar = Boolean(actions)
-  const firstName = user?.firstName || 'User'
+  const hasMobileToolbar = Boolean(actions);
+  const firstName = user?.firstName || "User";
 
   return (
     <>
@@ -118,7 +116,11 @@ export function AppHeader({
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="left" showCloseButton={false} className="w-[280px] sm:w-[300px] p-0 border-none bg-card">
+              <SheetContent
+                side="left"
+                showCloseButton={false}
+                className="w-[280px] sm:w-[300px] p-0 border-none bg-card"
+              >
                 <Sidebar portal={portal} onNavigate={() => setNavOpen(false)} />
               </SheetContent>
             </Sheet>
@@ -126,19 +128,27 @@ export function AppHeader({
             {leading}
 
             <div className="min-w-0 flex-1 flex items-center gap-1.5 text-[13px]">
-              <Link to={dashboardPath} className="shrink-0 font-semibold text-muted-foreground transition-colors hover:text-primary">
-                {portal === 'org' ? 'Organization' : 'Vendor'}
+              <Link
+                to={dashboardPath}
+                className="shrink-0 font-semibold text-muted-foreground transition-colors hover:text-primary"
+              >
+                {portal === "org" ? "Organization" : "Vendor"}
               </Link>
               <span className="text-muted-foreground/40 shrink-0">/</span>
               {breadcrumbSection && !isTopLevelNavigationPage && (
                 <>
-                  <Link to={breadcrumbPath} className="hidden shrink-0 text-muted-foreground transition-colors hover:text-foreground sm:inline">
+                  <Link
+                    to={breadcrumbPath}
+                    className="hidden shrink-0 text-muted-foreground transition-colors hover:text-foreground sm:inline"
+                  >
                     {breadcrumbSection}
                   </Link>
                   <span className="text-muted-foreground/40 shrink-0 hidden sm:inline">/</span>
                 </>
               )}
-              <MarqueeText className="font-bold tracking-tight text-foreground">{isTopLevelNavigationPage ? breadcrumbSection : title}</MarqueeText>
+              <MarqueeText className="font-bold tracking-tight text-foreground">
+                {isTopLevelNavigationPage ? breadcrumbSection : title}
+              </MarqueeText>
             </div>
           </div>
 
@@ -178,7 +188,7 @@ export function AppHeader({
               size="icon"
               className="hidden h-8 w-8 rounded-lg border border-border text-muted-foreground hover:bg-muted/60 lg:inline-flex"
               aria-label="Help & Support"
-              onClick={() => window.open('https://docs.maintainpro.com', '_blank')}
+              onClick={() => window.open("https://docs.maintainpro.com", "_blank")}
             >
               <CircleHelp className="h-4 w-4" />
             </Button>
@@ -201,15 +211,21 @@ export function AppHeader({
 
                   <DropdownMenuContent align="end" className="w-48">
                     {canManageAssets && (
-                      <DropdownMenuItem onClick={() => navigate(newAssetPath)}>Asset</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(newAssetPath)}>
+                        Asset
+                      </DropdownMenuItem>
                     )}
                     {canManageVendors && (
-                      <DropdownMenuItem onClick={() => navigate(newVendorPath)}>Vendor</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(newVendorPath)}>
+                        Vendor
+                      </DropdownMenuItem>
                     )}
                     {canManagePm && (
                       <>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => navigate(pmPath)}>PM Schedule</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate(pmPath)}>
+                          PM Schedule
+                        </DropdownMenuItem>
                       </>
                     )}
                   </DropdownMenuContent>
@@ -236,7 +252,7 @@ export function AppHeader({
                       size="icon"
                       className="relative h-9 w-9 rounded-lg border border-border text-muted-foreground hover:bg-muted/60"
                       aria-label={
-                        unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'
+                        unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"
                       }
                     >
                       <Bell className="h-4 w-4" aria-hidden />
@@ -248,7 +264,10 @@ export function AppHeader({
                     </Button>
                   </DropdownMenuTrigger>
 
-                  <DropdownMenuContent align="end" className="w-80 max-w-[calc(100vw-2rem)] max-h-96 overflow-y-auto">
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-80 max-w-[calc(100vw-2rem)] max-h-96 overflow-y-auto"
+                  >
                     <DropdownMenuLabel className="flex items-center justify-between">
                       Notifications
                       <Button
@@ -264,7 +283,10 @@ export function AppHeader({
                     <DropdownMenuSeparator />
 
                     {notifications.length === 0 && (
-                      <DropdownMenuItem disabled className="justify-center py-6 text-sm text-muted-foreground">
+                      <DropdownMenuItem
+                        disabled
+                        className="justify-center py-6 text-sm text-muted-foreground"
+                      >
                         No notifications
                       </DropdownMenuItem>
                     )}
@@ -277,14 +299,17 @@ export function AppHeader({
                         <div className="flex w-full items-start justify-between gap-2">
                           <span
                             className={cn(
-                              'text-sm font-medium',
-                              !notification.isRead && 'text-foreground',
+                              "text-sm font-medium",
+                              !notification.isRead && "text-foreground",
                             )}
                           >
                             {notification.title}
                           </span>
                           {!notification.isRead && (
-                            <div className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-label="Unread" />
+                            <div
+                              className="h-2 w-2 shrink-0 rounded-full bg-primary"
+                              aria-label="Unread"
+                            />
                           )}
                         </div>
                         <span className="line-clamp-2 text-xs text-muted-foreground">
@@ -322,7 +347,9 @@ export function AppHeader({
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.firstName} {user.lastName}</p>
+                        <p className="text-sm font-medium leading-none">
+                          {user.firstName} {user.lastName}
+                        </p>
                         <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                       </div>
                     </DropdownMenuLabel>
@@ -335,7 +362,9 @@ export function AppHeader({
                       <Bell className="mr-2 h-4 w-4" />
                       Notifications
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => window.open('https://docs.maintainpro.com', '_blank')}>
+                    <DropdownMenuItem
+                      onClick={() => window.open("https://docs.maintainpro.com", "_blank")}
+                    >
                       <CircleHelp className="mr-2 h-4 w-4" />
                       Help & Support
                     </DropdownMenuItem>
@@ -363,8 +392,8 @@ export function AppHeader({
         {hasMobileToolbar ? (
           <div
             className={cn(
-              'flex items-center gap-2 overflow-x-auto border-t border-border/60 px-3 py-2 lg:hidden',
-              '[&_button]:shrink-0 [&_a]:shrink-0',
+              "flex items-center gap-2 overflow-x-auto border-t border-border/60 px-3 py-2 lg:hidden",
+              "[&_button]:shrink-0 [&_a]:shrink-0",
             )}
           >
             {actions}
@@ -372,5 +401,5 @@ export function AppHeader({
         ) : null}
       </div>
     </>
-  )
+  );
 }

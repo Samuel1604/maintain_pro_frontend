@@ -1,40 +1,29 @@
 export const ROUTES = {
-  HOME: '/',
+  HOME: "/",
 
-  LOGIN: '/login',
+  LOGIN: "/login",
 
-  SIGNUP: '/signup',
+  SIGNUP: "/signup",
 
-  SIGNUP_ORGANIZATION:
-    '/signup/organization',
+  SIGNUP_ORGANIZATION: "/signup/organization",
 
-  SIGNUP_VENDOR:
-    '/signup/vendor',
+  SIGNUP_VENDOR: "/signup/vendor",
 
-  FORGOT_PASSWORD:
-    '/forgot-password',
+  FORGOT_PASSWORD: "/forgot-password",
 
-  RESET_PASSWORD:
-    '/reset-password',
+  RESET_PASSWORD: "/reset-password",
 
-  ACCEPT_INVITE:
-    '/accept-invite',
+  ACCEPT_INVITE: "/accept-invite",
 
-  UNAUTHORIZED:
-    '/unauthorized',
+  UNAUTHORIZED: "/unauthorized",
 
-  FEATURES:
-    '/features',
+  FEATURES: "/features",
 
-  ABOUT:
-    '/about',
+  ABOUT: "/about",
 
-  CONTACT:
-    '/contact',
+  CONTACT: "/contact",
 
-  PRIVACY_POLICY:
-    '/privacy-policy',
+  PRIVACY_POLICY: "/privacy-policy",
 
-  TERMS_OF_SERVICE:
-    '/terms-of-service',
-} as const
+  TERMS_OF_SERVICE: "/terms-of-service",
+} as const;

@@ -53,7 +53,12 @@ export const invitationService = {
     return apiClient.post<TempInvitationResponse>("/invitations/temp", payload);
   },
 
-  async listInvitations(params?: { status?: string; role?: string; page?: number; limit?: number }) {
+  async listInvitations(params?: {
+    status?: string;
+    role?: string;
+    page?: number;
+    limit?: number;
+  }) {
     return apiClient.get<InvitationResponse[]>(ENDPOINTS.INVITATIONS.LIST, { params });
   },
 
