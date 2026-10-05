@@ -301,10 +301,3 @@ export function FacilityManagerDashboard() {
     </>
   );
 }
-
-// suppress unused lint warnings
-void AlertCircle;
-void Clock3;
-void Users;
-void Wrench;
-void Calendar;
