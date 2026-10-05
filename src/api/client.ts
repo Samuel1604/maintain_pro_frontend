@@ -55,8 +55,8 @@ async function getCsrfToken(): Promise<string | undefined> {
   if (cookieToken) return cookieToken;
   if (!csrfTokenPromise) {
     csrfTokenPromise = client
-      .get<{ token?: string | null }>("/csrf")
-      .then((result) => result.token ?? undefined)
+      .get<ApplicationResult<{ token?: string | null }>>("/csrf")
+      .then((response) => response.data.data?.token ?? undefined)
       .finally(() => {
         csrfTokenPromise = null;
       });
