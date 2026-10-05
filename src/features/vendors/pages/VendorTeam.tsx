@@ -29,7 +29,7 @@ import { useActionConfirm } from "@/hooks/useActionConfirm";
 import { FeedbackAlert } from "@/components/feedback/FeedbackAlert";
 
 import { invitationService } from "@/services/invitation.service";
-import { apiClient } from "@/api/client";
+import { httpClient } from "@/api/httpClient";
 import { ENDPOINTS } from "@/api/endpoints";
 
 const MEMBER_ROLES = [
@@ -108,7 +108,7 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
 
   const allMembers = [teamLead, ...members];
   useEffect(() => {
-    void apiClient
+    void httpClient
       .get<
         | Array<{
             id?: string;
