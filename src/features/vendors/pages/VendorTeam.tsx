@@ -140,6 +140,7 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
               email: string;
               role: string;
               isActive?: boolean;
+              createdAt?: string;
             }>;
           }
       >(ENDPOINTS.USERS)
