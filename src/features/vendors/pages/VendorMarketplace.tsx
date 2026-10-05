@@ -228,7 +228,14 @@ export function VendorMarketplace() {
       setRfqVendor(null);
       setRfqDetails("");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Unable to send vendor request");
+      const message = error instanceof Error ? error.message : "Unable to send vendor request";
+      if (message.toLowerCase().includes("already exists")) {
+        toast.info(`A relationship with ${vendor.name} is already active or pending.`);
+        setRfqVendor(null);
+        setRfqDetails("");
+        return;
+      }
+      toast.error(message);
     }
   };
 
