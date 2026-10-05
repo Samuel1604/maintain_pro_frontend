@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { UserPlus, X, Copy, Check, AlertTriangle, ShieldAlert } from "lucide-react";
 import { invitationApi, type TempInvitationResult } from "@/api/invitation.api";
 import { useAuthStore } from "@/app/store";
+import { useFacilities } from "@/features/facilities/hooks/useFacilities";
 
 interface InviteUserModalProps {
   isOpen: boolean;
@@ -10,8 +11,15 @@ interface InviteUserModalProps {
   facilityName?: string;
 }
 
-export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: InviteUserModalProps) {
+export function InviteUserModal({
+  isOpen,
+  onClose,
+  facilityId,
+  facilityName,
+}: InviteUserModalProps) {
   const actorRole = useAuthStore((s) => s.user?.role);
+  const facilitiesQuery = useFacilities();
+  const facilities = facilitiesQuery.data?.data ?? [];
 
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -19,12 +27,17 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
   const [role, setRole] = useState(
     actorRole === "vendor_lead" ? "vendor_manager" : "facility_manager",
   );
+  const [selectedFacilityId, setSelectedFacilityId] = useState(facilityId ?? "");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createdResult, setCreatedResult] = useState<TempInvitationResult | null>(null);
   const [copied, setCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setSelectedFacilityId(facilityId ?? "");
+  }, [facilityId]);
 
   useEffect(() => {
     return () => {
@@ -49,12 +62,22 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email || !firstName || !lastName || !role) return;
+    if (role === "facility_manager" && !selectedFacilityId) {
+      setError("Select a facility for this facility manager before sending the invitation.");
+      return;
+    }
 
     setLoading(true);
     setError(null);
 
     invitationApi
-      .createTempInvitation({ email, firstName, lastName, role, ...(facilityId ? { facilityId } : {}) })
+      .createTempInvitation({
+        email,
+        firstName,
+        lastName,
+        role,
+        ...(selectedFacilityId ? { facilityId: selectedFacilityId } : {}),
+      })
       .then((res) => {
         // res.data or res direct based on API client wrapper
         const data = (res as any)?.data ?? res;
@@ -83,6 +106,7 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
     setEmail("");
     setFirstName("");
     setLastName("");
+    setSelectedFacilityId(facilityId ?? "");
     setError(null);
     setCreatedResult(null);
     onClose();
@@ -141,7 +165,14 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
               <UserPlus size={20} color="var(--primary-foreground)" />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700, color: "var(--primary-foreground)" }}>
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: "1.1rem",
+                  fontWeight: 700,
+                  color: "var(--primary-foreground)",
+                }}
+              >
                 {facilityName ? `Invite Facility Manager for ${facilityName}` : "Invite New User"}
               </h2>
               <p style={{ margin: "2px 0 0", fontSize: "0.8rem", color: "rgba(255,255,255,0.7)" }}>
@@ -186,7 +217,10 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
           )}
 
           {!createdResult ? (
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <form
+              onSubmit={handleSubmit}
+              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            >
               <div style={{ display: "flex", gap: "12px" }}>
                 <div style={{ flex: 1 }}>
                   <label
@@ -305,6 +339,70 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
                 </select>
               </div>
 
+              {role === "facility_manager" && (
+                <div>
+                  <label
+                    style={{
+                      display: "block",
+                      fontSize: "0.8125rem",
+                      fontWeight: 600,
+                      marginBottom: "6px",
+                      color: "var(--foreground)",
+                    }}
+                  >
+                    Facility Context
+                  </label>
+                  {facilityId ? (
+                    <div
+                      style={{
+                        width: "100%",
+                        padding: "9px 12px",
+                        borderRadius: "6px",
+                        border: "1px solid var(--border)",
+                        fontSize: "0.9rem",
+                        background: "var(--muted)",
+                        color: "var(--foreground)",
+                      }}
+                    >
+                      {facilityName ?? "Selected facility"}
+                    </div>
+                  ) : (
+                    <select
+                      required
+                      value={selectedFacilityId}
+                      onChange={(e) => setSelectedFacilityId(e.target.value)}
+                      disabled={facilitiesQuery.isLoading || facilities.length === 0}
+                      style={{
+                        width: "100%",
+                        padding: "9px 12px",
+                        borderRadius: "6px",
+                        border: "1px solid var(--border)",
+                        fontSize: "0.9rem",
+                        background: "var(--background)",
+                      }}
+                    >
+                      <option value="">
+                        {facilitiesQuery.isLoading ? "Loading facilities…" : "Select facility"}
+                      </option>
+                      {facilities.map((facility) => (
+                        <option key={facility.id} value={facility.id}>
+                          {facility.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  <p
+                    style={{
+                      margin: "6px 0 0",
+                      fontSize: "0.75rem",
+                      color: "var(--muted-foreground)",
+                    }}
+                  >
+                    This limits the manager’s operational context to the selected facility.
+                  </p>
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={loading}
@@ -341,7 +439,9 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
               >
                 <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: "2px" }} />
                 <div>
-                  <strong>Important:</strong> Save or copy these temporary credentials. If the user does not login within <strong>15 minutes</strong>, the account will be automatically purged.
+                  <strong>Important:</strong> Save or copy these temporary credentials. If the user
+                  does not login within <strong>15 minutes</strong>, the account will be
+                  automatically purged.
                 </div>
               </div>
 
@@ -357,7 +457,14 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
                 }}
               >
                 <div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--muted-foreground)", textTransform: "uppercase", fontWeight: 700 }}>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--muted-foreground)",
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                    }}
+                  >
                     User Email
                   </span>
                   <div style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--foreground)" }}>
@@ -366,7 +473,14 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
                 </div>
 
                 <div>
-                  <span style={{ fontSize: "0.75rem", color: "var(--muted-foreground)", textTransform: "uppercase", fontWeight: 700 }}>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--muted-foreground)",
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                    }}
+                  >
                     Temporary Password
                   </span>
                   <div
@@ -393,7 +507,9 @@ export function InviteUserModal({ isOpen, onClose, facilityId, facilityName }: I
                   padding: "10px",
                   borderRadius: "6px",
                   border: "1.5px solid var(--primary)",
-                  background: copied ? "color-mix(in oklch, var(--success) 12%, transparent)" : "transparent",
+                  background: copied
+                    ? "color-mix(in oklch, var(--success) 12%, transparent)"
+                    : "transparent",
                   color: copied ? "var(--success)" : "var(--primary)",
                   borderColor: copied ? "var(--success)" : "var(--primary)",
                   fontWeight: 600,

@@ -47,17 +47,8 @@ import { displayLabel, displayReference } from "@/utils/display-ids";
 import type { Location } from "@/features/locations/types/location.types";
 import type { Facility } from "@/features/facilities/types/facility.types";
 
-const ASSET_CATEGORIES = [
-  "hardware",
-  "infrastructure",
-  "other",
-] as const;
-const ASSET_STATUSES = [
-  "active",
-  "inactive",
-  "under_maintenance",
-  "retired",
-] as const;
+const ASSET_CATEGORIES = ["hardware", "infrastructure", "other"] as const;
+const ASSET_STATUSES = ["active", "inactive", "under_maintenance", "retired"] as const;
 const ASSET_CURRENCIES = ["NGN", "USD", "GBP", "EUR"] as const;
 
 export function Assets() {
@@ -74,7 +65,13 @@ export function Assets() {
   } = useFacilities();
   const { data: locationsResponse } = useLocationsApi();
   const assetMutations = useBackendAssetMutations();
-  const facilityId = user?.facilityId ?? facilitiesResponse?.data?.[0]?.id;
+  // Facility managers must use the facility scope assigned to their account.
+  // Falling back to the first organization facility would hide a missing
+  // invitation context and could request the wrong facility's assets.
+  const facilityId =
+    user?.role === "facility_manager"
+      ? user.facilityId
+      : (user?.facilityId ?? facilitiesResponse?.data?.[0]?.id);
   const queryFacilityId = facilityId;
   const facilityLocations = (locationsResponse ?? []).filter(
     (location: Location) => !facilityId || location.facilityId === facilityId,
@@ -92,8 +89,7 @@ export function Assets() {
     ...(queryFacilityId ? { facilityId: queryFacilityId } : {}),
   });
   useEffect(() => {
-    if (queryFacilityId)
-      setFilters((current) => ({ ...current, facilityId: queryFacilityId }));
+    if (queryFacilityId) setFilters((current) => ({ ...current, facilityId: queryFacilityId }));
   }, [queryFacilityId, setFilters]);
 
   const [search, setSearch] = useState("");
@@ -156,13 +152,11 @@ export function Assets() {
             role="status"
             className="rounded-xl border border-dashed border-border bg-card px-6 py-14 text-center"
           >
-            <h2 className="text-base font-semibold text-foreground">
-              Facility context required
-            </h2>
+            <h2 className="text-base font-semibold text-foreground">Facility context required</h2>
             <p className="mx-auto mt-2 max-w-lg text-sm text-muted-foreground">
-              Select or configure a facility before viewing and registering
-              assets. Assets must belong to a facility so their locations,
-              maintenance history, and work orders remain properly connected.
+              Select or configure a facility before viewing and registering assets. Assets must
+              belong to a facility so their locations, maintenance history, and work orders remain
+              properly connected.
             </p>
             <Button className="mt-5" onClick={() => navigate(facilitiesPath)}>
               Open Facilities
@@ -181,12 +175,11 @@ export function Assets() {
     assetTag: asset.assetTag,
     category: asset.category,
     locationName:
-        locationsResponse?.find((location: Location) => location.id === asset.locationId)
-        ?.name ?? "—",
+      locationsResponse?.find((location: Location) => location.id === asset.locationId)?.name ??
+      "—",
     facility:
-      facilitiesResponse?.data?.find(
-        (facility: Facility) => facility.id === asset.facilityId,
-      )?.name ??
+      facilitiesResponse?.data?.find((facility: Facility) => facility.id === asset.facilityId)
+        ?.name ??
       facilitiesResponse?.data?.[0]?.name ??
       "Unknown facility",
     status: asset.status,
@@ -199,20 +192,15 @@ export function Assets() {
     const matchSearch =
       item.name.toLowerCase().includes(search.toLowerCase()) ||
       item.assetTag.toLowerCase().includes(search.toLowerCase());
-    const matchCategory =
-      categoryFilter === "all" || item.category === categoryFilter;
+    const matchCategory = categoryFilter === "all" || item.category === categoryFilter;
     const matchStatus = statusFilter === "all" || item.status === statusFilter;
     const matchCondition =
-      conditionFilter === "all" ||
-      item.condition.toLowerCase() === conditionFilter.toLowerCase();
+      conditionFilter === "all" || item.condition.toLowerCase() === conditionFilter.toLowerCase();
     return matchSearch && matchCategory && matchStatus && matchCondition;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginatedRows = filtered.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE,
-  );
+  const paginatedRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function getConditionStyle(condition: string) {
     if (condition === "Excellent") return "text-success font-semibold";
@@ -269,11 +257,7 @@ export function Assets() {
             <SelectContent>
               <SelectItem value="all">Category: All</SelectItem>
               {ASSET_CATEGORIES.map((category) => (
-                <SelectItem
-                  key={category}
-                  value={category}
-                  className="capitalize"
-                >
+                <SelectItem key={category} value={category} className="capitalize">
                   {displayLabel(category)}
                 </SelectItem>
               ))}
@@ -326,10 +310,7 @@ export function Assets() {
             <TableBody>
               {paginatedRows.length === 0 && (
                 <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="h-24 text-center text-muted-foreground"
-                  >
+                  <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                     No assets match the current filters.
                   </TableCell>
                 </TableRow>
@@ -340,26 +321,18 @@ export function Assets() {
                     <TableCell>
                       <p className="font-bold text-foreground">{item.name}</p>
                       <p className="text-[11px] font-mono text-muted-foreground mt-0.5">
-                        {displayReference('AST', item.assetTag)}
+                        {displayReference("AST", item.assetTag)}
                       </p>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {displayLabel(item.category)}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {item.locationName}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {item.facility}
-                    </TableCell>
+                    <TableCell className="text-muted-foreground">{item.locationName}</TableCell>
+                    <TableCell className="text-muted-foreground">{item.facility}</TableCell>
                     <TableCell>
                       <StatusBadge status={item.status} />
                     </TableCell>
-                    <TableCell
-                      className={`text-[13px] ${getConditionStyle(
-                        item.condition,
-                      )}`}
-                    >
+                    <TableCell className={`text-[13px] ${getConditionStyle(item.condition)}`}>
                       {item.condition}
                     </TableCell>
                     <TableCell className="text-right">
@@ -367,11 +340,7 @@ export function Assets() {
                         variant="ghost"
                         size="sm"
                         onClick={() =>
-                          navigate(
-                            `${assetsPath}/${encodeURIComponent(
-                              item.assetTag,
-                            )}`,
-                          )
+                          navigate(`${assetsPath}/${encodeURIComponent(item.assetTag)}`)
                         }
                         className="h-8 rounded-md bg-muted px-3 text-[12px] font-semibold text-foreground hover:bg-accent"
                       >
@@ -392,18 +361,10 @@ export function Assets() {
                 {paginatedRows.length ? (page - 1) * PAGE_SIZE + 1 : 0}-
                 {Math.min(page * PAGE_SIZE, filtered.length)}
               </span>{" "}
-              of{" "}
-              <span className="font-semibold text-foreground">
-                {filtered.length}
-              </span>{" "}
-              entries
+              of <span className="font-semibold text-foreground">{filtered.length}</span> entries
             </div>
             <div className="flex items-center gap-1.5">
-              <Pagination
-                page={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
-              />
+              <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
             </div>
           </div>
         </div>
@@ -416,25 +377,21 @@ export function Assets() {
             <DialogTitle className="text-lg font-bold text-foreground">
               Register New Asset
             </DialogTitle>
-            <p className="text-sm text-muted-foreground">Record the asset details needed for tracking, maintenance, and reporting.</p>
+            <p className="text-sm text-muted-foreground">
+              Record the asset details needed for tracking, maintenance, and reporting.
+            </p>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-2 text-[13px]">
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">
-                Asset Name *
-              </Label>
+              <Label className="text-[12px] font-semibold text-foreground">Asset Name *</Label>
               <Input
                 placeholder="e.g. HVAC Chiller Unit #3"
                 value={form.name}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, name: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">
-                Linked Location *
-              </Label>
+              <Label className="text-[12px] font-semibold text-foreground">Linked Location *</Label>
               <Select
                 value={form.locationId}
                 onValueChange={(v) => setForm((p) => ({ ...p, locationId: v }))}
@@ -452,57 +409,39 @@ export function Assets() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">
-                Asset Tag *
-              </Label>
+              <Label className="text-[12px] font-semibold text-foreground">Asset Tag *</Label>
               <Input
                 placeholder="e.g. AST-10024"
                 value={form.assetTag}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, assetTag: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, assetTag: e.target.value }))}
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">
-                Manufacturer
-              </Label>
+              <Label className="text-[12px] font-semibold text-foreground">Manufacturer</Label>
               <Input
                 placeholder="e.g. Carrier Systems"
                 value={form.manufacturer}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, manufacturer: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, manufacturer: e.target.value }))}
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">
-                Model Number
-              </Label>
+              <Label className="text-[12px] font-semibold text-foreground">Model Number</Label>
               <Input
                 placeholder="e.g. Aquasnap 30RAP"
                 value={form.model}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, model: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, model: e.target.value }))}
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">
-                Serial Number
-              </Label>
+              <Label className="text-[12px] font-semibold text-foreground">Serial Number</Label>
               <Input
                 placeholder="e.g. CARR-4810239-X"
                 value={form.serialNumber}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, serialNumber: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, serialNumber: e.target.value }))}
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">
-                Category *
-              </Label>
+              <Label className="text-[12px] font-semibold text-foreground">Category *</Label>
               <Select
                 value={form.category}
                 onValueChange={(v) => setForm((p) => ({ ...p, category: v }))}
@@ -512,34 +451,77 @@ export function Assets() {
                 </SelectTrigger>
                 <SelectContent>
                   {ASSET_CATEGORIES.map((category) => (
-                    <SelectItem
-                      key={category}
-                      value={category}
-                      className="capitalize"
-                    >
-                    {displayLabel(category)}
+                    <SelectItem key={category} value={category} className="capitalize">
+                      {displayLabel(category)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="asset-purchase-date" className="text-[12px] font-semibold text-foreground">Purchase Date *</Label>
-              <Input id="asset-purchase-date" type="date" value={form.purchaseDate} onChange={(e) => setForm((p) => ({ ...p, purchaseDate: e.target.value }))} required />
+              <Label
+                htmlFor="asset-purchase-date"
+                className="text-[12px] font-semibold text-foreground"
+              >
+                Purchase Date *
+              </Label>
+              <Input
+                id="asset-purchase-date"
+                type="date"
+                value={form.purchaseDate}
+                onChange={(e) => setForm((p) => ({ ...p, purchaseDate: e.target.value }))}
+                required
+              />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="asset-installation-date" className="text-[12px] font-semibold text-foreground">Installation Date *</Label>
-              <Input id="asset-installation-date" type="date" value={form.installationDate} onChange={(e) => setForm((p) => ({ ...p, installationDate: e.target.value }))} required />
+              <Label
+                htmlFor="asset-installation-date"
+                className="text-[12px] font-semibold text-foreground"
+              >
+                Installation Date *
+              </Label>
+              <Input
+                id="asset-installation-date"
+                type="date"
+                value={form.installationDate}
+                onChange={(e) => setForm((p) => ({ ...p, installationDate: e.target.value }))}
+                required
+              />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="asset-estimated-value" className="text-[12px] font-semibold text-foreground">Estimated Value *</Label>
-              <Input id="asset-estimated-value" type="number" min="0" step="0.01" placeholder="0.00" value={form.estimatedValue} onChange={(e) => setForm((p) => ({ ...p, estimatedValue: e.target.value }))} required />
+              <Label
+                htmlFor="asset-estimated-value"
+                className="text-[12px] font-semibold text-foreground"
+              >
+                Estimated Value *
+              </Label>
+              <Input
+                id="asset-estimated-value"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={form.estimatedValue}
+                onChange={(e) => setForm((p) => ({ ...p, estimatedValue: e.target.value }))}
+                required
+              />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-foreground">Currency *</Label>
-              <Select value={form.currency} onValueChange={(value) => setForm((p) => ({ ...p, currency: value }))}>
-                <SelectTrigger><SelectValue placeholder="Select currency" /></SelectTrigger>
-                <SelectContent>{ASSET_CURRENCIES.map((currency) => <SelectItem key={currency} value={currency}>{currency}</SelectItem>)}</SelectContent>
+              <Select
+                value={form.currency}
+                onValueChange={(value) => setForm((p) => ({ ...p, currency: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ASSET_CURRENCIES.map((currency) => (
+                    <SelectItem key={currency} value={currency}>
+                      {currency}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <div className="col-span-2 space-y-1.5">
@@ -550,9 +532,7 @@ export function Assets() {
                 rows={2}
                 placeholder="Optional notes about this asset..."
                 value={form.description}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, description: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
               />
             </div>
           </div>
@@ -574,9 +554,7 @@ export function Assets() {
               onClick={async () => {
                 try {
                   if (!facilityId) {
-                    toast.error(
-                      "A facility context is required before registering an asset.",
-                    );
+                    toast.error("A facility context is required before registering an asset.");
                     return;
                   }
                   await assetMutations.create.mutateAsync({
@@ -585,8 +563,7 @@ export function Assets() {
                     assetTag: form.assetTag.trim(),
                     name: form.name.trim(),
                     description: form.description || undefined,
-                    category:
-                      form.category as (typeof ASSET_CATEGORIES)[number],
+                    category: form.category as (typeof ASSET_CATEGORIES)[number],
                     manufacturer: form.manufacturer || undefined,
                     modelNumber: form.model || undefined,
                     serialNumber: form.serialNumber || undefined,
@@ -617,18 +594,12 @@ export function Assets() {
                     description: "",
                   });
                 } catch (error) {
-                  toast.error(
-                    error instanceof Error
-                      ? error.message
-                      : "Unable to register asset",
-                  );
+                  toast.error(error instanceof Error ? error.message : "Unable to register asset");
                 }
               }}
               className="bg-primary text-primary-foreground"
             >
-              {assetMutations.create.isPending
-                ? "Registering…"
-                : "Register Asset"}
+              {assetMutations.create.isPending ? "Registering…" : "Register Asset"}
             </Button>
           </DialogFooter>
         </DialogContent>
