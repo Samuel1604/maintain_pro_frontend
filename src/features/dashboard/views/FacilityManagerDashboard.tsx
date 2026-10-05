@@ -293,6 +293,22 @@ function CriticalIssuesPanel({ orders, path }: { orders: WorkOrder[]; path: stri
   );
 }
 
+function UnavailablePanel({
+  title,
+  subtitle,
+  message,
+}: {
+  title: string;
+  subtitle: string;
+  message: string;
+}) {
+  return (
+    <SectionCard title={title} subtitle={subtitle}>
+      <p className="text-sm text-muted-foreground">{message}</p>
+    </SectionCard>
+  );
+}
+
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 
 export function FacilityManagerDashboard() {
@@ -377,7 +393,11 @@ export function FacilityManagerDashboard() {
             <CriticalIssuesPanel orders={activeWorkOrders} path={workOrdersPath} />
           </div>
           <div className="lg:col-span-5">
-            <FacilityScopePanel facilityName={facility.data?.name} locations={locations} />
+            <UnavailablePanel
+              title="Vendor SLA Compliance"
+              subtitle="Contract response and resolution health"
+              message="Vendor SLA performance is not available from the dashboard API yet."
+            />
           </div>
         </div>
 
@@ -388,7 +408,20 @@ export function FacilityManagerDashboard() {
             <SchedulePanel orders={workOrdersInRange} />
           </div>
           <div className="lg:col-span-5">
+            <FacilityScopePanel facilityName={facility.data?.name} locations={locations} />
+          </div>
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="lg:col-span-7">
             <ActivityPanel orders={workOrdersInRange} />
+          </div>
+          <div className="lg:col-span-5">
+            <UnavailablePanel
+              title="Technician Workload"
+              subtitle="Assigned ticket volume and active indicators"
+              message="Live technician workload data is not available from the dashboard API yet."
+            />
           </div>
         </div>
       </div>
