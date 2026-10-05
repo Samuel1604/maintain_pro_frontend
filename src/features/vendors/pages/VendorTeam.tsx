@@ -134,7 +134,11 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
           }
       >(ENDPOINTS.USERS)
       .then((result) => {
-        const records = Array.isArray(result) ? result : (result.data ?? []);
+        const records = Array.isArray(result)
+          ? result
+          : Array.isArray(result.data)
+            ? result.data
+            : [];
         setApiMembers(
           records.map(
             (member) =>
@@ -151,7 +155,10 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
           ),
         );
       })
-      .catch(() => toast.error("Unable to load vendor team"));
+      .catch((error: unknown) => {
+        const message = error instanceof Error ? error.message : "Unknown server error";
+        toast.error(`Unable to load vendor team: ${message}`);
+      });
   }, []);
 
   const handleReInvite = async (member: VendorTeamMember & { invitationId?: string }) => {
