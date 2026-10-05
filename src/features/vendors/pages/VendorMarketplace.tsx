@@ -265,10 +265,10 @@ export function VendorMarketplace() {
               </Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="w-full border-border text-[13px] bg-background text-foreground">
-                  <SelectValue placeholder="Elevator, Escalator, HVAC, Plumbing..." />
+                  <SelectValue placeholder="All service categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Elevator, Escalator, HVAC, Plumbing...</SelectItem>
+                  <SelectItem value="all">All service categories</SelectItem>
                   {marketplaceCategories.map((item) => (
                     <SelectItem key={item} value={item.toLowerCase()}>
                       {item}
