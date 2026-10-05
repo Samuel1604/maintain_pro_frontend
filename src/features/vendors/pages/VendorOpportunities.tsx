@@ -40,16 +40,13 @@ export interface OpportunityRow {
   status: "open" | "completed" | "cancelled" | "assigned" | "in_progress" | "on_hold";
 }
 
-
 export function VendorOpportunities() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [proximityFilter, setProximityFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [slaFilter, setSlaFilter] = useState("all");
-  const [apiOpportunities, setApiOpportunities] = useState<OpportunityRow[]>(
-    [],
-  );
+  const [apiOpportunities, setApiOpportunities] = useState<OpportunityRow[]>([]);
   const [apiLoading, setApiLoading] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
   const loadVendorOpportunities = async () => {
@@ -71,9 +68,7 @@ export function VendorOpportunities() {
         })),
       );
     } catch (error) {
-      setApiError(
-        error instanceof Error ? error.message : "Unable to load opportunities",
-      );
+      setApiError(error instanceof Error ? error.message : "Unable to load opportunities");
     } finally {
       setApiLoading(false);
     }
@@ -87,27 +82,21 @@ export function VendorOpportunities() {
   const [bidNotes, setBidNotes] = useState("");
 
   const filtered = useMemo(() => {
-    return apiOpportunities.filter(
-      (item) => {
-        const matchSearch =
-          item.id.toLowerCase().includes(search.toLowerCase()) ||
-          item.organization.toLowerCase().includes(search.toLowerCase()) ||
-          item.serviceCategory.toLowerCase().includes(search.toLowerCase());
-        const matchCategory =
-          categoryFilter === "all" ||
-          item.serviceCategory
-            .toLowerCase()
-            .includes(categoryFilter.toLowerCase());
-        const matchPriority =
-          priorityFilter === "all" ||
-          item.priority.toLowerCase() === priorityFilter.toLowerCase();
-        const matchSla =
-          slaFilter === "all" ||
-          item.slaRequirement.toLowerCase().includes(slaFilter.toLowerCase());
+    return apiOpportunities.filter((item) => {
+      const matchSearch =
+        item.id.toLowerCase().includes(search.toLowerCase()) ||
+        item.organization.toLowerCase().includes(search.toLowerCase()) ||
+        item.serviceCategory.toLowerCase().includes(search.toLowerCase());
+      const matchCategory =
+        categoryFilter === "all" ||
+        item.serviceCategory.toLowerCase().includes(categoryFilter.toLowerCase());
+      const matchPriority =
+        priorityFilter === "all" || item.priority.toLowerCase() === priorityFilter.toLowerCase();
+      const matchSla =
+        slaFilter === "all" || item.slaRequirement.toLowerCase().includes(slaFilter.toLowerCase());
 
-        return matchSearch && matchCategory && matchPriority && matchSla;
-      },
-    );
+      return matchSearch && matchCategory && matchPriority && matchSla;
+    });
   }, [apiOpportunities, search, categoryFilter, priorityFilter, slaFilter]);
 
   if (apiLoading) return <PageLoader label="Loading opportunities..." />;
@@ -142,8 +131,7 @@ export function VendorOpportunities() {
         },
       );
       const applicationId = application.id ?? application._id;
-      if (!applicationId)
-        throw new Error("The application was created without an identifier.");
+      if (!applicationId) throw new Error("The application was created without an identifier.");
       await apiClient.post(ENDPOINTS.QUOTATIONS.CREATE, {
         vendorApplicationId: applicationId,
         laborCost: amount,
@@ -155,9 +143,7 @@ export function VendorOpportunities() {
       setSelectedOpp(null);
       setBidNotes("");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Unable to submit bid.",
-      );
+      toast.error(error instanceof Error ? error.message : "Unable to submit bid.");
     }
   };
 
@@ -253,68 +239,64 @@ export function VendorOpportunities() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
-                {filtered.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-muted/20 transition-colors"
-                  >
-                    <td className="py-4 px-5 font-bold text-indigo-500">
-                      {item.id}
-                    </td>
-                    <td className="py-4 px-5 font-bold text-foreground">
-                      {item.organization}
-                    </td>
-                    <td className="py-4 px-5">
-                      <p className="font-bold text-foreground">
-                        {item.serviceCategory}
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-5 py-14 text-center">
+                      <p className="text-sm font-semibold text-foreground">
+                        No marketplace opportunities available
                       </p>
-                      <p className="text-[11px] text-muted-foreground">
-                        {item.categoryDetail}
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Opportunities will appear here when your vendor has an active marketplace
+                        relationship and eligible work is published.
                       </p>
-                    </td>
-                    <td className="py-4 px-5">
-                      <span className="text-foreground">
-                        {item.locationProximity}
-                      </span>{" "}
-                      <span className="text-muted-foreground">
-                        ({item.proximityDetail})
-                      </span>
-                    </td>
-                    <td className="py-4 px-5">
-                      <PriorityBadge priority={item.priority} />
-                    </td>
-                    <td className="py-4 px-5 font-medium text-foreground">
-                      {item.slaRequirement}
-                    </td>
-                    <td className="py-4 px-5">
-                      <StatusBadge status={item.status} />
-                    </td>
-                    <td className="py-4 px-5 text-right">
-                      {item.status === "open" ? (
-                        <Button
-                          onClick={() => setSelectedOpp(item)}
-                          className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[12px] h-8 px-4 rounded-xl shadow-sm"
-                        >
-                          Apply Bid
-                        </Button>
-                      ) : (
-                        <span className="text-[12px] text-muted-foreground font-medium">
-                          Archived
-                        </span>
-                      )}
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filtered.map((item) => (
+                    <tr key={item.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="py-4 px-5 font-bold text-indigo-500">{item.id}</td>
+                      <td className="py-4 px-5 font-bold text-foreground">{item.organization}</td>
+                      <td className="py-4 px-5">
+                        <p className="font-bold text-foreground">{item.serviceCategory}</p>
+                        <p className="text-[11px] text-muted-foreground">{item.categoryDetail}</p>
+                      </td>
+                      <td className="py-4 px-5">
+                        <span className="text-foreground">{item.locationProximity}</span>{" "}
+                        <span className="text-muted-foreground">({item.proximityDetail})</span>
+                      </td>
+                      <td className="py-4 px-5">
+                        <PriorityBadge priority={item.priority} />
+                      </td>
+                      <td className="py-4 px-5 font-medium text-foreground">
+                        {item.slaRequirement}
+                      </td>
+                      <td className="py-4 px-5">
+                        <StatusBadge status={item.status} />
+                      </td>
+                      <td className="py-4 px-5 text-right">
+                        {item.status === "open" ? (
+                          <Button
+                            onClick={() => setSelectedOpp(item)}
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[12px] h-8 px-4 rounded-xl shadow-sm"
+                          >
+                            Apply Bid
+                          </Button>
+                        ) : (
+                          <span className="text-[12px] text-muted-foreground font-medium">
+                            Archived
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="border-t border-border px-5 py-3.5 text-[13px] text-muted-foreground">
             <div>
-              Showing{" "}
-              <span className="font-bold text-foreground">
-                {filtered.length}
-              </span>{" "}
+              Showing <span className="font-bold text-foreground">{filtered.length}</span>{" "}
               opportunities
             </div>
           </div>
@@ -336,9 +318,7 @@ export function VendorOpportunities() {
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-[12px] font-bold text-foreground">
-                  Bid Amount ($)
-                </Label>
+                <Label className="text-[12px] font-bold text-foreground">Bid Amount ($)</Label>
                 <Input
                   type="number"
                   value={bidAmount}
@@ -347,9 +327,7 @@ export function VendorOpportunities() {
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[12px] font-bold text-foreground">
-                  Duration (Days)
-                </Label>
+                <Label className="text-[12px] font-bold text-foreground">Duration (Days)</Label>
                 <Input
                   type="number"
                   value={bidDuration}
