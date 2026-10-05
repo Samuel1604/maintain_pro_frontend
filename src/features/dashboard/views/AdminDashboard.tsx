@@ -171,14 +171,20 @@ function VendorDispatchPanel() {
   );
 }
 
-function PendingApprovalsPanel({ approvalsPath }: { approvalsPath: string }) {
+function PendingApprovalsPanel({ isFacilityManager }: { isFacilityManager: boolean }) {
   return (
     <SectionCard
-      title="Pending Approvals"
-      subtitle="Financial and contract permissions waiting on Admin clearance"
+      title={isFacilityManager ? "Service Request Reviews" : "Pending Approvals"}
+      subtitle={
+        isFacilityManager
+          ? "Service requests awaiting review within your facility"
+          : "Financial and contract permissions waiting on Admin clearance"
+      }
     >
       <p className="text-sm text-muted-foreground">
-        Pending approval records are not available from the dashboard API.
+        {isFacilityManager
+          ? "Pending service request review data is not available from the dashboard API."
+          : "Pending approval records are not available from the dashboard API."}
       </p>
     </SectionCard>
   );
@@ -270,7 +276,6 @@ export function AdminDashboard() {
   });
   const locations = useLocationsApi().data ?? [];
   const workOrdersPath = usePortalPath("work-orders");
-  const approvalsPath = usePortalPath("approvals");
   const pmPath = usePortalPath("preventive-maintenance");
   const facilitiesPath = usePortalPath("facilities");
   const locationsPath = usePortalPath("locations");
@@ -428,7 +433,7 @@ export function AdminDashboard() {
         {/* ── Row 3: Pending Approvals | Inventory Warnings ── */}
         <div className="mb-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-7">
-            <PendingApprovalsPanel approvalsPath={approvalsPath} />
+            <PendingApprovalsPanel isFacilityManager={isFacilityManager} />
           </div>
           <div className="lg:col-span-5">
             <InventoryWarningsPanel />
