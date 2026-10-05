@@ -214,6 +214,85 @@ function FacilityScopePanel({
   );
 }
 
+function StatusBreakdownPanel({ orders }: { orders: WorkOrder[] }) {
+  const statuses = [
+    { key: "open", label: "Open", color: "var(--chart-1)" },
+    { key: "in_progress", label: "In Progress", color: "var(--chart-2)" },
+    { key: "on_hold", label: "On Hold", color: "var(--warning)" },
+    { key: "completed", label: "Completed", color: "var(--success)" },
+  ].map((status) => ({
+    ...status,
+    count: orders.filter((order) => order.status === status.key).length,
+  }));
+  const total = Math.max(
+    statuses.reduce((sum, status) => sum + status.count, 0),
+    1,
+  );
+
+  return (
+    <SectionCard title="Work Order Status" subtitle="Current status of work in your facility">
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
+        {statuses.map((status) => (
+          <span
+            key={status.key}
+            style={{ backgroundColor: status.color, width: `${(status.count / total) * 100}%` }}
+          />
+        ))}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+        {statuses.map((status) => (
+          <span
+            key={status.key}
+            className="flex items-center gap-1.5 text-[13px] text-muted-foreground"
+          >
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: status.color }} />
+            {status.label}: <strong className="text-foreground">{status.count}</strong>
+          </span>
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
+function CriticalIssuesPanel({ orders, path }: { orders: WorkOrder[]; path: string }) {
+  const criticalOrders = orders.filter(
+    (order) => order.priority === "critical" || order.priority === "high",
+  );
+  return (
+    <SectionCard
+      title="Critical Issues"
+      subtitle="High-priority work requiring attention"
+      noPadding
+    >
+      {criticalOrders.length === 0 ? (
+        <p className="px-5 py-6 text-sm text-muted-foreground">
+          No critical or high-priority work orders are currently in scope.
+        </p>
+      ) : (
+        <div className="divide-y divide-border">
+          {criticalOrders.slice(0, 5).map((order) => (
+            <a
+              key={order.id}
+              href={`${path}/${order.id}`}
+              className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-muted/40"
+            >
+              <span className="rounded bg-destructive/10 px-2 py-0.5 text-[11px] font-bold uppercase text-destructive">
+                {order.priority}
+              </span>
+              <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-foreground">
+                {order.title}
+              </span>
+              <span className="hidden shrink-0 text-[12px] text-muted-foreground sm:block">
+                {order.locationName ?? "Location unavailable"}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
+    </SectionCard>
+  );
+}
+
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 
 export function FacilityManagerDashboard() {
@@ -223,6 +302,7 @@ export function FacilityManagerDashboard() {
   const facility = useFacility(user?.facilityId ?? "");
   const workOrdersPath = usePortalPath("work-orders");
   const pmPath = usePortalPath("preventive-maintenance");
+  const locationsPath = usePortalPath("locations");
 
   const urgent = activeWorkOrders.filter(
     (o) => o.priority === "critical" || o.priority === "high",
@@ -260,6 +340,14 @@ export function FacilityManagerDashboard() {
             href={workOrdersPath}
           />
           <KPICard
+            title="Critical Issues"
+            value={urgent}
+            changeLabel="Requires attention"
+            icon="overdue"
+            variant="warning"
+            href={workOrdersPath}
+          />
+          <KPICard
             title="PM Overdue"
             value={overdue}
             changeLabel="Preventive actions"
@@ -268,11 +356,11 @@ export function FacilityManagerDashboard() {
             href={pmPath}
           />
           <KPICard
-            title="Active Technicians"
-            value="—"
-            changeLabel="Live staffing data pending API"
-            icon="users"
-            href={workOrdersPath}
+            title="Active Locations"
+            value={locations.length}
+            changeLabel="In assigned facility"
+            icon="facilities"
+            href={locationsPath}
           />
           <KPICard
             title="Avg Resolution Time"
@@ -284,17 +372,23 @@ export function FacilityManagerDashboard() {
         </div>
 
         {/* ── Main 2-col layout ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left column (7 cols on lg) */}
-          <div className="lg:col-span-7 flex flex-col gap-6">
-            <PriorityBar orders={workOrdersInRange} />
-            <SchedulePanel orders={workOrdersInRange} />
-            <ActivityPanel orders={workOrdersInRange} />
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <CriticalIssuesPanel orders={activeWorkOrders} path={workOrdersPath} />
           </div>
-
-          {/* Right column (5 cols on lg) */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
+          <div className="lg:col-span-5">
             <FacilityScopePanel facilityName={facility.data?.name} locations={locations} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="flex flex-col gap-6 lg:col-span-7">
+            <PriorityBar orders={workOrdersInRange} />
+            <StatusBreakdownPanel orders={workOrdersInRange} />
+            <SchedulePanel orders={workOrdersInRange} />
+          </div>
+          <div className="lg:col-span-5">
+            <ActivityPanel orders={workOrdersInRange} />
           </div>
         </div>
       </div>
