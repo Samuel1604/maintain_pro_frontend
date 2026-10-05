@@ -17,7 +17,9 @@ async function stableRequestKey(config: AxiosRequestConfig): Promise<string> {
   const body = typeof config.data === "string" ? config.data : JSON.stringify(config.data ?? {});
   const input = new TextEncoder().encode(`${config.method}:${config.url}:${body}`);
   const digest = await globalThis.crypto.subtle.digest("SHA-256", input);
-  const hex = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  const hex = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join(
+    "",
+  );
   return `ui-${hex}`;
 }
 
@@ -31,9 +33,7 @@ async function stableRequestKey(config: AxiosRequestConfig): Promise<string> {
  * to reproduce this header).
  */
 function readCookie(name: string): string | undefined {
-  const match = document.cookie.match(
-    new RegExp(`(?:^|; )${name}=([^;]*)`),
-  );
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
   return match ? decodeURIComponent(match[1]) : undefined;
 }
 
@@ -48,18 +48,37 @@ export const client = axios.create({
   },
 });
 
+let csrfTokenPromise: Promise<string | undefined> | null = null;
+
+async function getCsrfToken(): Promise<string | undefined> {
+  const cookieToken = readCookie(CSRF_COOKIE_NAME);
+  if (cookieToken) return cookieToken;
+  if (!csrfTokenPromise) {
+    csrfTokenPromise = client
+      .get<{ token?: string | null }>("/csrf")
+      .then((result) => result.token ?? undefined)
+      .finally(() => {
+        csrfTokenPromise = null;
+      });
+  }
+  return csrfTokenPromise;
+}
+
 client.interceptors.request.use(async (config) => {
   const method = config.method?.toLowerCase();
 
   if (method && MUTATING_METHODS.has(method)) {
-    const csrfToken = readCookie(CSRF_COOKIE_NAME);
+    const csrfToken = await getCsrfToken();
 
     if (csrfToken) {
       config.headers.set(CSRF_HEADER_NAME, csrfToken);
     }
 
     const request = config as RequestWithIdempotency;
-    config.headers.set("Idempotency-Key", request.idempotencyKey || await stableRequestKey(config));
+    config.headers.set(
+      "Idempotency-Key",
+      request.idempotencyKey || (await stableRequestKey(config)),
+    );
   }
 
   return config;
@@ -76,7 +95,7 @@ client.interceptors.request.use(async (config) => {
  * promise, so exactly one refresh call is made per expiry, not N.
  */
 let refreshPromise: Promise<void> | null = null;
- 
+
 function refreshSession(): Promise<void> {
   if (!refreshPromise) {
     refreshPromise = client
@@ -86,16 +105,14 @@ function refreshSession(): Promise<void> {
         refreshPromise = null;
       });
   }
- 
+
   return refreshPromise!;
 }
 
 client.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<ApplicationResult>) => {
-    const originalRequest = error.config as
-      | (AxiosRequestConfig & { _retry?: boolean })
-      | undefined;
+    const originalRequest = error.config as (AxiosRequestConfig & { _retry?: boolean }) | undefined;
 
     if (
       error.response?.status === 401 &&
@@ -120,7 +137,7 @@ client.interceptors.response.use(
     }
 
     return Promise.reject(mapHttpToAppError(error));
-  }
+  },
 );
 
 function unwrap<T>(result: ApplicationResult<T>): T {
@@ -135,7 +152,11 @@ export const apiClient = {
   async download(url: string, filename: string): Promise<void> {
     const response = await client.get(url, { responseType: "blob" });
     const objectUrl = URL.createObjectURL(response.data as Blob);
-    const link = document.createElement("a"); link.href = objectUrl; link.download = filename; link.click(); URL.revokeObjectURL(objectUrl);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(objectUrl);
   },
   async getBlob(url: string): Promise<Blob> {
     const response = await client.get(url, { responseType: "blob" });
