@@ -4,9 +4,12 @@ import { USER_ROLES } from "@/types/user.types";
 
 import { PageLoader } from "@/components/feedback/PageLoader";
 
-import { FacilityManagerDashboard } from "../views/FacilityManagerDashboard";
 import { TechnicianDashboard } from "../views/TechnicianDashboard";
-import { VendorLeadDashboard, VendorManagerDashboard, VendorTechnicianDashboard } from "../views/VendorDashboard";
+import {
+  VendorLeadDashboard,
+  VendorManagerDashboard,
+  VendorTechnicianDashboard,
+} from "../views/VendorDashboard";
 import { FinanceDashboard } from "../views/FinanceDashboard";
 import { AdminDashboard } from "../views/AdminDashboard";
 import { StaffDashboard } from "../views/StaffDashboard";
@@ -16,7 +19,9 @@ export default function DashboardPage() {
 
   switch (user?.role) {
     case USER_ROLES.FACILITY_MANAGER:
-      return <FacilityManagerDashboard />;
+      // Facility managers use the same dashboard composition as admins.
+      // The underlying role-scoped queries still limit data to their facility.
+      return <AdminDashboard />;
 
     case USER_ROLES.TECHNICIAN:
       return <TechnicianDashboard />;
