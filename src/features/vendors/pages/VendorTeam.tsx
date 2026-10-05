@@ -44,6 +44,8 @@ type VendorTeamMember = {
   status: string;
   isTeamLead?: boolean;
   invitationId?: string;
+  activeWorkOrders?: number;
+  joinedAt?: string;
 };
 
 function initials(name: string) {
@@ -69,6 +71,7 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
     role: "Team Lead",
     status: "active",
     isTeamLead: true,
+    joinedAt: user?.createdAt,
   };
 
   const [activeInvitations, setActiveInvitations] = useState<
@@ -106,7 +109,13 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
     emailSent?: boolean;
   } | null>(null);
 
-  const allMembers = [teamLead, ...members];
+  const allMembers = [
+    teamLead,
+    ...members.filter(
+      (member) =>
+        member.id !== teamLead.id && member.email.toLowerCase() !== teamLead.email.toLowerCase(),
+    ),
+  ];
   useEffect(() => {
     void httpClient
       .get<
@@ -119,6 +128,7 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
             email: string;
             role: string;
             isActive?: boolean;
+            createdAt?: string;
           }>
         | {
             data?: Array<{
@@ -151,6 +161,7 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
                 role: member.role,
                 status: member.isActive === false ? "inactive" : "active",
                 isTeamLead: member.role === "vendor_lead",
+                joinedAt: member.createdAt,
               }) as VendorTeamMember,
           ),
         );
@@ -464,10 +475,14 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
                         <StatusBadge status={isInvited ? "PENDING" : "ACTIVE"} />
                       </td>
                       <td className="hidden px-6 py-4 text-muted-foreground lg:table-cell">
-                        {isInvited ? "—" : `${idx % 3} assigned`}
+                        {isInvited ? "—" : (member.activeWorkOrders ?? "—")}
                       </td>
                       <td className="hidden px-6 py-4 text-muted-foreground lg:table-cell">
-                        {isInvited ? "Pending Auth" : `Jan 12, 2024`}
+                        {isInvited
+                          ? "Pending Auth"
+                          : member.joinedAt
+                            ? new Date(member.joinedAt).toLocaleDateString()
+                            : "—"}
                       </td>
                       <td className="px-3 py-4 text-right sm:px-6">
                         {member.isTeamLead ? (
