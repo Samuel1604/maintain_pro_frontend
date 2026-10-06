@@ -45,7 +45,7 @@ export function useServiceRequests(
         setIsRefreshing(false);
       }
     },
-    [filters.page, filters.limit, filters.status, filters.from, filters.to],
+    [filters],
   );
 
   useEffect(() => {

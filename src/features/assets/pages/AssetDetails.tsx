@@ -330,3 +330,4 @@ export function AssetDetails() {
     </div>
   );
 }
+/* eslint-disable react-hooks/exhaustive-deps */

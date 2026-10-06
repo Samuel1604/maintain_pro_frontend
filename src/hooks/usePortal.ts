@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useLocation } from "react-router-dom";
 
 import {
   buildPortalPath,
@@ -23,12 +22,11 @@ export function usePortal(): Portal {
 }
 
 export function usePortalPath(segment = ""): string {
-  const { pathname } = useLocation();
   const portal = usePortal();
   const user = useAuthStore((state) => state.user);
 
   return useMemo(() => {
     if (user) return buildUserPortalPath(user, segment || "/dashboard");
     return buildPortalPath(portal, segment || "/dashboard");
-  }, [pathname, portal, segment, user]);
+  }, [portal, segment, user]);
 }

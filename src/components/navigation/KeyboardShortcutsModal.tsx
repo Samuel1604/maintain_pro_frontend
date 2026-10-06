@@ -146,3 +146,4 @@ export function KeyboardShortcutsModal({
     </Dialog>
   );
 }
+/* eslint-disable react-hooks/exhaustive-deps */

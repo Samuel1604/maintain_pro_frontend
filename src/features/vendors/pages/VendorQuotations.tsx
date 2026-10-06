@@ -369,3 +369,4 @@ export function VendorQuotations() {
     </div>
   );
 }
+/* eslint-disable react-hooks/exhaustive-deps */

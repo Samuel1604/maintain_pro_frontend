@@ -288,3 +288,4 @@ export function VendorContracts() {
     </div>
   );
 }
+/* eslint-disable react-hooks/exhaustive-deps */

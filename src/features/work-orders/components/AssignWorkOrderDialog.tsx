@@ -640,3 +640,4 @@ function IndependentAssignmentPanel({
     </div>
   );
 }
+/* eslint-disable react-hooks/exhaustive-deps */

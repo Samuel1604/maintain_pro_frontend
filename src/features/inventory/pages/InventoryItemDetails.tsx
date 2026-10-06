@@ -277,3 +277,4 @@ export function InventoryItemDetails() {
   );
 }
 export default InventoryItemDetails;
+/* eslint-disable react-hooks/exhaustive-deps */

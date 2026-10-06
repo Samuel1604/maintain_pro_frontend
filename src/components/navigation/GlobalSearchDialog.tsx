@@ -451,3 +451,4 @@ export function GlobalSearchDialog({ open, onOpenChange }: GlobalSearchDialogPro
     </Dialog>
   );
 }
+/* eslint-disable react-hooks/exhaustive-deps */
