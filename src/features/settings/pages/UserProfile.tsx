@@ -74,6 +74,10 @@ export function UserProfile() {
     confirmPassword?: string;
   }>({});
   const [photoError, setPhotoError] = useState<string | null>(null);
+  const [jobTitle, setJobTitle] = useState("Organization Admin");
+  const [bioNotes, setBioNotes] = useState(
+    "Managing facilities, vendor dispatch, and maintenance schedules across all regional campuses. Contact for high-level operations clearance.",
+  );
 
   const [emailWorkOrders, setEmailWorkOrders] = useState(true);
   const [emailMaintenance, setEmailMaintenance] = useState(true);
@@ -222,11 +226,6 @@ export function UserProfile() {
       toast.error("Unable to reset preferences");
     }
   };
-
-  const [jobTitle, setJobTitle] = useState("Organization Admin");
-  const [bioNotes, setBioNotes] = useState(
-    "Managing facilities, vendor dispatch, and maintenance schedules across all regional campuses. Contact for high-level operations clearance.",
-  );
 
   return (
     <div className="flex flex-col bg-background min-h-screen">
