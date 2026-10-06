@@ -15,10 +15,18 @@ export interface OrganizationVendorRecord {
   createdAt: string;
   updatedAt: string;
 }
+interface OrganizationVendorPage {
+  data?: OrganizationVendorRecord[];
+}
 
 export const organizationVendorsService = {
-  list: (params?: { search?: string; status?: string; page?: number; limit?: number }) =>
-    httpClient.get<OrganizationVendorRecord[]>(ENDPOINTS.ORGANIZATION_VENDORS.LIST, { params }),
+  list: async (params?: { search?: string; status?: string; page?: number; limit?: number }) => {
+    const result = await httpClient.get<OrganizationVendorRecord[] | OrganizationVendorPage>(
+      ENDPOINTS.ORGANIZATION_VENDORS.LIST,
+      { params },
+    );
+    return Array.isArray(result) ? result : (result.data ?? []);
+  },
   get: (vendorId: string) =>
     httpClient.get<OrganizationVendorRecord>(ENDPOINTS.ORGANIZATION_VENDORS.DETAIL(vendorId)),
   performance: (vendorId: string) =>

@@ -70,6 +70,9 @@ export const ENDPOINTS = {
     DETAIL: (id: string) => `${API_BASE}/organizations/me/vendors/${id}`,
     PERFORMANCE: (id: string) => `${API_BASE}/organizations/me/vendors/${id}/performance`,
     STATUS: (id: string) => `${API_BASE}/organizations/me/vendors/${id}/status`,
+    INCOMING: `${API_BASE}/organizations/me/vendors/relationships/incoming`,
+    RESPOND: (organizationId: string) =>
+      `${API_BASE}/organizations/me/vendors/relationships/${organizationId}`,
   },
   VENDOR_APPLICATIONS: {
     CREATE: `${API_BASE}/vendor-applications`,

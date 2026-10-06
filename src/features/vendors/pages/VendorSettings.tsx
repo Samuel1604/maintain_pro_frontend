@@ -20,6 +20,9 @@ import { PageError } from "@/components/feedback/PageError";
 import { usePaymentMethods } from "@/features/billing/hooks/useBilling";
 import { useSubscription } from "@/features/billing/hooks/useBilling";
 import type { PaymentMethodData } from "@/services/billingService";
+import { httpClient } from "@/api/httpClient";
+import { ENDPOINTS } from "@/api/endpoints";
+type IncomingRelationship = { organizationId: string; organizationName?: string; status: string };
 
 type TabKey = "profile" | "categories" | "areas" | "team" | "marketplace" | "billing";
 
@@ -76,6 +79,8 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
     modernization: false,
     audits: true,
   });
+  const [incomingRelationships, setIncomingRelationships] = useState<IncomingRelationship[]>([]);
+  const [incomingLoading, setIncomingLoading] = useState(true);
 
   // Handlers
   const handleRemoveCategory = (cat: string) => {
@@ -99,6 +104,37 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
   const handleSave = (msg: string) => {
     toast.success(msg);
   };
+  const loadIncomingRelationships = async () => {
+    setIncomingLoading(true);
+    try {
+      setIncomingRelationships(
+        (await httpClient.get<IncomingRelationship[]>(ENDPOINTS.ORGANIZATION_VENDORS.INCOMING)) ??
+          [],
+      );
+    } catch {
+      setIncomingRelationships([]);
+    } finally {
+      setIncomingLoading(false);
+    }
+  };
+  const respondToRelationship = async (organizationId: string, status: "active" | "removed") => {
+    try {
+      await httpClient.patch(ENDPOINTS.ORGANIZATION_VENDORS.RESPOND(organizationId), { status });
+      toast.success(
+        status === "active"
+          ? "Organization connection approved"
+          : "Organization connection declined",
+      );
+      await loadIncomingRelationships();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to update organization connection",
+      );
+    }
+  };
+  useEffect(() => {
+    void loadIncomingRelationships();
+  }, []);
 
   useEffect(() => {
     const value = vendorSettings.data;
@@ -253,6 +289,72 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
 
           {/* Right Main Content Panel (9 cols) */}
           <div className="lg:col-span-9 space-y-6">
+            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-foreground">
+                    Organization connection requests
+                  </h3>
+                  <p className="text-[13px] text-muted-foreground">
+                    Approve organizations requesting access to your vendor services.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void loadIncomingRelationships()}
+                  disabled={incomingLoading}
+                >
+                  Refresh
+                </Button>
+              </div>
+              {incomingLoading ? (
+                <p className="text-sm text-muted-foreground">Checking for connection requests...</p>
+              ) : incomingRelationships.filter((item) => item.status === "pending").length ? (
+                <div className="space-y-3">
+                  {incomingRelationships
+                    .filter((item) => item.status === "pending")
+                    .map((item) => (
+                      <div
+                        key={item.organizationId}
+                        className="flex flex-col gap-3 rounded-lg border border-border bg-background p-4 sm:flex-row sm:items-center sm:justify-between"
+                      >
+                        <div>
+                          <p className="text-sm font-semibold">
+                            {item.organizationName ?? "Organization"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Pending connection request
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              void respondToRelationship(item.organizationId, "removed")
+                            }
+                          >
+                            Decline
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() =>
+                              void respondToRelationship(item.organizationId, "active")
+                            }
+                          >
+                            Approve
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No pending organization connection requests.
+                </p>
+              )}
+            </div>
             {activeTab === "team" && <VendorTeam embedded />}
             {/* 1. VENDOR PROFILE TAB */}
             {activeTab === "profile" && (
