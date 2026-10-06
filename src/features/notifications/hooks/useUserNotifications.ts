@@ -35,6 +35,7 @@ function toNotification(item: BackendNotification): Notification {
     billing: "contract",
     security: "system",
     system: "system",
+    invitation: "invitation",
   };
   return {
     id: item.id,

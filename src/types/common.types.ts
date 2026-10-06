@@ -394,7 +394,8 @@ export type NotificationType =
   | "system"
   | "vendor"
   | "contract"
-  | "escalation";
+  | "escalation"
+  | "invitation";
 export type NotificationChannel = "in_app" | "email" | "sms" | "push";
 
 export interface Notification {

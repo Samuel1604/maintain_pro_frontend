@@ -7,6 +7,7 @@ import {
   Package,
   Settings2,
   Shield,
+  UserPlus,
   Wrench,
 } from "lucide-react";
 
@@ -26,6 +27,7 @@ export const NOTIFICATION_TYPE_CONFIG: Record<
   vendor: { icon: FileText, color: "text-cyan-400 bg-cyan-400/10", label: "Vendors" },
   contract: { icon: Shield, color: "text-orange-400 bg-orange-400/10", label: "Contracts" },
   escalation: { icon: AlertTriangle, color: "text-red-400 bg-red-400/10", label: "Escalations" },
+  invitation: { icon: UserPlus, color: "text-indigo-400 bg-indigo-400/10", label: "Invitations" },
 };
 
 export const DEFAULT_NOTIFICATION_PREFS: Record<
@@ -40,6 +42,7 @@ export const DEFAULT_NOTIFICATION_PREFS: Record<
   vendor: { inApp: true, email: true, sms: false, push: false },
   contract: { inApp: true, email: true, sms: true, push: true },
   escalation: { inApp: true, email: true, sms: true, push: true },
+  invitation: { inApp: true, email: true, sms: false, push: true },
 };
 
 export const NOTIFICATION_TYPES_BY_ROLE: Record<UserRole, NotificationType[]> = {
@@ -52,6 +55,7 @@ export const NOTIFICATION_TYPES_BY_ROLE: Record<UserRole, NotificationType[]> = 
     "vendor",
     "contract",
     "escalation",
+    "invitation",
   ],
   [USER_ROLES.FACILITY_MANAGER]: [
     "work_order",
@@ -62,10 +66,11 @@ export const NOTIFICATION_TYPES_BY_ROLE: Record<UserRole, NotificationType[]> = 
     "vendor",
     "contract",
     "escalation",
+    "invitation",
   ],
   [USER_ROLES.TECHNICIAN]: ["work_order", "maintenance", "system"],
-  [USER_ROLES.VENDOR_LEAD]: ["work_order", "vendor", "contract", "approval"],
-  [USER_ROLES.VENDOR_MANAGER]: ["work_order", "vendor", "contract", "approval"],
+  [USER_ROLES.VENDOR_LEAD]: ["work_order", "vendor", "contract", "approval", "invitation"],
+  [USER_ROLES.VENDOR_MANAGER]: ["work_order", "vendor", "contract", "approval", "invitation"],
   [USER_ROLES.VENDOR_TECHNICIAN]: ["work_order", "vendor", "system"],
   [USER_ROLES.STAFF]: ["work_order", "maintenance"],
   [USER_ROLES.FINANCE]: ["approval", "vendor", "contract", "work_order", "inventory"],
