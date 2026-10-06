@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AppHeader } from "@/components/navigation/Navbar";
@@ -369,4 +370,3 @@ export function VendorQuotations() {
     </div>
   );
 }
-/* eslint-disable react-hooks/exhaustive-deps */

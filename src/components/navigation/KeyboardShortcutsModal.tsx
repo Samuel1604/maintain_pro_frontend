@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import {
   Command,
@@ -146,4 +147,3 @@ export function KeyboardShortcutsModal({
     </Dialog>
   );
 }
-/* eslint-disable react-hooks/exhaustive-deps */

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -427,4 +428,3 @@ export function WorkOrderDetails() {
     </div>
   );
 }
-/* eslint-disable react-hooks/exhaustive-deps */

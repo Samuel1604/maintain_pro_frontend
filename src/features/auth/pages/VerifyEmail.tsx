@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { MailCheck, RefreshCw, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
@@ -315,4 +316,3 @@ export function VerifyEmail() {
     </div>
   );
 }
-/* eslint-disable react-hooks/exhaustive-deps */

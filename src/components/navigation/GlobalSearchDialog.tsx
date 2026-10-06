@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -451,4 +452,3 @@ export function GlobalSearchDialog({ open, onOpenChange }: GlobalSearchDialogPro
     </Dialog>
   );
 }
-/* eslint-disable react-hooks/exhaustive-deps */

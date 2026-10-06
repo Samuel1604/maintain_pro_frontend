@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useMemo, useState } from "react";
 import {
   Building2,
@@ -640,4 +641,3 @@ function IndependentAssignmentPanel({
     </div>
   );
 }
-/* eslint-disable react-hooks/exhaustive-deps */

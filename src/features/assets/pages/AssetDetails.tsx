@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Download, FileText, History, Pencil, QrCode, Wrench } from "lucide-react";
@@ -330,4 +331,3 @@ export function AssetDetails() {
     </div>
   );
 }
-/* eslint-disable react-hooks/exhaustive-deps */

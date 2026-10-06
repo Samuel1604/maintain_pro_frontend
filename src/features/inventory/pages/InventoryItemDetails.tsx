@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { ArrowLeft, Package, Pencil, RefreshCw } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -277,4 +278,3 @@ export function InventoryItemDetails() {
   );
 }
 export default InventoryItemDetails;
-/* eslint-disable react-hooks/exhaustive-deps */

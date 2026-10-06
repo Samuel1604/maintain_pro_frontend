@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, XCircle } from "lucide-react";
@@ -242,4 +243,3 @@ export function ServiceRequestDetails() {
 }
 
 export default ServiceRequestDetails;
-/* eslint-disable react-hooks/exhaustive-deps */

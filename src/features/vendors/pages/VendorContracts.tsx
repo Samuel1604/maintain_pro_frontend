@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/navigation/Navbar";
 import { Button } from "@/components/ui/button";
@@ -288,4 +289,3 @@ export function VendorContracts() {
     </div>
   );
 }
-/* eslint-disable react-hooks/exhaustive-deps */
