@@ -30,8 +30,6 @@ export interface InvitationResponse {
   invitationToken?: string;
   /** Full accept URL with token already embedded */
   invitationUrl?: string;
-  /** On-screen temp password — present when emailSent === false */
-  temporaryPassword?: string;
   /** TTL of the invitation in minutes (always 15) */
   expiresInMinutes?: number;
   /** True if an email provider sent the invitation email */
@@ -40,8 +38,8 @@ export interface InvitationResponse {
 
 export interface TempInvitationResponse {
   email: string;
-  temporaryPassword: string;
   expiresInMinutes: number;
+  emailSent?: boolean;
 }
 
 export const invitationService = {
@@ -65,7 +63,7 @@ export const invitationService = {
   /**
    * Re-sends an existing pending invitation.
    * Backend issues a fresh 15-min token, new temp password, and returns the
-   * same credentials payload as sendInvitation (invitationUrl, temporaryPassword, emailSent).
+   * same invitation status payload as sendInvitation.
    */
   async resendInvitation(id: string): Promise<InvitationResponse> {
     return apiClient.post<InvitationResponse>(ENDPOINTS.INVITATIONS.RESEND(id), {});

@@ -79,7 +79,6 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
       string,
       {
         url: string;
-        tempPassword?: string;
         emailSent: boolean;
         createdAt: number;
         firstName: string;
@@ -104,7 +103,6 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
   });
   const [inviteResultData, setInviteResultData] = useState<{
     url?: string;
-    tempPassword?: string;
     email?: string;
     emailSent?: boolean;
   } | null>(null);
@@ -188,7 +186,6 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
       });
       setInviteResultData({
         url: existing.url,
-        tempPassword: existing.tempPassword,
         email: member.email,
         emailSent: existing.emailSent,
       });
@@ -222,12 +219,10 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
       const generatedUrl =
         result.invitationUrl ||
         `${window.location.origin}/accept-invitation?token=${result.invitationToken || ""}`;
-      const tempPassword = result.temporaryPassword;
       const emailSent = result.emailSent ?? false;
 
       const record = {
         url: generatedUrl,
-        tempPassword,
         emailSent,
         createdAt: Date.now(),
         firstName,
@@ -243,7 +238,6 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
       setForm({ firstName, lastName, email: member.email, role: roleValue });
       setInviteResultData({
         url: generatedUrl,
-        tempPassword,
         email: member.email,
         emailSent,
       });
@@ -285,14 +279,12 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
         `${window.location.origin}/accept-invitation?token=${
           (result as any).invitationToken || ""
         }`;
-      const tempPassword = (result as any).temporaryPassword;
       const emailSent = (result as any).emailSent ?? false;
 
       const invitationId = result._id;
 
       const record = {
         url: generatedUrl,
-        tempPassword,
         emailSent,
         createdAt: Date.now(),
         firstName: form.firstName,
@@ -308,7 +300,6 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
 
       setInviteResultData({
         url: generatedUrl,
-        tempPassword,
         email: form.email,
         emailSent,
       });
@@ -584,78 +575,22 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
             <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2">
               <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
               <p className="text-xs text-muted-foreground">
-                An invitation email will be dispatched. If no mail provider is wired, on-screen
-                credentials will be displayed here (valid for 15 minutes).
+                Temporary login details are sent directly to the invitee. They are never shown in
+                this portal.
               </p>
             </div>
 
             {inviteResultData && !inviteResultData.emailSent && (
-              <div className="space-y-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 mt-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-amber-400">
-                    Temporary Member Credentials
-                  </span>
-                  <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-semibold">
-                    Expires in 15 mins
-                  </span>
-                </div>
+              <div className="mt-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 text-xs text-amber-200">
+                The invitation was created, but the login email could not be delivered. The
+                temporary password is not available to the inviter. Ask the invitee to contact an
+                administrator before retrying the invitation.
+              </div>
+            )}
 
-                <div className="text-xs space-y-2 bg-background/90 p-2.5 rounded-lg border border-amber-500/20">
-                  <div className="flex justify-between items-center text-muted-foreground">
-                    <span>Email:</span>
-                    <span className="font-medium text-foreground font-mono">
-                      {inviteResultData.email}
-                    </span>
-                  </div>
-
-                  {inviteResultData.tempPassword && (
-                    <div className="flex justify-between items-center text-muted-foreground pt-2 border-t border-border/40">
-                      <span>Temp Password:</span>
-                      <div className="flex items-center gap-1.5">
-                        <code className="bg-muted px-2 py-0.5 rounded font-mono border border-border text-foreground font-bold">
-                          {inviteResultData.tempPassword}
-                        </code>
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          className="h-6 px-2 text-[11px]"
-                          onClick={async () => {
-                            await navigator.clipboard.writeText(inviteResultData.tempPassword!);
-                            toast.success("Temporary password copied!");
-                          }}
-                        >
-                          Copy
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {inviteResultData.url && (
-                    <div className="flex flex-col gap-1 pt-2 border-t border-border/40">
-                      <span className="text-muted-foreground">Accept Link:</span>
-                      <div className="flex gap-1.5">
-                        <Input
-                          readOnly
-                          value={inviteResultData.url}
-                          className="text-xs font-mono bg-background border-amber-500/20 h-7"
-                        />
-                        <Button
-                          type="button"
-                          variant="default"
-                          size="sm"
-                          className="bg-amber-600 hover:bg-amber-700 text-white text-[11px] h-7 px-2"
-                          onClick={async () => {
-                            await navigator.clipboard.writeText(inviteResultData.url!);
-                            toast.success("Invitation link copied!");
-                          }}
-                        >
-                          Copy Link
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+            {inviteResultData && inviteResultData.emailSent && (
+              <div className="mt-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 text-xs text-emerald-200">
+                Temporary login details were sent directly to {inviteResultData.email}.
               </div>
             )}
 

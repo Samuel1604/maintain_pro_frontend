@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { UserPlus, X, Copy, Check, AlertTriangle, ShieldAlert } from "lucide-react";
+import { useEffect, useState } from "react";
+import { UserPlus, X, AlertTriangle, ShieldAlert, MailCheck } from "lucide-react";
 import { invitationApi, type TempInvitationResult } from "@/api/invitation.api";
 import { useAuthStore } from "@/app/store";
 import { useFacilities } from "@/features/facilities/hooks/useFacilities";
@@ -32,18 +32,9 @@ export function InviteUserModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createdResult, setCreatedResult] = useState<TempInvitationResult | null>(null);
-  const [copied, setCopied] = useState(false);
-  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   useEffect(() => {
     setSelectedFacilityId(facilityId ?? "");
   }, [facilityId]);
-
-  useEffect(() => {
-    return () => {
-      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-    };
-  }, []);
 
   // Filter allowed roles based on actor
   const availableRoles =
@@ -90,16 +81,6 @@ export function InviteUserModal({
       .finally(() => {
         setLoading(false);
       });
-  }
-
-  function handleCopy() {
-    if (!createdResult) return;
-    const text = `Email: ${createdResult.email}\nTemporary Password: ${createdResult.temporaryPassword}\nNote: Password expires in 15 minutes.`;
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 3000);
-    });
   }
 
   function handleResetAndClose() {
@@ -439,9 +420,9 @@ export function InviteUserModal({
               >
                 <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: "2px" }} />
                 <div>
-                  <strong>Important:</strong> Save or copy these temporary credentials. If the user
-                  does not login within <strong>15 minutes</strong>, the account will be
-                  automatically purged.
+                  <strong>Important:</strong> Temporary login details are sent directly to the
+                  invitee. They are never shown or copied in this portal and expire in
+                  <strong> 15 minutes</strong>.
                 </div>
               </div>
 
@@ -471,34 +452,9 @@ export function InviteUserModal({
                     {createdResult.email}
                   </div>
                 </div>
-
-                <div>
-                  <span
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "var(--muted-foreground)",
-                      textTransform: "uppercase",
-                      fontWeight: 700,
-                    }}
-                  >
-                    Temporary Password
-                  </span>
-                  <div
-                    style={{
-                      fontSize: "1.1rem",
-                      fontWeight: 700,
-                      fontFamily: "monospace",
-                      color: "var(--primary)",
-                      letterSpacing: "1px",
-                    }}
-                  >
-                    {createdResult.temporaryPassword}
-                  </div>
-                </div>
               </div>
 
-              <button
-                onClick={handleCopy}
+              <div
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -506,20 +462,18 @@ export function InviteUserModal({
                   gap: "8px",
                   padding: "10px",
                   borderRadius: "6px",
-                  border: "1.5px solid var(--primary)",
-                  background: copied
-                    ? "color-mix(in oklch, var(--success) 12%, transparent)"
-                    : "transparent",
-                  color: copied ? "var(--success)" : "var(--primary)",
-                  borderColor: copied ? "var(--success)" : "var(--primary)",
+                  border: "1px solid var(--border)",
+                  background: "var(--muted)",
+                  color: "var(--muted-foreground)",
                   fontWeight: 600,
                   fontSize: "0.9rem",
-                  cursor: "pointer",
                 }}
               >
-                {copied ? <Check size={16} /> : <Copy size={16} />}
-                {copied ? "Copied Credentials to Clipboard!" : "Copy Credentials"}
-              </button>
+                <MailCheck size={16} />
+                {createdResult.emailSent
+                  ? "Login details sent securely to the invitee"
+                  : "The login email could not be delivered"}
+              </div>
 
               <button
                 onClick={handleResetAndClose}

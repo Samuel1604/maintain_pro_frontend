@@ -10,8 +10,8 @@ export interface CreateTempInvitationPayload {
 
 export interface TempInvitationResult {
   email: string;
-  temporaryPassword: string;
   expiresInMinutes: number;
+  emailSent: boolean;
 }
 
 export const invitationApi = {
