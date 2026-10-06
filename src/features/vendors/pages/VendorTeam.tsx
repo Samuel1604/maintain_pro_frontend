@@ -59,6 +59,7 @@ function initials(name: string) {
 
 export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
   const user = useAuthStore((s) => s.user);
+  const memberRoles = user?.role === "vendor_manager" ? [MEMBER_ROLES[0]] : MEMBER_ROLES;
   const { requestConfirm, ActionConfirmDialog } = useActionConfirm();
 
   const [apiMembers, setApiMembers] = useState<VendorTeamMember[]>([]);
@@ -564,7 +565,7 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {MEMBER_ROLES.map((r) => (
+                  {memberRoles.map((r) => (
                     <SelectItem key={r.value} value={r.value}>
                       {r.label}
                     </SelectItem>
