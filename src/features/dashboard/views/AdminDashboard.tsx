@@ -194,9 +194,9 @@ function PendingApprovalsPanel({ isFacilityManager, count, isLoading, path }: { 
         }
       >
         {isLoading ? <p className="text-sm text-muted-foreground">Loading pending approvals…</p> : (
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <span className="text-3xl font-semibold text-foreground">{count}</span>
-            <span className="text-sm text-muted-foreground">awaiting review</span>
+            <span className="shrink-0 text-right text-sm text-muted-foreground">awaiting review</span>
           </div>
         )}
       </SectionCard>
