@@ -11,13 +11,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldError } from "@/components/feedback/FieldError";
 import { SkeletonCard } from "@/components/feedback/Skeletons";
-import { useAuthStore } from "@/app/store";
 import { usePortalPath } from "@/hooks/usePortal";
 import { financeApprovalsService } from "../services/financeApprovals.service";
 import type { WorkOrder } from "@/types/common.types";
 
 export function FinanceApprovals() {
-  const user = useAuthStore((s) => s.user);
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -154,7 +152,7 @@ export function FinanceApprovals() {
                     <p className="text-xs text-muted-foreground">Estimated cost</p>
                     <p className="flex items-center justify-end gap-1 text-lg font-semibold">
                       <DollarSign className="h-4 w-4" />
-                      {(wo.estimatedCost ?? 0).toLocaleString()}
+                      {wo.estimatedCost == null ? "—" : wo.estimatedCost.toLocaleString()}
                     </p>
                   </div>
                 </div>
