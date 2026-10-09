@@ -69,14 +69,19 @@ export function Locations() {
     id: l.id,
     name: l.name,
     facilityId: l.facilityId,
-    facility:
-      facilities.find((facility: Facility) => facility.id === l.facilityId)?.name ||
-      "Facility unavailable",
-    floorZone: l.floor || l.description || "Not specified",
+    facility: facilities.find((facility: Facility) => facility.id === l.facilityId)?.name || "—",
+    floorZone: l.floor || l.description || "—",
     assets: l.assetCount ?? 0,
     openWos: l.openWorkOrderCount ?? 0,
     status: l.status.toUpperCase(),
   }));
+  const zoneOptions = [
+    ...new Set(
+      apiLocations
+        .map((location) => location.floor)
+        .filter((zone): zone is string => Boolean(zone)),
+    ),
+  ];
   const editableLocations: CommonLocation[] = apiLocations.map((location) => ({
     ...location,
     type:
@@ -103,12 +108,15 @@ export function Locations() {
   const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   if (locationsQuery.isLoading || facilitiesQuery.isLoading)
     return <PageLoader label="Loading locations..." />;
-  if (locationsQuery.isError)
+  if (locationsQuery.isError || facilitiesQuery.isError)
     return (
       <PageError
         title="Locations unavailable"
         message="Unable to fetch locations. Please try again."
-        onRetry={() => void locationsQuery.refetch()}
+        onRetry={() => {
+          void locationsQuery.refetch();
+          void facilitiesQuery.refetch();
+        }}
       />
     );
 
@@ -198,8 +206,11 @@ export function Locations() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Zone/Floor: All</SelectItem>
-              <SelectItem value="floor">Floor</SelectItem>
-              <SelectItem value="basement">Basement</SelectItem>
+              {zoneOptions.map((zone) => (
+                <SelectItem key={zone} value={zone}>
+                  {zone}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -210,8 +221,7 @@ export function Locations() {
             <SelectContent>
               <SelectItem value="all">Status: All</SelectItem>
               <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="critical">Critical</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
         </div>
