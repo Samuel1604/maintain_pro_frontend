@@ -31,6 +31,13 @@ export interface VendorWorkOrderRow {
   status: "IN PROGRESS" | "SCHEDULED" | "COMPLETED" | "ON HOLD" | "PENDING COMPLETION";
 }
 
+function formatSlaDeadline(dueDate?: string) {
+  if (!dueDate) return "—";
+  const date = new Date(dueDate);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
 export function VendorWorkOrders() {
   const navigate = useNavigate();
   const workOrdersPath = usePortalPath("work-orders");
@@ -56,7 +63,15 @@ export function VendorWorkOrders() {
           location: item.locationName || "—",
           assetTask: item.title,
           priority: item.priority.toUpperCase() as VendorWorkOrderRow["priority"],
-          slaDeadline: "—",
+          slaDeadline: formatSlaDeadline(item.dueDate),
+          slaUrgent: Boolean(
+            item.dueDate && new Date(item.dueDate).getTime() - Date.now() < 48 * 60 * 60 * 1000,
+          ),
+          slaOverdue: Boolean(
+            item.dueDate &&
+            new Date(item.dueDate).getTime() < Date.now() &&
+            item.status !== "completed",
+          ),
           assignedTech: item.assigneeName || "Unassigned",
           status:
             item.status === "completed"
@@ -97,6 +112,16 @@ export function VendorWorkOrders() {
       return matchSearch && matchFacility && matchPriority && matchStatus && matchTech;
     });
   }, [apiRows, search, facilityFilter, priorityFilter, statusFilter, techFilter]);
+
+  const facilityOptions = useMemo(
+    () =>
+      [...new Set(apiRows.map((item) => item.facility).filter((value) => value !== "—"))].sort(),
+    [apiRows],
+  );
+  const techOptions = useMemo(
+    () => [...new Set(apiRows.map((item) => item.assignedTech).filter(Boolean))].sort(),
+    [apiRows],
+  );
 
   if (apiLoading) return <PageLoader label="Loading vendor work orders..." />;
   if (apiError)
@@ -181,13 +206,11 @@ export function VendorWorkOrders() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Facility: All Locations</SelectItem>
-              <SelectItem value="Main HQ Office">Main HQ Office</SelectItem>
-              <SelectItem value="West Campus Shaft">West Campus Shaft</SelectItem>
-              <SelectItem value="North Logistics">North Logistics</SelectItem>
-              <SelectItem value="East Warehouses">East Warehouses</SelectItem>
-              <SelectItem value="Silicon Valley Lab">Silicon Valley Lab</SelectItem>
-              <SelectItem value="HQ Office Tower">HQ Office Tower</SelectItem>
-              <SelectItem value="West Campus Lobby">West Campus Lobby</SelectItem>
+              {facilityOptions.map((facility) => (
+                <SelectItem key={facility} value={facility}>
+                  {facility}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -223,11 +246,11 @@ export function VendorWorkOrders() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tech: All Team</SelectItem>
-              <SelectItem value="Mike Ross">Mike Ross</SelectItem>
-              <SelectItem value="John Doe">John Doe</SelectItem>
-              <SelectItem value="Sarah Jenkins">Sarah Jenkins</SelectItem>
-              <SelectItem value="Dave Miller">Dave Miller</SelectItem>
-              <SelectItem value="Unassigned">Unassigned</SelectItem>
+              {techOptions.map((tech) => (
+                <SelectItem key={tech} value={tech}>
+                  {tech}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -319,51 +342,57 @@ export function VendorWorkOrders() {
         ) : (
           /* Kanban Board View */
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {["SCHEDULED", "IN PROGRESS", "ON HOLD", "COMPLETED"].map((columnStatus) => {
-              const colItems = filtered.filter((item) => item.status === columnStatus);
-              return (
-                <div
-                  key={columnStatus}
-                  className="bg-card rounded-2xl border border-border p-4 flex flex-col gap-3 min-h-[500px]"
-                >
-                  <div className="flex items-center justify-between pb-2 border-b border-border">
-                    <h3 className="font-bold text-[13px] text-foreground">{columnStatus}</h3>
-                    <Badge variant="secondary" className="rounded-full text-[11px] font-bold">
-                      {colItems.length}
-                    </Badge>
-                  </div>
+            {["SCHEDULED", "IN PROGRESS", "PENDING COMPLETION", "ON HOLD", "COMPLETED"].map(
+              (columnStatus) => {
+                const colItems = filtered.filter((item) => item.status === columnStatus);
+                return (
+                  <div
+                    key={columnStatus}
+                    className="bg-card rounded-2xl border border-border p-4 flex flex-col gap-3 min-h-[500px]"
+                  >
+                    <div className="flex items-center justify-between pb-2 border-b border-border">
+                      <h3 className="font-bold text-[13px] text-foreground">{columnStatus}</h3>
+                      <Badge variant="secondary" className="rounded-full text-[11px] font-bold">
+                        {colItems.length}
+                      </Badge>
+                    </div>
 
-                  <div className="space-y-3 flex-1 overflow-y-auto">
-                    {colItems.length === 0 ? (
-                      <p className="rounded-xl border border-dashed border-border p-5 text-center text-xs text-muted-foreground">
-                        No work orders in this stage.
-                      </p>
-                    ) : (
-                      colItems.map((item) => (
-                        <div
-                          key={item.id}
-                          onClick={() => navigate(`${workOrdersPath}/${item.id}`)}
-                          className="p-4 rounded-xl border border-border bg-background hover:bg-muted/30 hover:shadow-md transition-all cursor-pointer space-y-2.5"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-indigo-500 text-[12px]">{item.id}</span>
-                            <span className="text-[11px] font-semibold text-muted-foreground">
-                              {item.priority}
-                            </span>
+                    <div className="space-y-3 flex-1 overflow-y-auto">
+                      {colItems.length === 0 ? (
+                        <p className="rounded-xl border border-dashed border-border p-5 text-center text-xs text-muted-foreground">
+                          No work orders in this stage.
+                        </p>
+                      ) : (
+                        colItems.map((item) => (
+                          <div
+                            key={item.id}
+                            onClick={() => navigate(`${workOrdersPath}/${item.id}`)}
+                            className="p-4 rounded-xl border border-border bg-background hover:bg-muted/30 hover:shadow-md transition-all cursor-pointer space-y-2.5"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-indigo-500 text-[12px]">
+                                {item.id}
+                              </span>
+                              <span className="text-[11px] font-semibold text-muted-foreground">
+                                {item.priority}
+                              </span>
+                            </div>
+                            <p className="font-bold text-[13px] text-foreground">
+                              {item.assetTask}
+                            </p>
+                            <p className="text-[12px] text-muted-foreground">{item.facility}</p>
+                            <div className="pt-2 flex items-center justify-between border-t border-border/60 text-[11px] text-muted-foreground">
+                              <span>{item.assignedTech}</span>
+                              <span className="font-bold text-foreground">{item.slaDeadline}</span>
+                            </div>
                           </div>
-                          <p className="font-bold text-[13px] text-foreground">{item.assetTask}</p>
-                          <p className="text-[12px] text-muted-foreground">{item.facility}</p>
-                          <div className="pt-2 flex items-center justify-between border-t border-border/60 text-[11px] text-muted-foreground">
-                            <span>{item.assignedTech}</span>
-                            <span className="font-bold text-foreground">{item.slaDeadline}</span>
-                          </div>
-                        </div>
-                      ))
-                    )}
+                        ))
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              },
+            )}
           </div>
         )}
       </div>
