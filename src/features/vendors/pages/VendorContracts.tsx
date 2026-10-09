@@ -27,7 +27,7 @@ interface ContractItem {
 
 export function VendorContracts() {
   const [search, setSearch] = useState("");
-  const [selectedContractId, setSelectedContractId] = useState<string>("CON-1192");
+  const [selectedContractId, setSelectedContractId] = useState<string>("");
   const [contracts, setContracts] = useState<ContractItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -47,8 +47,8 @@ export function VendorContracts() {
         Array<{
           _id: string;
           organizationId: string;
-          vendorId: string;
-          workOrderId: string;
+          vendorId: string | { _id: string; name?: string };
+          workOrderId: string | { _id: string; title?: string };
           status: string;
           effectiveAt?: string;
           expiresAt?: string;
@@ -63,7 +63,12 @@ export function VendorContracts() {
           ({
             id: item._id,
             organization:
-              item.organizationName || (isOrganizationView ? item.vendorId : item.organizationId),
+              item.organizationName ||
+              (isOrganizationView
+                ? typeof item.vendorId === "string"
+                  ? item.vendorId
+                  : (item.vendorId.name ?? "—")
+                : item.organizationId),
             value: item.quotation
               ? `${item.quotation.currency} ${(item.quotation.totalMinor / 100).toFixed(2)}`
               : "Tracked operational agreement",
@@ -72,8 +77,10 @@ export function VendorContracts() {
               [item.effectiveAt, item.expiresAt]
                 .filter(Boolean)
                 .map((value) => new Date(value as string).toLocaleDateString())
-                .join(" – ") || "Dates not configured",
-            scope: item.notes || `Awarded work order ${item.workOrderId}.`,
+                .join(" – ") || "—",
+            scope:
+              item.notes ||
+              `Awarded work order ${typeof item.workOrderId === "string" ? item.workOrderId : (item.workOrderId.title ?? item.workOrderId._id)}.`,
             organizationName: item.organizationName,
             quotation: item.quotation,
             sla: item.sla,

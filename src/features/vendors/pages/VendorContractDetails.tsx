@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { apiClient } from "@/api/client";
 
 export function VendorContractDetails() {
-  const { contractId = "CON-1192" } = useParams();
+  const { contractId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const isOrganizationView = location.pathname.includes("/vendors/contracts");
@@ -65,7 +65,7 @@ export function VendorContractDetails() {
             warrantyPeriodDays: number;
           };
         }>
-      >("/contract-awards/mine")
+      >(isOrganizationView ? "/contract-awards" : "/contract-awards/mine")
       .then((items) => {
         const found = items.find((item) => item._id === contractId);
         if (!found) throw new Error("Contract award not found");
@@ -92,8 +92,7 @@ export function VendorContractDetails() {
       .finally(() => setLoading(false));
   }, [contractId]);
 
-  const formatDate = (value?: string) =>
-    value ? new Date(value).toLocaleDateString() : "Not configured";
+  const formatDate = (value?: string) => (value ? new Date(value).toLocaleDateString() : "—");
 
   return (
     <div className="min-h-full bg-background text-foreground">
