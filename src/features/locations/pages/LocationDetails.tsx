@@ -54,6 +54,7 @@ export function LocationDetails() {
   const assetsPath = usePortalPath("assets");
   const workOrdersPath = usePortalPath("work-orders");
   const pmPath = usePortalPath("preventive-maintenance");
+  const serviceRequestsPath = usePortalPath("service-requests");
 
   if (isLoading) return <PageLoader label="Loading location details..." />;
   if (isError)
@@ -334,16 +335,20 @@ export function LocationDetails() {
                 </>
               );
             })()}
-            <Button
-              onClick={() => {
-                if (activeTab === "assets")
-                  navigate(`${assetsPath}?location=${locationData?.id || ""}`);
-                if (activeTab === "work-orders") navigate(workOrdersPath);
-              }}
-              className="mt-4 bg-primary text-primary-foreground text-[13px] hover:bg-primary/90"
-            >
-              Open Full {activeTab.replace("-", " ")} Directory
-            </Button>
+            {activeTab !== "history" && (
+              <Button
+                onClick={() => {
+                  if (activeTab === "assets")
+                    navigate(`${assetsPath}?location=${locationData?.id || ""}`);
+                  if (activeTab === "work-orders") navigate(workOrdersPath);
+                  if (activeTab === "service-requests") navigate(serviceRequestsPath);
+                  if (activeTab === "pm") navigate(pmPath);
+                }}
+                className="mt-4 bg-primary text-primary-foreground text-[13px] hover:bg-primary/90"
+              >
+                Open Full {activeTab.replace("-", " ")} Directory
+              </Button>
+            )}
           </div>
         )}
       </div>

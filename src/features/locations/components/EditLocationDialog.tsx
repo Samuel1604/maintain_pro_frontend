@@ -41,7 +41,6 @@ export function EditLocationDialog({
   const [form, setForm] = useState({
     name: "",
     type: "building" as Location["type"],
-    address: "",
     description: "",
     parentId: "",
   });
@@ -51,7 +50,6 @@ export function EditLocationDialog({
     setForm({
       name: location.name,
       type: location.type,
-      address: location.address ?? "",
       description: location.description ?? "",
       parentId: location.parentId ?? "",
     });
@@ -157,13 +155,6 @@ export function EditLocationDialog({
                 Leave blank if this location has no parent.
               </p>
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Address</Label>
-            <Input
-              value={form.address}
-              onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
-            />
           </div>
           <div className="space-y-1.5">
             <Label>Description</Label>

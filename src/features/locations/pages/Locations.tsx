@@ -134,7 +134,9 @@ export function Locations() {
         status: "active",
         parentId: formParentId.trim()
           ? (editableLocations.find(
-              (location) => location.name.toLowerCase() === formParentId.trim().toLowerCase(),
+              (location) =>
+                location.facilityId === formFacilityId &&
+                location.name.toLowerCase() === formParentId.trim().toLowerCase(),
             )?.id ?? null)
           : null,
       });
@@ -423,9 +425,11 @@ export function Locations() {
                   onChange={(e) => setFormParentId(e.target.value)}
                 />
                 <datalist id="parent-location-options">
-                  {editableLocations.map((location) => (
-                    <option key={location.id} value={location.name} />
-                  ))}
+                  {editableLocations
+                    .filter((location) => location.facilityId === formFacilityId)
+                    .map((location) => (
+                      <option key={location.id} value={location.name} />
+                    ))}
                 </datalist>
                 <p className="text-[11px] text-muted-foreground">
                   Leave blank for a top-level location.
