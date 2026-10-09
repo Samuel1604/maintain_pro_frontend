@@ -259,7 +259,7 @@ export function WorkOrderDetails() {
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Facility</dt>
                       <dd className="mt-1 font-medium">
-                        {resolvedFacilityName || workOrder.facilityId || "Not specified"}
+                        {resolvedFacilityName || workOrder.facilityId || "—"}
                       </dd>
                     </div>
                     <div>
@@ -268,16 +268,13 @@ export function WorkOrderDetails() {
                         {resolvedLocationName ||
                           workOrder.locationName ||
                           workOrder.locationId ||
-                          "Not specified"}
+                          "—"}
                       </dd>
                     </div>
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Asset</dt>
                       <dd className="mt-1 font-medium">
-                        {resolvedAssetName ||
-                          workOrder.assetName ||
-                          workOrder.assetId ||
-                          "Not specified"}
+                        {resolvedAssetName || workOrder.assetName || workOrder.assetId || "—"}
                       </dd>
                     </div>
                     <div>
@@ -289,7 +286,7 @@ export function WorkOrderDetails() {
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Due date</dt>
                       <dd className="mt-1 font-medium">
-                        {workOrder.dueDate?.toLocaleDateString() || "Not scheduled"}
+                        {workOrder.dueDate?.toLocaleDateString() || "—"}
                       </dd>
                     </div>
                   </dl>
