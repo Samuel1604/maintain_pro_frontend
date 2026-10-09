@@ -219,30 +219,23 @@ function PendingApprovalsPanel({
   path: string;
 }) {
   return (
-    <Link
-      to={path}
-      className="block rounded-2xl transition-colors hover:ring-2 hover:ring-primary/30"
+    <SectionCard
+      title={isFacilityManager ? "Service Request Reviews" : "Pending Approvals"}
+      subtitle={
+        isFacilityManager
+          ? "Service requests awaiting review within your facility"
+          : "Financial and contract permissions waiting on Admin clearance"
+      }
     >
-      <SectionCard
-        title={isFacilityManager ? "Service Request Reviews" : "Pending Approvals"}
-        subtitle={
-          isFacilityManager
-            ? "Service requests awaiting review within your facility"
-            : "Financial and contract permissions waiting on Admin clearance"
-        }
-      >
-        {isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading pending approvals…</p>
-        ) : (
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-3xl font-semibold text-foreground">{count}</span>
-            <span className="shrink-0 text-right text-sm text-muted-foreground">
-              awaiting review
-            </span>
-          </div>
-        )}
-      </SectionCard>
-    </Link>
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading pending approvals…</p>
+      ) : (
+        <Link to={path} className="flex items-center justify-between gap-4 hover:text-primary">
+          <span className="text-3xl font-semibold text-foreground">{count}</span>
+          <span className="shrink-0 text-right text-sm text-muted-foreground">awaiting review</span>
+        </Link>
+      )}
+    </SectionCard>
   );
 }
 
