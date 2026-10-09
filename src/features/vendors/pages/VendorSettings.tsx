@@ -168,6 +168,7 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
             .join(", ")
         : "",
     );
+    setBaseLocation(value.address?.street ?? "");
     setCategories(value.serviceCategories);
     setRadius(
       typeof value.coverageRadiusKm === "number" && Number.isFinite(value.coverageRadiusKm)
@@ -246,7 +247,11 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
       return;
     }
     try {
-      await vendorProfileUpdate.mutateAsync({ serviceCategories: categories, coverageRadiusKm });
+      await vendorProfileUpdate.mutateAsync({
+        serviceCategories: categories,
+        coverageRadiusKm,
+        address: { street: baseLocation.trim() },
+      });
       toast.success("Vendor capabilities saved");
     } catch {
       toast.error("Unable to save vendor capabilities");
@@ -394,7 +399,7 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                       </Label>
                       <Input
                         value={contactEmail}
-                        onChange={(e) => setContactEmail(e.target.value)}
+                        disabled
                         className="bg-background border-border"
                       />
                     </div>
@@ -475,7 +480,11 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4">
-                    <Button variant="outline" className="text-[13px]">
+                    <Button
+                      variant="outline"
+                      className="text-[13px]"
+                      onClick={() => void vendorProfile.refetch()}
+                    >
                       Cancel
                     </Button>
                     <Button
@@ -543,7 +552,11 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4 border-t border-border">
-                    <Button variant="outline" className="text-[13px]">
+                    <Button
+                      variant="outline"
+                      className="text-[13px]"
+                      onClick={() => void vendorProfile.refetch()}
+                    >
                       Cancel
                     </Button>
                     <Button
@@ -593,8 +606,7 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                   <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-1">
                     <p className="text-[12px] font-bold text-foreground">Radius Active</p>
                     <p className="text-[12px] text-muted-foreground">
-                      Bids originating outside the 50mi threshold will automatically be flagged or
-                      filtered based on Marketplace rules.
+                      Bids outside the configured radius may be filtered by marketplace matching.
                     </p>
                   </div>
                 </div>
@@ -633,7 +645,11 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                   />
                 </div>
                 <div className="flex justify-end gap-3 pt-4 border-t border-border">
-                  <Button variant="outline" className="text-[13px]">
+                  <Button
+                    variant="outline"
+                    className="text-[13px]"
+                    onClick={() => void vendorProfile.refetch()}
+                  >
                     Cancel
                   </Button>
                   <Button
@@ -778,7 +794,11 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4 border-t border-border">
-                    <Button variant="outline" className="text-[13px]">
+                    <Button
+                      variant="outline"
+                      className="text-[13px]"
+                      onClick={() => void vendorSettings.refetch()}
+                    >
                       Cancel
                     </Button>
                     <Button
