@@ -33,7 +33,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocationsApi } from "@/features/locations/hooks/useLocationsApi";
 import { reportsApi } from "@/features/reports/api/reports.api";
 import { financeApprovalsService } from "@/features/finance/services/financeApprovals.service";
-import { inventoryService, type InventoryOverview } from "@/features/inventory/services/inventory.service";
+import {
+  inventoryService,
+  type InventoryOverview,
+} from "@/features/inventory/services/inventory.service";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -103,16 +106,26 @@ function CriticalIssuesPanel({ orders, path }: { orders: WorkOrder[]; path: stri
   );
 }
 
-function VendorSLAPanel({ data, isLoading }: { data?: { complianceRate: number; breaches: number; activeAgreements: number }; isLoading: boolean }) {
+function VendorSLAPanel({
+  data,
+  isLoading,
+}: {
+  data?: { complianceRate: number; breaches: number; activeAgreements: number };
+  isLoading: boolean;
+}) {
   return (
     <SectionCard title="Vendor SLA Compliance" subtitle="Contract response/resolution health">
-      {isLoading ? <p className="text-sm text-muted-foreground">Loading SLA performance…</p> : data ? (
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading SLA performance…</p>
+      ) : data ? (
         <div className="grid grid-cols-3 gap-3 text-center">
           <Metric value={`${data.complianceRate}%`} label="Compliance" />
           <Metric value={data.breaches} label="Breaches" />
           <Metric value={data.activeAgreements} label="Active SLAs" />
         </div>
-      ) : <p className="text-sm text-muted-foreground">No active vendor SLA data.</p>}
+      ) : (
+        <p className="text-sm text-muted-foreground">No active vendor SLA data.</p>
+      )}
     </SectionCard>
   );
 }
@@ -172,19 +185,44 @@ function VendorDispatchPanel({ orders }: { orders: WorkOrder[] }) {
       title="Recent Vendor Dispatch"
       subtitle="Real-time activity log of assigned technicians"
     >
-      {rows.length ? <div className="space-y-3">{rows.map((order) => (
-        <Link key={order.id} to={`../work-orders/${order.id}`} className="flex items-center justify-between gap-3 text-sm hover:text-primary">
-          <span className="truncate">{order.title}</span>
-          <span className="shrink-0 text-xs text-muted-foreground">{order.assigneeName ?? "Assigned"}</span>
-        </Link>
-      ))}</div> : <p className="text-sm text-muted-foreground">No dispatched work orders in this period.</p>}
+      {rows.length ? (
+        <div className="space-y-3">
+          {rows.map((order) => (
+            <Link
+              key={order.id}
+              to={`../work-orders/${order.id}`}
+              className="flex items-center justify-between gap-3 text-sm hover:text-primary"
+            >
+              <span className="truncate">{order.title}</span>
+              <span className="shrink-0 text-xs text-muted-foreground">
+                {order.assigneeName ?? "Assigned"}
+              </span>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">No dispatched work orders in this period.</p>
+      )}
     </SectionCard>
   );
 }
 
-function PendingApprovalsPanel({ isFacilityManager, count, isLoading, path }: { isFacilityManager: boolean; count: number; isLoading: boolean; path: string }) {
+function PendingApprovalsPanel({
+  isFacilityManager,
+  count,
+  isLoading,
+  path,
+}: {
+  isFacilityManager: boolean;
+  count: number;
+  isLoading: boolean;
+  path: string;
+}) {
   return (
-    <Link to={path} className="block rounded-2xl transition-colors hover:ring-2 hover:ring-primary/30">
+    <Link
+      to={path}
+      className="block rounded-2xl transition-colors hover:ring-2 hover:ring-primary/30"
+    >
       <SectionCard
         title={isFacilityManager ? "Service Request Reviews" : "Pending Approvals"}
         subtitle={
@@ -193,10 +231,14 @@ function PendingApprovalsPanel({ isFacilityManager, count, isLoading, path }: { 
             : "Financial and contract permissions waiting on Admin clearance"
         }
       >
-        {isLoading ? <p className="text-sm text-muted-foreground">Loading pending approvals…</p> : (
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground">Loading pending approvals…</p>
+        ) : (
           <div className="flex items-center justify-between gap-4">
             <span className="text-3xl font-semibold text-foreground">{count}</span>
-            <span className="shrink-0 text-right text-sm text-muted-foreground">awaiting review</span>
+            <span className="shrink-0 text-right text-sm text-muted-foreground">
+              awaiting review
+            </span>
           </div>
         )}
       </SectionCard>
@@ -204,24 +246,41 @@ function PendingApprovalsPanel({ isFacilityManager, count, isLoading, path }: { 
   );
 }
 
-function InventoryWarningsPanel({ data, isLoading, path }: { data?: InventoryOverview; isLoading: boolean; path: string }) {
+function InventoryWarningsPanel({
+  data,
+  isLoading,
+  path,
+}: {
+  data?: InventoryOverview;
+  isLoading: boolean;
+  path: string;
+}) {
   return (
     <SectionCard
       title="Inventory Level Warnings"
       subtitle="Replacement items below minimal safety stock threshold"
     >
-      {isLoading ? <p className="text-sm text-muted-foreground">Loading inventory levels…</p> : data ? (
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading inventory levels…</p>
+      ) : data ? (
         <Link to={path} className="flex items-center justify-between hover:text-primary">
           <span className="text-3xl font-semibold">{data.lowStockItems}</span>
           <span className="text-sm text-muted-foreground">items below minimum stock</span>
         </Link>
-      ) : <p className="text-sm text-muted-foreground">No inventory warning data.</p>}
+      ) : (
+        <p className="text-sm text-muted-foreground">No inventory warning data.</p>
+      )}
     </SectionCard>
   );
 }
 
 function Metric({ value, label }: { value: string | number; label: string }) {
-  return <div><p className="text-xl font-semibold text-foreground">{value}</p><p className="text-xs text-muted-foreground">{label}</p></div>;
+  return (
+    <div>
+      <p className="text-xl font-semibold text-foreground">{value}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
+    </div>
+  );
 }
 
 function RecentActivityPanel({
@@ -297,7 +356,11 @@ export function AdminDashboard() {
   });
   const slaQuery = useQuery({
     queryKey: ["dashboard", "sla-compliance", user?.id],
-    queryFn: () => reportsApi.slaCompliance({ startDate: new Date(0).toISOString(), endDate: new Date().toISOString() }),
+    queryFn: () =>
+      reportsApi.slaCompliance({
+        startDate: new Date(0).toISOString(),
+        endDate: new Date().toISOString(),
+      }),
     enabled: Boolean(user?.id) && !isFacilityManager,
     staleTime: 60_000,
     retry: false,
@@ -477,10 +540,19 @@ export function AdminDashboard() {
         {/* ── Row 3: Pending Approvals | Inventory Warnings ── */}
         <div className="mb-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-7">
-            <PendingApprovalsPanel isFacilityManager={isFacilityManager} count={approvalsQuery.data?.data?.length ?? 0} isLoading={approvalsQuery.isLoading} path={approvalsPath} />
+            <PendingApprovalsPanel
+              isFacilityManager={isFacilityManager}
+              count={approvalsQuery.data?.data?.length ?? 0}
+              isLoading={approvalsQuery.isLoading}
+              path={approvalsPath}
+            />
           </div>
           <div className="lg:col-span-5">
-            <InventoryWarningsPanel data={inventoryQuery.data} isLoading={inventoryQuery.isLoading} path={inventoryPath} />
+            <InventoryWarningsPanel
+              data={inventoryQuery.data}
+              isLoading={inventoryQuery.isLoading}
+              path={inventoryPath}
+            />
           </div>
         </div>
 
