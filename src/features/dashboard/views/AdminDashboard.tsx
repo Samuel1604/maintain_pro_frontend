@@ -31,6 +31,9 @@ import { HandWaveGreeting } from "@/components/ui/HandWaveGreeting";
 import { facilitiesApi } from "@/features/facilities/api/facilities.api";
 import { useQuery } from "@tanstack/react-query";
 import { useLocationsApi } from "@/features/locations/hooks/useLocationsApi";
+import { reportsApi } from "@/features/reports/api/reports.api";
+import { financeApprovalsService } from "@/features/finance/services/financeApprovals.service";
+import { inventoryService, type InventoryOverview } from "@/features/inventory/services/inventory.service";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -100,12 +103,16 @@ function CriticalIssuesPanel({ orders, path }: { orders: WorkOrder[]; path: stri
   );
 }
 
-function VendorSLAPanel() {
+function VendorSLAPanel({ data, isLoading }: { data?: { complianceRate: number; breaches: number; activeAgreements: number }; isLoading: boolean }) {
   return (
     <SectionCard title="Vendor SLA Compliance" subtitle="Contract response/resolution health">
-      <p className="text-sm text-muted-foreground">
-        Vendor SLA performance is not available from the dashboard API.
-      </p>
+      {isLoading ? <p className="text-sm text-muted-foreground">Loading SLA performance…</p> : data ? (
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <Metric value={`${data.complianceRate}%`} label="Compliance" />
+          <Metric value={data.breaches} label="Breaches" />
+          <Metric value={data.activeAgreements} label="Active SLAs" />
+        </div>
+      ) : <p className="text-sm text-muted-foreground">No active vendor SLA data.</p>}
     </SectionCard>
   );
 }
@@ -158,20 +165,24 @@ function StatusBreakdownPanel({ workOrders }: { workOrders: WorkOrder[] }) {
   );
 }
 
-function VendorDispatchPanel() {
+function VendorDispatchPanel({ orders }: { orders: WorkOrder[] }) {
+  const rows = orders.filter((order) => order.assigneeId || order.assigneeName).slice(0, 4);
   return (
     <SectionCard
       title="Recent Vendor Dispatch"
       subtitle="Real-time activity log of assigned technicians"
     >
-      <p className="text-sm text-muted-foreground">
-        Vendor dispatch activity is not available from the dashboard API.
-      </p>
+      {rows.length ? <div className="space-y-3">{rows.map((order) => (
+        <Link key={order.id} to={`../work-orders/${order.id}`} className="flex items-center justify-between gap-3 text-sm hover:text-primary">
+          <span className="truncate">{order.title}</span>
+          <span className="shrink-0 text-xs text-muted-foreground">{order.assigneeName ?? "Assigned"}</span>
+        </Link>
+      ))}</div> : <p className="text-sm text-muted-foreground">No dispatched work orders in this period.</p>}
     </SectionCard>
   );
 }
 
-function PendingApprovalsPanel({ isFacilityManager }: { isFacilityManager: boolean }) {
+function PendingApprovalsPanel({ isFacilityManager, count, isLoading }: { isFacilityManager: boolean; count: number; isLoading: boolean }) {
   return (
     <SectionCard
       title={isFacilityManager ? "Service Request Reviews" : "Pending Approvals"}
@@ -181,26 +192,31 @@ function PendingApprovalsPanel({ isFacilityManager }: { isFacilityManager: boole
           : "Financial and contract permissions waiting on Admin clearance"
       }
     >
-      <p className="text-sm text-muted-foreground">
-        {isFacilityManager
-          ? "Pending service request review data is not available from the dashboard API."
-          : "Pending approval records are not available from the dashboard API."}
-      </p>
+      {isLoading ? <p className="text-sm text-muted-foreground">Loading pending approvals…</p> : (
+        <p className="text-3xl font-semibold text-foreground">{count}<span className="ml-2 text-sm font-normal text-muted-foreground">awaiting review</span></p>
+      )}
     </SectionCard>
   );
 }
 
-function InventoryWarningsPanel() {
+function InventoryWarningsPanel({ data, isLoading, path }: { data?: InventoryOverview; isLoading: boolean; path: string }) {
   return (
     <SectionCard
       title="Inventory Level Warnings"
       subtitle="Replacement items below minimal safety stock threshold"
     >
-      <p className="text-sm text-muted-foreground">
-        Inventory warnings are not available from the dashboard API.
-      </p>
+      {isLoading ? <p className="text-sm text-muted-foreground">Loading inventory levels…</p> : data ? (
+        <Link to={path} className="flex items-center justify-between hover:text-primary">
+          <span className="text-3xl font-semibold">{data.lowStockItems}</span>
+          <span className="text-sm text-muted-foreground">items below minimum stock</span>
+        </Link>
+      ) : <p className="text-sm text-muted-foreground">No inventory warning data.</p>}
     </SectionCard>
   );
+}
+
+function Metric({ value, label }: { value: string | number; label: string }) {
+  return <div><p className="text-xl font-semibold text-foreground">{value}</p><p className="text-xs text-muted-foreground">{label}</p></div>;
 }
 
 function RecentActivityPanel({
@@ -274,11 +290,33 @@ export function AdminDashboard() {
     staleTime: 60_000,
     retry: false,
   });
+  const slaQuery = useQuery({
+    queryKey: ["dashboard", "sla-compliance", user?.id],
+    queryFn: () => reportsApi.slaCompliance({ startDate: new Date(0).toISOString(), endDate: new Date().toISOString() }),
+    enabled: Boolean(user?.id) && !isFacilityManager,
+    staleTime: 60_000,
+    retry: false,
+  });
+  const approvalsQuery = useQuery({
+    queryKey: ["dashboard", "pending-approvals", user?.id],
+    queryFn: financeApprovalsService.list,
+    enabled: Boolean(user?.id) && !isFacilityManager,
+    staleTime: 60_000,
+    retry: false,
+  });
+  const inventoryQuery = useQuery({
+    queryKey: ["dashboard", "inventory-overview", user?.id],
+    queryFn: inventoryService.overview,
+    enabled: Boolean(user?.id),
+    staleTime: 60_000,
+    retry: false,
+  });
   const locations = useLocationsApi().data ?? [];
   const workOrdersPath = usePortalPath("work-orders");
   const pmPath = usePortalPath("preventive-maintenance");
   const facilitiesPath = usePortalPath("facilities");
   const locationsPath = usePortalPath("locations");
+  const inventoryPath = usePortalPath("inventory");
   const critical = useMemo(
     () => activeWorkOrders.filter((o) => o.priority === "critical").slice(0, 3),
     [activeWorkOrders],
@@ -407,7 +445,7 @@ export function AdminDashboard() {
             <CriticalIssuesPanel orders={critical} path={workOrdersPath} />
           </div>
           <div className="lg:col-span-5">
-            <VendorSLAPanel />
+            <VendorSLAPanel data={slaQuery.data} isLoading={slaQuery.isLoading} />
           </div>
         </div>
 
@@ -426,17 +464,17 @@ export function AdminDashboard() {
             <StatusBreakdownPanel workOrders={workOrdersInRange} />
           </div>
           <div className="lg:col-span-5">
-            <VendorDispatchPanel />
+            <VendorDispatchPanel orders={workOrdersInRange} />
           </div>
         </div>
 
         {/* ── Row 3: Pending Approvals | Inventory Warnings ── */}
         <div className="mb-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-7">
-            <PendingApprovalsPanel isFacilityManager={isFacilityManager} />
+            <PendingApprovalsPanel isFacilityManager={isFacilityManager} count={approvalsQuery.data?.data?.length ?? 0} isLoading={approvalsQuery.isLoading} />
           </div>
           <div className="lg:col-span-5">
-            <InventoryWarningsPanel />
+            <InventoryWarningsPanel data={inventoryQuery.data} isLoading={inventoryQuery.isLoading} path={inventoryPath} />
           </div>
         </div>
 
