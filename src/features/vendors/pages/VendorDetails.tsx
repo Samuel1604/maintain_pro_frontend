@@ -84,33 +84,25 @@ export function VendorDetails() {
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Service Categories
                   </p>
-                  <p className="text-[13px] font-semibold text-foreground mt-1">
-                    "Not provided by live API"
-                  </p>
+                  <p className="text-[13px] font-semibold text-foreground mt-1">—</p>
                 </div>
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Facility Coverage
                   </p>
-                  <p className="text-[13px] font-semibold text-foreground mt-1">
-                    "Not provided by live API"
-                  </p>
+                  <p className="text-[13px] font-semibold text-foreground mt-1">—</p>
                 </div>
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Primary Contact
                   </p>
-                  <p className="text-[13px] font-semibold text-foreground mt-1">
-                    "Not provided by live API"
-                  </p>
+                  <p className="text-[13px] font-semibold text-foreground mt-1">—</p>
                 </div>
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                     Dispatch Line
                   </p>
-                  <p className="text-[13px] font-semibold text-foreground mt-1">
-                    "Not provided by live API"
-                  </p>
+                  <p className="text-[13px] font-semibold text-foreground mt-1">—</p>
                 </div>
               </div>
             </div>
