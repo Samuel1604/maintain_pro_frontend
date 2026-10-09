@@ -38,8 +38,8 @@ export function mapWorkOrder(item: BackendWorkOrder): WorkOrder {
     !hasTechnician && ["assigned", "in_progress"].includes(rawStatus)
       ? "open"
       : hasTechnician && rawStatus === "open"
-      ? "assigned"
-      : rawStatus;
+        ? "assigned"
+        : rawStatus;
   return {
     id: item._id,
     sourceType: item.sourceType,
@@ -98,7 +98,7 @@ export const workOrdersService = {
       ENDPOINTS.WORK_ORDERS.MARKETPLACE_OPEN,
       { params: filters as Record<string, string | number | boolean> },
     );
-    const records = Array.isArray(result) ? result : result.data ?? [];
+    const records = Array.isArray(result) ? result : (result.data ?? []);
     const pagination = Array.isArray(result)
       ? {
           page: 1,
