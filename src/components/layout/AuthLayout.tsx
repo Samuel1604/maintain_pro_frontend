@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { AuthBackToHome } from "@/features/auth/components/AuthBackToHome";
+import { PublicFooter } from "@/features/public/components/PublicFooter";
 
 export function AuthLayout() {
   return (
@@ -13,6 +14,7 @@ export function AuthLayout() {
         <ThemeToggle />
       </div>
       <Outlet />
+      <PublicFooter variant="contact" />
     </div>
   );
 }

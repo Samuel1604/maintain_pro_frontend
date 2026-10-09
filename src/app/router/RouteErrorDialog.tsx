@@ -1,4 +1,4 @@
-import { useNavigate, useRouteError, isRouteErrorResponse } from "react-router-dom";
+import { useEffect, useNavigate, useRouteError, isRouteErrorResponse } from "react-router-dom";
 import { CircleAlert } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { isStaleChunkError, reloadOnceForStaleChunk } from "@/lib/recover-stale-chunk";
 
 /**
  * Uncaught route-level errors (unexpected client crashes, unhandled
@@ -27,6 +28,19 @@ export function RouteErrorDialog() {
     : error instanceof Error
       ? error.message
       : "Something went wrong. Please try again.";
+  const staleChunkError = isStaleChunkError(error) || isStaleChunkError(message);
+
+  useEffect(() => {
+    if (staleChunkError) reloadOnceForStaleChunk();
+  }, [staleChunkError]);
+
+  if (staleChunkError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-6 text-sm text-muted-foreground">
+        Refreshing the application…
+      </div>
+    );
+  }
 
   return (
     <Dialog open>
