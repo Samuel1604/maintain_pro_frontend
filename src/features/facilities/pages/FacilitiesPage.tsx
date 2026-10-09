@@ -54,6 +54,9 @@ export function FacilitiesPage() {
   const [formStreet, setFormStreet] = useState("");
   const [formCity, setFormCity] = useState("");
   const [formState, setFormState] = useState("");
+  const [formCountry, setFormCountry] = useState("");
+  const [formLatitude, setFormLatitude] = useState("");
+  const [formLongitude, setFormLongitude] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formManagerName, setFormManagerName] = useState("");
   const [formPrimaryPhone, setFormPrimaryPhone] = useState("");
@@ -112,6 +115,9 @@ export function FacilitiesPage() {
     setFormStreet("");
     setFormCity("");
     setFormState("");
+    setFormCountry("");
+    setFormLatitude("");
+    setFormLongitude("");
     setFormDescription("");
     setFormManagerName("");
     setFormPrimaryPhone("");
@@ -123,6 +129,9 @@ export function FacilitiesPage() {
     setFormStreet(facility.address.street || "");
     setFormCity(facility.address.city || "");
     setFormState(facility.address.state || "");
+    setFormCountry(facility.address.country || "");
+    setFormLatitude(String(facility.coordinates.coordinates[1]));
+    setFormLongitude(String(facility.coordinates.coordinates[0]));
     setFormDescription(facility.description || "");
     setFormManagerName(facility.managerName || "");
     setFormPrimaryPhone(facility.primaryPhone || "");
@@ -130,14 +139,29 @@ export function FacilitiesPage() {
   };
 
   async function handleCreateFacility() {
-    if (!organization.data || !formName.trim()) return;
+    const latitude = Number(formLatitude);
+    const longitude = Number(formLongitude);
+    if (
+      !organization.data ||
+      !formName.trim() ||
+      !formCountry.trim() ||
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude) ||
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      toast.error("Enter a valid country and facility coordinates");
+      return;
+    }
     try {
       await mutations.create.mutateAsync({
         organizationId: organization.data.id,
         name: formName.trim(),
-        address: { street: formStreet, city: formCity, state: formState, country: "USA" },
-        latitude: 0,
-        longitude: 0,
+        address: { street: formStreet, city: formCity, state: formState, country: formCountry },
+        latitude,
+        longitude,
         description: formDescription.trim() || undefined,
         primaryPhone: formPrimaryPhone.trim() || undefined,
         emergencyContact: formEmergencyContact.trim() || undefined,
@@ -162,7 +186,7 @@ export function FacilitiesPage() {
             city: formCity,
             state: formState,
             postalCode: editingFacility.address.postalCode,
-            country: editingFacility.address.country || "USA",
+            country: formCountry || editingFacility.address.country,
           },
           description: formDescription.trim() || undefined,
           primaryPhone: formPrimaryPhone.trim() || undefined,
@@ -407,6 +431,20 @@ export function FacilitiesPage() {
                   value={formState}
                   onChange={(e) => setFormState(e.target.value)}
                 />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label className="text-[12px] font-semibold text-foreground">Country *</Label>
+                <Input value={formCountry} onChange={(e) => setFormCountry(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[12px] font-semibold text-foreground">Latitude *</Label>
+                <Input value={formLatitude} onChange={(e) => setFormLatitude(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[12px] font-semibold text-foreground">Longitude *</Label>
+                <Input value={formLongitude} onChange={(e) => setFormLongitude(e.target.value)} />
               </div>
             </div>
             <div className="space-y-1.5">
