@@ -4,7 +4,7 @@ import { ArrowLeft, CheckCircle2, Clock3, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/navigation/Navbar";
 import { Button } from "@/components/ui/button";
-import { Badge, StatusBadge, PriorityBadge } from "@/components/ui/badge";
+import { Badge, StatusBadge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import {
   Dialog,
@@ -81,7 +81,6 @@ export function VendorSLADetails() {
   const [sla, setSla] = useState<Sla | null>((location.state as { sla?: Sla } | null)?.sla ?? null);
   const [editOpen, setEditOpen] = useState(false);
   const [nextStatus, setNextStatus] = useState("");
-  const workOrders: string[][] = [];
   useEffect(() => {
     if (!sla && slaId)
       void apiClient
@@ -102,7 +101,7 @@ export function VendorSLADetails() {
         <PageHeader
           className="rounded-xl border border-border"
           title={`Vendor SLA: ${slaId ?? ""}`}
-          subtitle="Define and monitor service-level expectations for Lagos HVAC Services."
+          subtitle="Review and manage the response and resolution targets attached to this agreement."
           breadcrumbs={
             <Button variant="ghost" className="px-0" onClick={() => navigate(`${base}/slas`)}>
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -260,22 +259,11 @@ export function VendorSLADetails() {
                         </tr>
                       </thead>
                       <tbody>
-                        {workOrders.map((row) => (
-                          <tr key={row[0]} className="border-b last:border-0">
-                            <td className="p-3 font-semibold text-orange-500">{row[0]}</td>
-                            <td className="max-w-[220px] truncate p-3">{row[1]}</td>
-                            <td className="p-3">
-                              <PriorityBadge priority={row[2]} />
-                            </td>
-                            <td className="hidden p-3 sm:table-cell">{row[3]}</td>
-                            <td className="hidden p-3 sm:table-cell">{row[4]}</td>
-                            <td className="p-3">
-                              <span className="text-xs font-medium text-muted-foreground">
-                                {row[5]}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
+                        <tr>
+                          <td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">
+                            Related work orders are not included in the live SLA response.
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                   </div>
