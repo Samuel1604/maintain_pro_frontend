@@ -17,6 +17,8 @@ type Sla = {
   status: string;
   workOrderId: string;
   vendorApplicationId: string;
+  workOrder?: { title?: string; status?: string; priority?: string; dueDate?: string };
+  performance?: { breached: boolean; workOrderStatus?: string };
 };
 const formatHours = (hours: number) =>
   hours < 1
@@ -116,7 +118,9 @@ export function VendorSLAs() {
                       </td>
                       <td className="px-6 py-4 text-muted-foreground">
                         Application {sla.vendorApplicationId.slice(0, 8).toUpperCase()}
-                        <p className="text-[11px]">Work order {sla.workOrderId.slice(0, 8)}</p>
+                        <p className="text-[11px]">
+                          {sla.workOrder?.title || `Work order ${sla.workOrderId.slice(0, 8)}`}
+                        </p>
                       </td>
                       <td className="px-6 py-4 font-semibold">
                         {formatHours(sla.responseTimeHours)}

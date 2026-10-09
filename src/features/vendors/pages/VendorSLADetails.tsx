@@ -34,6 +34,14 @@ type Sla = {
   contractId?: string;
   effectiveAt?: string;
   expiresAt?: string;
+  workOrder?: {
+    title?: string;
+    status?: string;
+    priority?: string;
+    dueDate?: string;
+    slaBreached?: boolean;
+  };
+  performance?: { breached: boolean; workOrderStatus?: string };
 };
 const hours = (value?: number) =>
   value == null
@@ -261,7 +269,9 @@ export function VendorSLADetails() {
                       <tbody>
                         <tr>
                           <td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">
-                            Related work orders are not included in the live SLA response.
+                            {sla.workOrder
+                              ? `${sla.workOrder.title || `Work order ${sla.workOrderId.slice(0, 8)}`} · ${sla.workOrder.status?.replaceAll("_", " ") || "status unavailable"}`
+                              : "No work order is linked to this SLA yet."}
                           </td>
                         </tr>
                       </tbody>
@@ -322,15 +332,19 @@ export function VendorSLADetails() {
                   <div className="mt-5 grid grid-cols-2 gap-5">
                     <div>
                       <p className={label}>SLA compliance</p>
-                      <p className="text-2xl font-bold text-emerald-500">{"—"}</p>
+                      <p className="text-2xl font-bold text-emerald-500">
+                        {sla.performance?.breached ? "0%" : "100%"}
+                      </p>
                     </div>
                     <div>
                       <p className={label}>Avg response time</p>
-                      <p className="text-2xl font-bold">{"—"}</p>
+                      <p className="text-2xl font-bold">{hours(sla.responseTimeHours)}</p>
                     </div>
                     <div>
                       <p className={label}>Breached WOs</p>
-                      <p className="text-2xl font-bold text-red-500">{"—"}</p>
+                      <p className="text-2xl font-bold text-red-500">
+                        {sla.performance?.breached ? 1 : 0}
+                      </p>
                     </div>
                     <div>
                       <p className={label}>Approaching breach</p>
