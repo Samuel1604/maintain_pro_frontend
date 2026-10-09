@@ -184,21 +184,23 @@ function VendorDispatchPanel({ orders }: { orders: WorkOrder[] }) {
 
 function PendingApprovalsPanel({ isFacilityManager, count, isLoading, path }: { isFacilityManager: boolean; count: number; isLoading: boolean; path: string }) {
   return (
-    <SectionCard
-      title={isFacilityManager ? "Service Request Reviews" : "Pending Approvals"}
-      subtitle={
-        isFacilityManager
-          ? "Service requests awaiting review within your facility"
-          : "Financial and contract permissions waiting on Admin clearance"
-      }
-    >
-      {isLoading ? <p className="text-sm text-muted-foreground">Loading pending approvals…</p> : (
-        <Link to={path} className="flex items-center justify-between hover:text-primary">
-          <span className="text-3xl font-semibold text-foreground">{count}</span>
-          <span className="text-sm text-muted-foreground">awaiting review</span>
-        </Link>
-      )}
-    </SectionCard>
+    <Link to={path} className="block rounded-2xl transition-colors hover:ring-2 hover:ring-primary/30">
+      <SectionCard
+        title={isFacilityManager ? "Service Request Reviews" : "Pending Approvals"}
+        subtitle={
+          isFacilityManager
+            ? "Service requests awaiting review within your facility"
+            : "Financial and contract permissions waiting on Admin clearance"
+        }
+      >
+        {isLoading ? <p className="text-sm text-muted-foreground">Loading pending approvals…</p> : (
+          <div className="flex items-center justify-between">
+            <span className="text-3xl font-semibold text-foreground">{count}</span>
+            <span className="text-sm text-muted-foreground">awaiting review</span>
+          </div>
+        )}
+      </SectionCard>
+    </Link>
   );
 }
 
