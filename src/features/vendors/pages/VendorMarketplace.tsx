@@ -125,8 +125,6 @@ const MARKETPLACE_VENDORS: MarketplaceVendor[] = [
 export function VendorMarketplace() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
-  const [proximity, setProximity] = useState("all");
-  const [slaFilter, setSlaFilter] = useState("all");
   const [selectedVendor, setSelectedVendor] = useState<MarketplaceVendor | null>(null);
   const [rfqVendor, setRfqVendor] = useState<MarketplaceVendor | null>(null);
   const [rfqDetails, setRfqDetails] = useState("");
@@ -143,17 +141,15 @@ export function VendorMarketplace() {
             id: vendor.id,
             name: vendor.name,
             location:
-              [vendor.address?.city, vendor.address?.state].filter(Boolean).join(", ") ||
-              "Location not provided",
-            distance: "Distance not provided",
+              [vendor.address?.city, vendor.address?.state].filter(Boolean).join(", ") || "—",
+            distance: "",
             rating: vendor.averageRating ?? 0,
             slaCompliance: 0,
             serviceCategories: vendor.serviceCategories ?? [],
-            description:
-              "Vendor profile details are available through the vendor relationship workflow.",
+            description: vendor.description ?? "—",
             certifications: vendor.certifications ?? [],
-            insuranceLimit: "Not provided",
-            avgDispatchTime: "Not provided",
+            insuranceLimit: "—",
+            avgDispatchTime: "—",
             activeContracts: [],
           })),
         ),
@@ -213,8 +209,6 @@ export function VendorMarketplace() {
       !v.serviceCategories.some((item) => item.toLowerCase().includes(category))
     )
       return false;
-    if (proximity !== "all" && Number.parseFloat(v.distance) > Number(proximity)) return false;
-    if (slaFilter !== "all" && v.slaCompliance < Number(slaFilter)) return false;
     return true;
   });
   const marketplaceCategories = [
@@ -284,49 +278,6 @@ export function VendorMarketplace() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="min-w-0 space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                Location & Proximity
-              </Label>
-              <Select value={proximity} onValueChange={setProximity}>
-                <SelectTrigger className="w-full border-border text-[13px] bg-background text-foreground">
-                  <SelectValue placeholder="Within 25 miles of HQ" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any distance</SelectItem>
-                  <SelectItem value="10">Within 10 miles</SelectItem>
-                  <SelectItem value="25">Within 25 miles of HQ</SelectItem>
-                  <SelectItem value="50">Within 50 miles</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="min-w-0 space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                Minimum SLA Rating
-              </Label>
-              <Select value={slaFilter} onValueChange={setSlaFilter}>
-                <SelectTrigger className="w-full border-border text-[13px] bg-background text-foreground">
-                  <SelectValue placeholder="90% + SLA compliance" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any Rating</SelectItem>
-                  <SelectItem value="90">90% + SLA compliance</SelectItem>
-                  <SelectItem value="95">95% + SLA compliance</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="min-w-0">
-              <Button
-                type="button"
-                onClick={() => undefined}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-[13px] font-semibold h-[38px] rounded-lg"
-              >
-                Filter Results
-              </Button>
-            </div>
           </div>
         </div>
       </div>
@@ -372,7 +323,9 @@ export function VendorMarketplace() {
                         Certifications
                       </p>
                       <p className="text-[13px] font-semibold text-foreground mt-1">
-                        {selectedVendor.certifications.join(", ")}
+                        {selectedVendor.certifications.length > 0
+                          ? selectedVendor.certifications.join(", ")
+                          : "—"}
                       </p>
                     </div>
                     <div>
@@ -391,40 +344,6 @@ export function VendorMarketplace() {
                         {selectedVendor.avgDispatchTime}
                       </p>
                     </div>
-                  </div>
-                </div>
-
-                {/* SLA Statistics */}
-                <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-                  <h3 className="text-[15px] font-bold text-foreground">
-                    SLA Performance Statistics
-                  </h3>
-                  <div className="space-y-4">
-                    {[
-                      {
-                        label: "Emergency Response Rate (Within 30 mins)",
-                        val: 98,
-                      },
-                      { label: "Standard Work Order Resolution Time", val: 94 },
-                      {
-                        label: "ASME Compliance Certification Success",
-                        val: 100,
-                      },
-                      { label: "First-Time Fix Ratio", val: 89 },
-                    ].map((st) => (
-                      <div key={st.label} className="space-y-1.5">
-                        <div className="flex justify-between text-[13px]">
-                          <span className="text-muted-foreground font-medium">{st.label}</span>
-                          <span className="font-bold text-foreground">{st.val}%</span>
-                        </div>
-                        <div className="h-2 w-full rounded-full bg-accent/40 overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-primary"
-                            style={{ width: `${st.val}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 </div>
               </div>
@@ -520,8 +439,12 @@ export function VendorMarketplace() {
                           <h3 className="text-[16px] font-bold text-foreground">{vendor.name}</h3>
                           <p className="text-[12px] text-muted-foreground flex items-center gap-1.5 mt-0.5">
                             <span>{vendor.location}</span>
-                            <span>•</span>
-                            <span>{vendor.distance}</span>
+                            {vendor.distance && (
+                              <>
+                                <span>•</span>
+                                <span>{vendor.distance}</span>
+                              </>
+                            )}
                           </p>
                         </div>
                       </div>
@@ -544,8 +467,7 @@ export function VendorMarketplace() {
 
                     <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
                       <span className="text-[13px] text-muted-foreground">
-                        SLA Compliance:{" "}
-                        <strong className="text-foreground">{vendor.slaCompliance}%</strong>
+                        SLA Compliance: <strong className="text-foreground">—</strong>
                       </span>
                       <div className="flex gap-2">
                         <Button
