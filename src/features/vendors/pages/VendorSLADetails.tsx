@@ -4,7 +4,7 @@ import { ArrowLeft, CheckCircle2, Clock3, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/navigation/Navbar";
 import { Button } from "@/components/ui/button";
-import { Badge, StatusBadge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import {
   Dialog,
