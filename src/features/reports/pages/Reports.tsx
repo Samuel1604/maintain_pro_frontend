@@ -145,75 +145,11 @@ function GenerationHubView({
   setActiveTab: (t: "generation_hub" | "maintenance_summary" | "inventory_report") => void;
   onOpenReport: (slug: string) => void;
 }) {
-  const reportRangeLabel = useMemo(() => {
-    const end = new Date();
-    const start = new Date(end);
-    start.setDate(start.getDate() - 29);
-    const format = (date: Date) =>
-      new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
-    return `Last 30 Days (${format(start)} - ${format(end)})`;
-  }, []);
-
   return (
     <div className="space-y-6">
-      {/* Global Report Filters Card */}
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-bold text-foreground">Global Report Filters</h2>
-          <span className="text-[11px] text-muted-foreground">
-            Apply parameters prior to file extraction
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-[13px]">
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase text-muted-foreground">
-              SELECT FACILITY
-            </label>
-            <Select defaultValue="all">
-              <SelectTrigger className="h-9 border-border bg-muted/30">
-                <SelectValue placeholder="All Facilities" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Facilities</SelectItem>
-                <SelectItem value="hq">HQ Office Tower</SelectItem>
-                <SelectItem value="west">West Campus</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase text-muted-foreground">
-              DATE RANGE
-            </label>
-            <Select defaultValue="30d">
-              <SelectTrigger className="h-9 border-border bg-muted/30">
-                <SelectValue placeholder={reportRangeLabel} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="30d">{reportRangeLabel}</SelectItem>
-                <SelectItem value="90d">Last 90 Days</SelectItem>
-                <SelectItem value="ytd">Year to Date</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase text-muted-foreground">
-              EXPORT FORMAT
-            </label>
-            <Select defaultValue="pdf">
-              <SelectTrigger className="h-9 border-border bg-muted/30">
-                <SelectValue placeholder="Adobe PDF Document (.pdf)" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pdf">Adobe PDF Document (.pdf)</SelectItem>
-                <SelectItem value="csv">CSV Spreadsheet (.csv)</SelectItem>
-                <SelectItem value="excel">Excel Workbook (.xlsx)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+      <div className="rounded-xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
+        Reports use live organization data for the selected report and its supported date range.
+        Choose a report below to view its filters and export the loaded results.
       </div>
 
       {/* 6 Report Generation Cards */}
@@ -221,7 +157,7 @@ function GenerationHubView({
         {[
           {
             title: "Maintenance Summary",
-            desc: "Overall health index, count of requests vs. completions, and active labor cost estimations.",
+            desc: "Live work-order totals, completion rates, backlog, and maintenance trends.",
             actionLabel: "View Summary",
             tabTarget: "maintenance_summary" as const,
           },
