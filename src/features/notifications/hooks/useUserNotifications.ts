@@ -37,6 +37,15 @@ function toNotification(item: BackendNotification): Notification {
     system: "system",
     invitation: "invitation",
   };
+  const resourcePaths: Record<string, string> = {
+    work_order: "work-orders",
+    service_request: "service-requests",
+    vendor_application: "applications",
+    contract_award: "contracts",
+    sla_agreement: "slas",
+    invoice: "invoices",
+    preventive_maintenance: "preventive-maintenance",
+  };
   return {
     id: item.id,
     type: types[item.type] ?? "system",
@@ -46,7 +55,9 @@ function toNotification(item: BackendNotification): Notification {
     priority: item.priority === "high" || item.priority === "critical" ? "high" : "normal",
     createdAt: new Date(item.createdAt),
     actionUrl:
-      item.resourceType && item.resourceId ? `${item.resourceType}/${item.resourceId}` : undefined,
+      item.resourceType && item.resourceId
+        ? `${resourcePaths[item.resourceType] ?? item.resourceType}/${item.resourceId}`
+        : undefined,
   };
 }
 
