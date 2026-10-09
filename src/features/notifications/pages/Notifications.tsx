@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/navigation/Navbar";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useUserNotifications } from "../hooks/useUserNotifications";
 import type { Notification, NotificationType } from "@/types/common.types";
 import { NOTIFICATION_TYPE_CONFIG } from "../config/notificationConfig";
+import { realtimeClient, type RealtimeState } from "@/realtime/realtime.client";
 
 function relativeTime(date: Date) {
   const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
@@ -41,6 +42,8 @@ export function NotificationCenter() {
     pageSubtitle,
   } = useUserNotifications();
   const [activeTab, setActiveTab] = useState<string>("All");
+  const [realtimeState, setRealtimeState] = useState<RealtimeState>(realtimeClient.getState());
+  useEffect(() => realtimeClient.subscribe(setRealtimeState), []);
   const categoryTabs = ["All", "Unread", ...notificationTypes];
   const filteredNotifications = notifications.filter((item) => {
     if (activeTab === "All") return true;
@@ -90,7 +93,11 @@ export function NotificationCenter() {
           ))}
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 p-3 text-[12px] text-primary">
-          <span>Real-time notifications are enabled.</span>
+          <span>
+            {realtimeState === "connected"
+              ? "Live notification updates are connected."
+              : "Live notification updates are unavailable; refresh to check for new alerts."}
+          </span>
         </div>
         {isLoading ? (
           <div role="status" aria-live="polite">

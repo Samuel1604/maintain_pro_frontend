@@ -103,8 +103,9 @@ const store = create<NotificationsStore>((set, get) => ({
     }));
     try {
       await notificationsApi.markRead(id);
-    } catch {
+    } catch (error) {
       await get().refresh();
+      throw error;
     }
   },
   markAllRead: async () => {
@@ -114,8 +115,9 @@ const store = create<NotificationsStore>((set, get) => ({
     }));
     try {
       await notificationsApi.markAllRead();
-    } catch {
+    } catch (error) {
       await get().refresh();
+      throw error;
     }
   },
   deleteNotification: () => undefined,
