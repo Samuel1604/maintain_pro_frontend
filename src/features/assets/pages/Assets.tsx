@@ -179,7 +179,7 @@ export function Assets() {
     status: asset.status,
     condition: asset.condition
       ? `${asset.condition.charAt(0).toUpperCase()}${asset.condition.slice(1)}`
-      : "Unknown",
+      : "—",
   }));
 
   const filtered = displayRows.filter((item) => {

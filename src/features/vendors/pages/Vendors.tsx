@@ -347,22 +347,6 @@ export function Vendors() {
                       </SelectContent>
                     </Select>
                   </div>
-
-                  <div className="flex items-center gap-2">
-                    <span className="text-[12px] font-semibold text-muted-foreground">
-                      Facility Coverage:
-                    </span>
-                    <Select defaultValue="all">
-                      <SelectTrigger className="w-[160px] h-[36px] text-[13px] border-border bg-card font-medium">
-                        <SelectValue placeholder="**All**" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Facilities</SelectItem>
-                        <SelectItem value="hq">Main HQ</SelectItem>
-                        <SelectItem value="west">West Campus</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
               </div>
 

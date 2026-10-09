@@ -57,8 +57,8 @@ export function OrganizationPage() {
     ["Status", data.status],
     ["Email", data.email],
     ["Phone", data.phone],
-    ["Website", data.website || "Not provided"],
-    ["Address", Object.values(data.address).filter(Boolean).join(", ") || "Not provided"],
+    ["Website", data.website || "—"],
+    ["Address", Object.values(data.address).filter(Boolean).join(", ") || "—"],
   ];
   return (
     <>

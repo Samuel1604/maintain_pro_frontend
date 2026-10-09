@@ -271,9 +271,7 @@ export function VendorContractDetails() {
                             <td className="px-4 py-3.5">
                               <StatusBadge status={workOrder.status || "open"} />
                             </td>
-                            <td className="px-4 py-3.5 text-right text-muted-foreground">
-                              Not provided
-                            </td>
+                            <td className="px-4 py-3.5 text-right text-muted-foreground">—</td>
                           </tr>
                         ))}
                       </tbody>
