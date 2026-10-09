@@ -347,6 +347,17 @@ export function AdminDashboard() {
     staleTime: 60_000,
     retry: false,
   });
+  const preventiveMaintenanceQuery = useQuery({
+    queryKey: ["dashboard", "preventive-maintenance", user?.id],
+    queryFn: () =>
+      reportsApi.preventiveMaintenance({
+        startDate: new Date(0).toISOString(),
+        endDate: new Date().toISOString(),
+      }),
+    enabled: Boolean(user?.id) && !isFacilityManager,
+    staleTime: 60_000,
+    retry: false,
+  });
   const slaQuery = useQuery({
     queryKey: ["dashboard", "sla-compliance", user?.id],
     queryFn: () =>
@@ -474,15 +485,17 @@ export function AdminDashboard() {
           />
           <KPICard
             title="PM Schedules"
-            value={stats.dueToday}
-            changeLabel="Scheduled this week"
+            value={preventiveMaintenanceQuery.data?.total ?? "—"}
+            changeLabel={
+              preventiveMaintenanceQuery.isLoading ? "Loading schedules" : "Live schedule count"
+            }
             icon="calendar"
             href={pmPath}
           />
           <KPICard
-            title="PM Due This Week"
+            title="Work Orders Due Today"
             value={stats.dueToday}
-            changeLabel="Preventive tasks"
+            changeLabel="Requires attention"
             icon="calendar"
             href={pmPath}
           />
