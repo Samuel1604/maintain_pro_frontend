@@ -113,7 +113,6 @@ export function Vendors() {
   const [page, setPage] = useState(1);
   const [viewVendor, setViewVendor] = useState<Vendor | null>(null);
   const [editVendor, setEditVendor] = useState<Vendor | null>(null);
-  const [renewVendor, setRenewVendor] = useState<Vendor | null>(null);
   const [deactivateVendor, setDeactivateVendor] = useState<Vendor | null>(null);
 
   const [form, setForm] = useState({
@@ -156,7 +155,6 @@ export function Vendors() {
             completedJobs: vendor.completedJobs ?? 0,
             contractStart: undefined,
             contractEnd: undefined,
-            totalSpend: 0,
           })),
         );
       })
@@ -222,17 +220,6 @@ export function Vendors() {
         onSaved={(updated) => {
           setAllVendors((prev) => prev.map((v) => (v.id === updated.id ? updated : v)));
           setEditVendor(null);
-        }}
-      />
-      <ConfirmDialog
-        open={!!renewVendor}
-        onOpenChange={(o) => !o && setRenewVendor(null)}
-        title="Renew contract?"
-        description={renewVendor ? `Start renewal workflow for ${renewVendor.name}?` : ""}
-        confirmLabel="Start renewal"
-        onConfirm={() => {
-          if (renewVendor) toast.success(`Renewal workflow started for ${renewVendor.name}`);
-          setRenewVendor(null);
         }}
       />
       <ConfirmDialog
@@ -434,22 +421,6 @@ export function Vendors() {
                                       </DropdownMenuItem>
                                     )}
                                     <DropdownMenuItem
-                                      onClick={() =>
-                                        requestConfirm({
-                                          title: "Vendor invoices",
-                                          description: `Invoice history for ${v.name} will be available in a future release.`,
-                                          confirmLabel: "OK",
-                                          singleAction: true,
-                                          onConfirm: () => {},
-                                        })
-                                      }
-                                    >
-                                      View Invoices
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setRenewVendor(v)}>
-                                      Renew Contract
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
                                       className="text-destructive"
                                       onClick={() => setDeactivateVendor(v)}
                                     >
@@ -517,7 +488,7 @@ export function Vendors() {
                                 { label: "Pending", value: v.pendingJobs || 0 },
                                 {
                                   label: "Spend",
-                                  value: `$${((v.totalSpend || 0) / 1000).toFixed(0)}k`,
+                                  value: "—",
                                 },
                               ].map((m) => (
                                 <div key={m.label}>
@@ -634,9 +605,7 @@ export function Vendors() {
                                   <span className="text-sm">{v.completedJobs || 0}</span>
                                 </TableCell>
                                 <TableCell>
-                                  <span className="text-sm">
-                                    ${((v.totalSpend || 0) / 1000).toFixed(0)}k
-                                  </span>
+                                  <span className="text-sm">—</span>
                                 </TableCell>
                                 <TableCell>
                                   <StatusBadge status={v.status} />
@@ -662,9 +631,6 @@ export function Vendors() {
                                           Edit
                                         </DropdownMenuItem>
                                       )}
-                                      <DropdownMenuItem onClick={() => setRenewVendor(v)}>
-                                        Renew Contract
-                                      </DropdownMenuItem>
                                       <DropdownMenuItem
                                         className="text-destructive"
                                         onClick={() => setDeactivateVendor(v)}
