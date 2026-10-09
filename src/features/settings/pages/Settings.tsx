@@ -360,7 +360,12 @@ export function OrganizationSettings() {
             email: contactEmail,
             phone: contactPhone,
             logo: logoUrl || undefined,
-            address: { street: addressLine, city: cityStateZip },
+            address: (() => {
+              const [city = "", state = "", postalCode = ""] = cityStateZip
+                .split(",")
+                .map((part) => part.trim());
+              return { street: addressLine, city, state, postalCode };
+            })(),
           });
         } catch (error) {
           const message = error instanceof Error ? error.message : "profile request failed";
@@ -1731,10 +1736,11 @@ export function OrganizationSettings() {
                       </div>
                       {/* TODO: no Google Calendar OAuth flow is wired yet. */}
                       <Button
-                        onClick={() => toast.info("Google Calendar integration coming soon")}
+                        disabled
+                        title="Google Calendar integration is not configured"
                         className="bg-foreground hover:bg-foreground/90 text-white text-[13px] font-semibold"
                       >
-                        Connect Integration
+                        Integration unavailable
                       </Button>
                     </div>
                     <p className="text-[13px] text-muted-foreground">
@@ -1769,10 +1775,11 @@ export function OrganizationSettings() {
                       </div>
                       {/* TODO: no cloud-storage OAuth flow is wired yet. */}
                       <Button
-                        onClick={() => toast.info("Cloud storage integration coming soon")}
+                        disabled
+                        title="Cloud storage integration is not configured"
                         className="bg-foreground hover:bg-foreground/90 text-white text-[13px] font-semibold"
                       >
-                        Connect Integration
+                        Integration unavailable
                       </Button>
                     </div>
                     <p className="text-[13px] text-muted-foreground">
