@@ -11,7 +11,6 @@ interface Performance {
   assigned: number;
   completionRate: number;
 }
-// TODO: add a completion-rate trend chart once the API returns time-series performance data.
 export function VendorPerformance() {
   const [data, setData] = useState<Performance | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,11 +44,12 @@ export function VendorPerformance() {
             ))}
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {[
               ["Total Work Orders", data.total],
               ["Completed", data.completed],
               ["In Progress", data.inProgress],
+              ["Assigned", data.assigned],
               ["Completion Rate", `${data.completionRate}%`],
             ].map(([label, value]) => (
               <div className="rounded-lg border bg-card p-5" key={String(label)}>
