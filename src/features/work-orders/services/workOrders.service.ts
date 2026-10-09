@@ -18,6 +18,8 @@ interface BackendWorkOrder {
   assignedTechnicianId?: string;
   dueDate?: string;
   facilityName?: string;
+  organizationName?: string;
+  distanceKm?: number;
   locationName?: string;
   assigneeName?: string;
   assignedVendorTechnicianId?: string;
@@ -36,8 +38,8 @@ export function mapWorkOrder(item: BackendWorkOrder): WorkOrder {
     !hasTechnician && ["assigned", "in_progress"].includes(rawStatus)
       ? "open"
       : hasTechnician && rawStatus === "open"
-        ? "assigned"
-        : rawStatus;
+      ? "assigned"
+      : rawStatus;
   return {
     id: item._id,
     sourceType: item.sourceType,
@@ -50,6 +52,9 @@ export function mapWorkOrder(item: BackendWorkOrder): WorkOrder {
     facilityId: item.facilityId,
     locationId: item.locationId ?? "",
     locationName: item.locationName ?? item.facilityName ?? "",
+    facilityName: item.facilityName,
+    organizationName: item.organizationName,
+    distanceKm: item.distanceKm,
     assetId: item.assetId,
     requesterId: "",
     requesterName: "",
@@ -93,7 +98,7 @@ export const workOrdersService = {
       ENDPOINTS.WORK_ORDERS.MARKETPLACE_OPEN,
       { params: filters as Record<string, string | number | boolean> },
     );
-    const records = Array.isArray(result) ? result : (result.data ?? []);
+    const records = Array.isArray(result) ? result : result.data ?? [];
     const pagination = Array.isArray(result)
       ? {
           page: 1,

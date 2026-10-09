@@ -40,6 +40,9 @@ export interface WorkOrder {
   facilityId?: string;
   locationId: string;
   locationName: string;
+  facilityName?: string;
+  organizationName?: string;
+  distanceKm?: number;
   assetId?: string;
   assetName?: string;
   assigneeId?: string;

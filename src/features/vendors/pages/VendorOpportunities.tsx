@@ -54,13 +54,17 @@ export function VendorOpportunities() {
       setApiOpportunities(
         result.data.map((item) => ({
           id: item.id,
-          organization: item.requesterName || "Organization opportunity",
+          organization: item.organizationName || "Organization opportunity",
           serviceCategory: item.category,
           categoryDetail: item.description,
-          locationProximity: item.locationName || "—",
+          locationProximity:
+            item.distanceKm != null ? `${item.distanceKm.toFixed(1)} km` : item.locationName || "—",
           priority: item.priority.toUpperCase() as OpportunityRow["priority"],
           slaRequirement: item.dueDate
-            ? `Due ${new Date(item.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`
+            ? `Due ${new Date(item.dueDate).toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+              })}`
             : "No deadline provided",
           status: (item.status || "open") as OpportunityRow["status"],
         })),
