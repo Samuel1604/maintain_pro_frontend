@@ -65,13 +65,12 @@ function SectionCard({
 }
 
 function CriticalIssuesPanel({ orders, path }: { orders: WorkOrder[]; path: string }) {
-  const CRITICAL_LOCATIONS = ["Main HQ", "West Campus", "North Logistics"];
   const rows =
     orders.length > 0
-      ? orders.slice(0, 3).map((o, i) => ({
+      ? orders.slice(0, 3).map((o) => ({
           id: o.id,
           title: o.title,
-          location: o.locationName ?? CRITICAL_LOCATIONS[i] ?? "—",
+          location: o.locationName ?? "—",
           time: relativeTime(o.updatedAt),
         }))
       : [];
@@ -183,7 +182,7 @@ function VendorDispatchPanel({ orders }: { orders: WorkOrder[] }) {
   return (
     <SectionCard
       title="Recent Vendor Dispatch"
-      subtitle="Real-time activity log of assigned technicians"
+      subtitle="Recently assigned work orders and technicians"
     >
       {rows.length ? (
         <div className="space-y-3">
@@ -304,7 +303,7 @@ function RecentActivityPanel({
       subtitle={
         isFacilityManager
           ? "Recent activity within your facility"
-          : "Complete audit trail of system events across all facilities"
+          : "Recent maintenance work orders across all facilities"
       }
       noPadding
     >
