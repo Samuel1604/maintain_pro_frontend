@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Calendar, Clock, CheckCircle2 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { PageError } from "@/components/feedback/PageError";
 import { AppHeader } from "@/components/navigation/Navbar";
@@ -9,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { apiClient } from "@/api/client";
 import { useActionConfirm } from "@/hooks/useActionConfirm";
+import { usePortalPath } from "@/hooks/usePortal";
 
 type ApplicationStatus = "submitted" | "under_review" | "withdrawn" | "rejected" | "awarded";
 interface VendorApplication {
@@ -35,6 +37,7 @@ export function VendorApplications() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const { requestConfirm, ActionConfirmDialog } = useActionConfirm();
+  const workOrdersPath = usePortalPath("work-orders");
   const loadApplications = async () => {
     setLoadError(null);
     setLoading(true);
@@ -91,147 +94,159 @@ export function VendorApplications() {
         subtitle="Track submitted bids, negotiations, and application outcomes."
       />
       <div className="px-8 py-6 space-y-6">
-        {loadError && (
+        {loadError ? (
           <PageError
             title="Applications unavailable"
             message={loadError}
             onRetry={() => void loadApplications()}
           />
-        )}
-        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_400px] gap-6">
-          <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="p-4 border-b border-border">
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search applications..."
-                  className="pl-9"
-                />
+        ) : (
+          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_400px] gap-6">
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <div className="p-4 border-b border-border">
+                <div className="relative">
+                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search applications..."
+                    className="pl-9"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-[13px]">
-                <thead className="bg-muted/40 text-[11px] uppercase text-muted-foreground">
-                  <tr>
-                    <th className="px-5 py-3">ID</th>
-                    <th className="px-5 py-3">Opportunity / Org</th>
-                    <th className="px-5 py-3">Submitted Date</th>
-                    <th className="px-5 py-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {loading ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-[13px]">
+                  <thead className="bg-muted/40 text-[11px] uppercase text-muted-foreground">
                     <tr>
-                      <td colSpan={4} className="p-8 text-center text-muted-foreground">
-                        Loading applications…
-                      </td>
+                      <th className="px-5 py-3">ID</th>
+                      <th className="px-5 py-3">Opportunity / Org</th>
+                      <th className="px-5 py-3">Submitted Date</th>
+                      <th className="px-5 py-3">Status</th>
                     </tr>
-                  ) : (
-                    filtered.map((item) => (
-                      <tr
-                        key={item.id}
-                        onClick={() => setSelectedId(item.id)}
-                        className={`cursor-pointer hover:bg-muted/20 ${selected?.id === item.id ? "bg-indigo-500/10" : ""}`}
-                      >
-                        <td className="px-5 py-4 font-bold text-indigo-500">
-                          {item.id.slice(0, 8).toUpperCase()}
-                        </td>
-                        <td className="px-5 py-4">
-                          <p className="font-semibold">Work order {item.workOrderId.slice(0, 8)}</p>
-                          <p className="text-[11px] text-muted-foreground">
-                            Organization {item.organizationId.slice(0, 8)}
-                          </p>
-                        </td>
-                        <td className="px-5 py-4 text-muted-foreground">
-                          {new Date(item.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-5 py-4">
-                          <Badge variant="secondary">{statusLabel[item.status]}</Badge>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {loading ? (
+                      <tr>
+                        <td colSpan={4} className="p-8 text-center text-muted-foreground">
+                          Loading applications…
                         </td>
                       </tr>
-                    ))
-                  )}
-                  {!loading && filtered.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="p-10 text-center text-muted-foreground">
-                        No applications found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      filtered.map((item) => (
+                        <tr
+                          key={item.id}
+                          onClick={() => setSelectedId(item.id)}
+                          className={`cursor-pointer hover:bg-muted/20 ${selected?.id === item.id ? "bg-indigo-500/10" : ""}`}
+                        >
+                          <td className="px-5 py-4 font-bold text-indigo-500">
+                            {item.id.slice(0, 8).toUpperCase()}
+                          </td>
+                          <td className="px-5 py-4">
+                            <Link
+                              to={`${workOrdersPath}/${item.workOrderId}`}
+                              className="font-semibold text-primary hover:underline"
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              Work order {item.workOrderId.slice(0, 8)}
+                            </Link>
+                            <p className="text-[11px] text-muted-foreground">
+                              Organization {item.organizationId.slice(0, 8)}
+                            </p>
+                          </td>
+                          <td className="px-5 py-4 text-muted-foreground">
+                            {new Date(item.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-5 py-4">
+                            <Badge variant="secondary">{statusLabel[item.status]}</Badge>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                    {!loading && filtered.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="p-10 text-center text-muted-foreground">
+                          No applications found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-6 space-y-5 min-h-[420px]">
+              {selected ? (
+                <>
+                  <div className="flex items-start justify-between border-b border-border pb-4">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase text-indigo-500">
+                        Application details
+                      </p>
+                      <h2 className="mt-1 text-lg font-bold">
+                        <Link
+                          to={`${workOrdersPath}/${selected.workOrderId}`}
+                          className="text-primary hover:underline"
+                        >
+                          Work order {selected.workOrderId.slice(0, 8)}
+                        </Link>
+                      </h2>
+                      <p className="text-[13px] text-muted-foreground">
+                        Organization {selected.organizationId.slice(0, 8)}
+                      </p>
+                    </div>
+                    <Badge>{statusLabel[selected.status]}</Badge>
+                  </div>
+                  <div className="space-y-4 text-[13px]">
+                    <div className="flex gap-3">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="font-semibold">Application submitted</p>
+                        <p className="text-muted-foreground">
+                          {new Date(selected.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="font-semibold">Last updated</p>
+                        <p className="text-muted-foreground">
+                          {new Date(selected.updatedAt).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-indigo-500" />
+                      <div>
+                        <p className="font-semibold">Status</p>
+                        <p className="text-muted-foreground">{statusLabel[selected.status]}</p>
+                      </div>
+                    </div>
+                    {selected.note && (
+                      <div>
+                        <p className="font-semibold">Submitted note</p>
+                        <p className="mt-1 text-muted-foreground">{selected.note}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-3 pt-4 border-t border-border">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      disabled={!["submitted", "under_review"].includes(selected.status)}
+                      onClick={confirmWithdraw}
+                    >
+                      Withdraw application
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  Select an application to view details.
+                </div>
+              )}
             </div>
           </div>
-          <div className="rounded-xl border border-border bg-card p-6 space-y-5 min-h-[420px]">
-            {selected ? (
-              <>
-                <div className="flex items-start justify-between border-b border-border pb-4">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase text-indigo-500">
-                      Application details
-                    </p>
-                    <h2 className="mt-1 text-lg font-bold">
-                      Work order {selected.workOrderId.slice(0, 8)}
-                    </h2>
-                    <p className="text-[13px] text-muted-foreground">
-                      Organization {selected.organizationId.slice(0, 8)}
-                    </p>
-                  </div>
-                  <Badge>{statusLabel[selected.status]}</Badge>
-                </div>
-                <div className="space-y-4 text-[13px]">
-                  <div className="flex gap-3">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-semibold">Application submitted</p>
-                      <p className="text-muted-foreground">
-                        {new Date(selected.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="font-semibold">Last updated</p>
-                      <p className="text-muted-foreground">
-                        {new Date(selected.updatedAt).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <CheckCircle2 className="h-4 w-4 text-indigo-500" />
-                    <div>
-                      <p className="font-semibold">Status</p>
-                      <p className="text-muted-foreground">{statusLabel[selected.status]}</p>
-                    </div>
-                  </div>
-                  {selected.note && (
-                    <div>
-                      <p className="font-semibold">Submitted note</p>
-                      <p className="mt-1 text-muted-foreground">{selected.note}</p>
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-3 pt-4 border-t border-border">
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    disabled={!["submitted", "under_review"].includes(selected.status)}
-                    onClick={confirmWithdraw}
-                  >
-                    Withdraw application
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                Select an application to view details.
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
