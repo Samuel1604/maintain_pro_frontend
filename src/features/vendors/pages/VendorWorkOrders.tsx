@@ -31,7 +31,7 @@ export interface VendorWorkOrderRow {
   status: "IN PROGRESS" | "SCHEDULED" | "COMPLETED" | "ON HOLD" | "PENDING COMPLETION";
 }
 
-function formatSlaDeadline(dueDate?: string) {
+function formatSlaDeadline(dueDate?: string | Date) {
   if (!dueDate) return "—";
   const date = new Date(dueDate);
   if (Number.isNaN(date.getTime())) return "—";
