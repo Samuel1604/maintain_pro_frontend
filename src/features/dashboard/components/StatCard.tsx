@@ -112,14 +112,16 @@ export function KPICard({
   const card = (
     <div
       className={cn(
-        "relative flex flex-col gap-3 overflow-hidden rounded-(--radius-card) border border-border/80 bg-gradient-to-br from-card via-card to-surface-muted/40 px-5 py-5 shadow-(--shadow-card) transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md before:absolute before:inset-y-0 before:left-0 before:w-1",
+        "relative flex h-full flex-col gap-3 overflow-hidden rounded-(--radius-card) border border-border/80 bg-gradient-to-br from-card via-card to-surface-muted/40 px-5 py-5 shadow-(--shadow-card) transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md before:absolute before:inset-y-0 before:left-0 before:w-1",
         accent,
         href && "cursor-pointer",
       )}
     >
       {/* Top row: label + icon */}
       <div className="flex items-center justify-between">
-        <span className="text-[13px] font-medium text-text-secondary">{title}</span>
+        <span className="min-h-10 text-[13px] font-medium leading-5 text-text-secondary">
+          {title}
+        </span>
         <div
           className={cn(
             "rounded-xl border border-border/70 bg-surface-muted p-2.5",
@@ -163,7 +165,7 @@ export function KPICard({
     </div>
   );
   return href ? (
-    <Link to={href} aria-label={`Open ${title}`} className="block">
+    <Link to={href} aria-label={`Open ${title}`} className="block h-full">
       {card}
     </Link>
   ) : (
