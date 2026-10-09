@@ -14,6 +14,7 @@ export interface VendorProfile {
   email: string;
   phone: string;
   website?: string;
+  description?: string;
   logo?: string;
   address?: VendorAddress;
   companyRegistrationNumber?: string;
@@ -38,6 +39,7 @@ export interface UpdateVendorProfilePayload {
   address?: VendorAddress;
   companyRegistrationNumber?: string;
   website?: string;
+  description?: string;
   logo?: string;
   serviceCategories?: string[];
   serviceAreas?: string[];

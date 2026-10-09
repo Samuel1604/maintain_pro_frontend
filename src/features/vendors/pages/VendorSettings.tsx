@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { X, Plus, Upload, Bell } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { VendorTeam } from "./VendorTeam";
@@ -101,9 +101,6 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
     toast.success("Category added");
   };
 
-  const handleSave = (msg: string) => {
-    toast.success(msg);
-  };
   const loadIncomingRelationships = async () => {
     setIncomingLoading(true);
     try {
@@ -161,6 +158,7 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
     setCompanyName(value.name);
     setRegistrationId(value.companyRegistrationNumber ?? "");
     setContactEmail(value.email);
+    setDescription(value.description ?? "");
     setLogoUrl(value.logo ?? "");
     setPhone(value.phone);
     setAddress(
@@ -198,6 +196,7 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
         vendorName: companyName,
         companyRegistrationNumber: registrationId || undefined,
         phone,
+        description: description || undefined,
         logo: logoUrl || undefined,
         address: { street: address },
       });
