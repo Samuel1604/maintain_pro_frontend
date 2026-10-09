@@ -23,6 +23,8 @@ import { organizationApi } from "@/features/organization/api/organization.api";
 import { vendorsApi } from "@/features/vendors/api/vendors.api";
 import type { User } from "@/types/user.types";
 
+export const EMAIL_VERIFICATION_OTP_TTL_SECONDS = 10 * 60;
+
 function useApplyAuthenticatedSession() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -75,7 +77,7 @@ function useApplyAuthenticatedSession() {
     queryClient.setQueryData(authKeys.me, user);
 
     if (user.isVerified === false) {
-      openVerificationModal("combined", 15);
+      openVerificationModal("combined", EMAIL_VERIFICATION_OTP_TTL_SECONDS);
       return;
     }
 
