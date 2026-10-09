@@ -724,7 +724,14 @@ export function OrganizationSettings() {
                   </div>
 
                   <div className="flex justify-end gap-3 pt-6 border-t border-border">
-                    <Button variant="outline" className="text-[13px]">
+                    <Button
+                      variant="outline"
+                      className="text-[13px]"
+                      onClick={() => {
+                        void organizationProfile.refetch();
+                        void organizationSettings.refetch();
+                      }}
+                    >
                       Cancel
                     </Button>
                     <Button
