@@ -4,7 +4,6 @@ import { AppHeader as Navbar } from "@/components/navigation/Navbar";
 import { KPICard } from "@/features/dashboard/components/StatCard";
 import { HandWaveGreeting } from "@/components/ui/HandWaveGreeting";
 import { useAuthStore } from "@/app/store";
-import { useRoleDashboardDateRange } from "@/features/dashboard/hooks/useRoleDashboardDateRange";
 import { useVendorProfile } from "@/features/vendors/hooks/useVendorProfile";
 import { usePortalPath } from "@/hooks/usePortal";
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +13,24 @@ import type { WorkOrder } from "@/types/common.types";
 
 type ContractRow = { title: string; score: string; meta: string; pct: number; fill: string };
 type TechnicianRow = { name: string; status: string; wos: string; dotColor: string };
+type VendorDashboardData = {
+  kpis: {
+    activeWorkOrders: number;
+    openApplications: number;
+    awardedContracts: number;
+    activeSlas: number;
+    complianceRate: number;
+    teamMembers: number;
+  };
+  activeDispatch: Array<{
+    id: string;
+    title: string;
+    status: string;
+    priority: string;
+    dueDate?: string;
+    technicianId?: string;
+  }>;
+};
 
 function SectionCard({
   title,
@@ -42,7 +59,12 @@ type VendorDashboardMode = "lead" | "manager" | "technician";
 export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode }) {
   const user = useAuthStore((state) => state.user);
   const { data: vendorProfile } = useVendorProfile();
-  const { workOrdersInRange, stats } = useRoleDashboardDateRange("30d");
+  const dashboardQuery = useQuery<VendorDashboardData>({
+    queryKey: ["vendor-dashboard", user?.id],
+    queryFn: () => apiClient.get<VendorDashboardData>("/vendors/me/dashboard"),
+    enabled: Boolean(user?.id),
+    staleTime: 60_000,
+  });
   const opportunitiesQuery = useQuery<{ data: WorkOrder[] }>({
     queryKey: ["dashboard", "vendor-opportunities", user?.id],
     queryFn: () => workOrdersService.listMarketplace({ limit: 10 }),
@@ -70,29 +92,24 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
     (user as typeof user & { vendorName?: string })?.vendorName ||
     "Vendor Company";
 
-  const activeCount =
-    stats.openWorkOrders ??
-    workOrdersInRange.filter((workOrder) => !["completed", "cancelled"].includes(workOrder.status))
-      .length;
+  const dashboardData = dashboardQuery.data;
+  const activeCount = dashboardData?.kpis.activeWorkOrders ?? 0;
   const applicationsCount = applicationsQuery.data?.length ?? 0;
-  const contractsCount = 0;
-  const slaPct = "—";
-  const teamCount = 0;
-  const activeDispatchRows = workOrdersInRange
-    .filter((workOrder) => !["completed", "cancelled"].includes(workOrder.status))
-    .slice(0, 10)
-    .map((workOrder) => ({
-      id: workOrder.id,
-      location: workOrder.locationName || "Location unavailable",
-      desc: workOrder.title,
-      priority: workOrder.priority.toUpperCase(),
-      priorityBg: "var(--muted)",
-      priorityColor: "var(--foreground)",
-      sla: workOrder.dueDate
-        ? `Due ${new Date(workOrder.dueDate).toLocaleDateString()}`
-        : "SLA unavailable",
-      tech: workOrder.assigneeName || "Unassigned",
-    }));
+  const contractsCount = dashboardData?.kpis.awardedContracts ?? 0;
+  const slaPct = dashboardData ? `${dashboardData.kpis.complianceRate}%` : "—";
+  const teamCount = dashboardData?.kpis.teamMembers ?? 0;
+  const activeDispatchRows = (dashboardData?.activeDispatch ?? []).map((workOrder) => ({
+    id: workOrder.id,
+    location: "Vendor dispatch",
+    desc: workOrder.title,
+    priority: workOrder.priority.toUpperCase(),
+    priorityBg: "var(--muted)",
+    priorityColor: "var(--foreground)",
+    sla: workOrder.dueDate
+      ? `Due ${new Date(workOrder.dueDate).toLocaleDateString()}`
+      : "No deadline",
+    tech: workOrder.technicianId || "Unassigned",
+  }));
   const opportunityRows = (opportunitiesQuery.data?.data ?? []).map((opportunity: WorkOrder) => ({
     id: opportunity.id,
     title: opportunity.title,
