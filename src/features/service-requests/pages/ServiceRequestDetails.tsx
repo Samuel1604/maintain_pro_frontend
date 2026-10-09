@@ -183,11 +183,11 @@ export function ServiceRequestDetails() {
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Facility</dt>
-                <dd className="mt-1">{facilityName ?? request.facilityName ?? "Not configured"}</dd>
+                <dd className="mt-1">{facilityName ?? request.facilityName ?? "—"}</dd>
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Location</dt>
-                <dd className="mt-1">{locationName ?? request.locationName ?? "Not configured"}</dd>
+                <dd className="mt-1">{locationName ?? request.locationName ?? "—"}</dd>
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Asset</dt>
@@ -197,7 +197,7 @@ export function ServiceRequestDetails() {
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Requested by</dt>
-                <dd className="mt-1">{request.requesterName ?? "Not configured"}</dd>
+                <dd className="mt-1">{request.requesterName ?? "—"}</dd>
               </div>
             </dl>
             <p className="mt-6 border-t border-border pt-5 text-sm leading-6 text-muted-foreground">

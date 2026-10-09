@@ -41,15 +41,12 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const reference = (id: string) => `PM-${id.slice(-6).toUpperCase()}`;
-const dateLabel = (value?: string) =>
-  value ? new Date(value).toLocaleDateString() : "Not scheduled";
-const displayValue = (value?: string | null) => value || "Not specified";
+const dateLabel = (value?: string) => (value ? new Date(value).toLocaleDateString() : "—");
+const displayValue = (value?: string | null) => value || "—";
 const displayLabel = (value?: string | null) =>
-  value
-    ? value.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())
-    : "Not specified";
+  value ? value.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()) : "—";
 const durationLabel = (minutes?: number) => {
-  if (!minutes || minutes <= 0) return "Not specified";
+  if (!minutes || minutes <= 0) return "—";
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
   return [
@@ -202,7 +199,7 @@ export function PreventiveMaintenanceDetails() {
         ? `Every ${recurrenceInterval} ${displayLabel(recurrenceFrequency).toLowerCase()}${recurrenceInterval === 1 ? "" : "s"}`
         : displayLabel(recurrenceFrequency);
   const technicianName = (technicianId?: string) =>
-    technicians.find((technician) => technician.id === technicianId)?.name ?? "Assigned technician";
+    technicians.find((technician) => technician.id === technicianId)?.name ?? "—";
 
   return (
     <div className="min-h-full bg-background text-foreground">

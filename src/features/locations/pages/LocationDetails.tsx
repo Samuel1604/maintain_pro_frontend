@@ -65,10 +65,10 @@ export function LocationDetails() {
       />
     );
 
-  const locationName = locationData?.name || "Server Room B";
-  const parentFacility = facilityData?.name || "Facility unavailable";
-  const floor = locationData?.floor || "Not configured";
-  const description = locationData?.description || "Not configured";
+  const locationName = locationData?.name || "—";
+  const parentFacility = facilityData?.name || "—";
+  const floor = locationData?.floor || "—";
+  const description = locationData?.description || "—";
   const assetCount = relationships.assets.length;
   const openWorkOrderCount = relationships.workOrders.length;
   const serviceRequestCount = relationships.serviceRequests.length;
@@ -132,14 +132,12 @@ export function LocationDetails() {
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Location Type</span>
                 <span className="font-semibold capitalize text-foreground">
-                  {locationData?.type?.toLowerCase().replace("_", " ") || "Not configured"}
+                  {locationData?.type?.toLowerCase().replace("_", " ") || "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Code</span>
-                <span className="font-semibold text-foreground">
-                  {locationData?.code || "Not configured"}
-                </span>
+                <span className="font-semibold text-foreground">{locationData?.code || "—"}</span>
               </div>
             </div>
           </div>
@@ -154,13 +152,13 @@ export function LocationDetails() {
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Room Number</span>
                 <span className="font-semibold text-foreground">
-                  {locationData?.roomNumber || "Not configured"}
+                  {locationData?.roomNumber || "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Status</span>
                 <span className="font-semibold capitalize text-foreground">
-                  {locationData?.status || "Not configured"}
+                  {locationData?.status || "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -168,7 +166,7 @@ export function LocationDetails() {
                 <span className="font-semibold text-foreground">
                   {locationData?.createdAt
                     ? new Date(locationData.createdAt).toLocaleDateString()
-                    : "Not configured"}
+                    : "—"}
                 </span>
               </div>
             </div>

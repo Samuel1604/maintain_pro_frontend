@@ -30,7 +30,7 @@ import { displayLabel, displayReference } from "@/utils/display-ids";
 import { formatMoney } from "@/lib/money";
 
 const displayValue = (value: unknown) =>
-  value === undefined || value === null || value === "" ? "Not configured" : String(value);
+  value === undefined || value === null || value === "" ? "—" : String(value);
 const formatDate = (value?: string) =>
   value
     ? new Date(value).toLocaleDateString("en-US", {
@@ -38,7 +38,7 @@ const formatDate = (value?: string) =>
         day: "numeric",
         year: "numeric",
       })
-    : "Not configured";
+    : "—";
 
 export function AssetDetails() {
   const { id } = useParams();
@@ -230,7 +230,7 @@ export function AssetDetails() {
             }
             changeLabel={
               asset.estimatedValueMinor === undefined && asset.estimatedValue === undefined
-                ? "Not configured"
+                ? "—"
                 : "Recorded value"
             }
             icon="cost"

@@ -105,11 +105,11 @@ export function FacilityDetailsPage() {
   const addressStr = facility
     ? Object.values(facility.address ?? {})
         .filter(Boolean)
-        .join(", ") || "Address unavailable"
-    : "Address unavailable";
-  const managerName = facility?.managerName || "Not configured";
-  const primaryPhone = facility?.primaryPhone || "Not configured";
-  const emergencyPhone = facility?.emergencyContact || "Not configured";
+        .join(", ") || "—"
+    : "—";
+  const managerName = facility?.managerName || "—";
+  const primaryPhone = facility?.primaryPhone || "—";
+  const emergencyPhone = facility?.emergencyContact || "—";
   const subLocationCount = relationships.locationCount ?? relationships.locations.length;
   const assetCount = relationships.assetCount ?? relationships.assets.length;
   const openWorkOrderCount =
@@ -215,29 +215,25 @@ export function FacilityDetailsPage() {
               <div className="flex items-start justify-between gap-6">
                 <span className="text-muted-foreground">Description</span>
                 <span className="text-right font-semibold text-foreground">
-                  {facility?.description || "Not configured"}
+                  {facility?.description || "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-6">
                 <span className="text-muted-foreground">Status</span>
                 <span className="font-semibold capitalize text-foreground">
-                  {facility?.status ?? "Not configured"}
+                  {facility?.status ?? "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-6">
                 <span className="text-muted-foreground">Created</span>
                 <span className="font-semibold text-foreground">
-                  {facility?.createdAt
-                    ? new Date(facility.createdAt).toLocaleDateString()
-                    : "Not configured"}
+                  {facility?.createdAt ? new Date(facility.createdAt).toLocaleDateString() : "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-6">
                 <span className="text-muted-foreground">Last updated</span>
                 <span className="font-semibold text-foreground">
-                  {facility?.updatedAt
-                    ? new Date(facility.updatedAt).toLocaleDateString()
-                    : "Not configured"}
+                  {facility?.updatedAt ? new Date(facility.updatedAt).toLocaleDateString() : "—"}
                 </span>
               </div>
             </div>
