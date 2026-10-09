@@ -11,8 +11,8 @@ import { workOrdersService } from "@/features/work-orders/services/workOrders.se
 import { apiClient } from "@/api/client";
 import type { WorkOrder } from "@/types/common.types";
 
-type ContractRow = { title: string; score: string; meta: string; pct: number; fill: string };
-type TechnicianRow = { name: string; status: string; wos: string; dotColor: string };
+type ContractRow = { title: string; score: string; meta: string };
+type TechnicianRow = { name: string; status: string; wos: number; dotColor: string };
 type VendorDashboardData = {
   kpis: {
     activeWorkOrders: number;
@@ -30,6 +30,8 @@ type VendorDashboardData = {
     dueDate?: string;
     technicianId?: string;
   }>;
+  contractPerformance: Array<{ id: string; title: string; status: string; meta: string }>;
+  technicianWorkload: Array<{ id: string; name: string; role: string; workOrders: number }>;
 };
 
 function SectionCard({
@@ -128,9 +130,21 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
       badgeColor: "var(--foreground)",
       time: "Live application",
     }));
-  const contractRows: ContractRow[] = [];
-  const technicianRows: TechnicianRow[] = [];
-
+  const contractRows: ContractRow[] = (dashboardData?.contractPerformance ?? []).map(
+    (contract) => ({
+      title: contract.title,
+      score: contract.status.replaceAll("_", " "),
+      meta: contract.meta,
+    }),
+  );
+  const technicianRows: TechnicianRow[] = (dashboardData?.technicianWorkload ?? []).map(
+    (member) => ({
+      name: member.name,
+      status: member.role.replaceAll("_", " "),
+      wos: member.workOrders,
+      dotColor: "var(--primary)",
+    }),
+  );
   return (
     <>
       <Navbar title="Manager Operations" subtitle={vendorCompanyName} hideQuickCreate />
@@ -317,12 +331,6 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
                       <div className="flex items-center justify-between">
                         <span className="text-[13px] font-bold text-foreground">{c.title}</span>
                         <span className="text-[13px] font-bold text-emerald-500">{c.score}</span>
-                      </div>
-                      <div className="h-2 w-full rounded-full bg-accent overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{ width: `${c.pct}%`, backgroundColor: c.fill }}
-                        />
                       </div>
                       <p className="text-[11px] text-muted-foreground">{c.meta}</p>
                     </div>
