@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Crown, Mail, Plus, Trash2, Users } from "lucide-react";
+import { Crown, Mail, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppHeader as Navbar } from "@/components/navigation/Navbar";
@@ -25,7 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuthStore } from "@/app/store";
-import { useActionConfirm } from "@/hooks/useActionConfirm";
 import { FeedbackAlert } from "@/components/feedback/FeedbackAlert";
 
 import { invitationService } from "@/services/invitation.service";
@@ -60,7 +59,6 @@ function initials(name: string) {
 export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
   const user = useAuthStore((s) => s.user);
   const memberRoles = user?.role === "vendor_manager" ? [MEMBER_ROLES[0]] : MEMBER_ROLES;
-  const { requestConfirm, ActionConfirmDialog } = useActionConfirm();
 
   const [apiMembers, setApiMembers] = useState<VendorTeamMember[]>([]);
   const members = apiMembers;
@@ -339,21 +337,8 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
     }
   };
 
-  const handleRemove = (member: VendorTeamMember) => {
-    requestConfirm({
-      title: "Remove team member?",
-      description: `${member.name} will lose access to your vendor portal.`,
-      confirmLabel: "Remove",
-      destructive: true,
-      onConfirm: () => {
-        toast.info("Team member removal is not available yet");
-      },
-    });
-  };
-
   return (
     <div className="min-h-full bg-background text-foreground">
-      {ActionConfirmDialog}
       {!embedded && <Navbar title="Team Management" hideQuickCreate />}
 
       <div className="px-4 sm:px-8 py-6 space-y-6">
@@ -440,28 +425,7 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
                             Team Lead
                           </span>
                         ) : (
-                          <Select
-                            value={
-                              member.role.toLowerCase().includes("manager")
-                                ? "vendor_manager"
-                                : "vendor_technician"
-                            }
-                            onValueChange={(newRoleValue) => {
-                              const newRoleLabel =
-                                newRoleValue === "vendor_manager"
-                                  ? "Vendor Manager"
-                                  : "Vendor Technician";
-                              toast.info("Updating team roles is not available yet");
-                            }}
-                          >
-                            <SelectTrigger className="h-8 w-[112px] text-[12px] font-medium bg-background border-border sm:w-[150px]">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="vendor_manager">Vendor Manager</SelectItem>
-                              <SelectItem value="vendor_technician">Vendor Technician</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <Badge variant="outline">{member.role.replaceAll("_", " ")}</Badge>
                         )}
                       </td>
                       <td className="px-3 py-4 sm:px-6">
@@ -490,14 +454,9 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
                             Resend
                           </button>
                         ) : (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemove(member)}
-                            className="h-8 px-2 text-destructive hover:bg-destructive/10 text-[12px] font-semibold"
-                          >
-                            Remove
-                          </Button>
+                          <span className="text-[12px] font-medium text-muted-foreground">
+                            Managed by administrator
+                          </span>
                         )}
                       </td>
                     </tr>
