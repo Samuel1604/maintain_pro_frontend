@@ -31,6 +31,9 @@ export function VendorContractDetails() {
     effectiveAt?: string;
     expiresAt?: string;
     notes?: string;
+    organizationName?: string;
+    quotation?: { currency: string; totalMinor: number; estimatedDurationHours: number };
+    sla?: { responseTimeHours: number; resolutionTimeHours: number; warrantyPeriodDays: number };
   } | null>(null);
   const [workOrders, setWorkOrders] = useState<
     Array<{
@@ -54,6 +57,13 @@ export function VendorContractDetails() {
           effectiveAt?: string;
           expiresAt?: string;
           notes?: string;
+          organizationName?: string;
+          quotation?: { currency: string; totalMinor: number; estimatedDurationHours: number };
+          sla?: {
+            responseTimeHours: number;
+            resolutionTimeHours: number;
+            warrantyPeriodDays: number;
+          };
         }>
       >("/contract-awards/mine")
       .then((items) => {
@@ -169,7 +179,7 @@ export function VendorContractDetails() {
                         {isOrganizationView ? "VENDOR PARTNER" : "ORGANIZATION CLIENT"}
                       </p>
                       <p className="text-[13px] font-bold text-foreground mt-1">
-                        {contract.organizationId}
+                        {contract.organizationName || contract.organizationId}
                       </p>
                     </div>
                     <div>
@@ -177,7 +187,7 @@ export function VendorContractDetails() {
                         AGREED SERVICE
                       </p>
                       <p className="text-[13px] font-bold text-foreground mt-1">
-                        {contract.notes || "Service scope not provided"}
+                        {contract.notes || "Service scope is recorded on the linked work order."}
                       </p>
                     </div>
                     <div>
@@ -185,7 +195,9 @@ export function VendorContractDetails() {
                         SLA COMMITMENT
                       </p>
                       <p className="text-[13px] font-bold text-foreground mt-1">
-                        SLA details not provided
+                        {contract.sla
+                          ? `${contract.sla.responseTimeHours}h response · ${contract.sla.resolutionTimeHours}h resolution · ${contract.sla.warrantyPeriodDays}d warranty`
+                          : "No SLA agreement is linked to this contract."}
                       </p>
                     </div>
                     <div>
@@ -203,7 +215,9 @@ export function VendorContractDetails() {
                       MONETARY TERMS & AUTHORIZATION
                     </p>
                     <p className="text-2xl font-extrabold text-amber-500">
-                      Financial terms not provided
+                      {contract.quotation
+                        ? `${contract.quotation.currency} ${(contract.quotation.totalMinor / 100).toFixed(2)}`
+                        : "No quotation is linked to this contract."}
                     </p>
                     <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground pt-1">
                       <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />

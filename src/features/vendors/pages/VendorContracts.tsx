@@ -20,6 +20,9 @@ interface ContractItem {
     "draft" | "pending_approval" | "awarded" | "active" | "completed" | "terminated" | "cancelled";
   activeDates: string;
   scope: string;
+  organizationName?: string;
+  quotation?: { currency: string; totalMinor: number };
+  sla?: { responseTimeHours: number; resolutionTimeHours: number };
 }
 
 export function VendorContracts() {
@@ -50,14 +53,20 @@ export function VendorContracts() {
           effectiveAt?: string;
           expiresAt?: string;
           notes?: string;
+          organizationName?: string;
+          quotation?: { currency: string; totalMinor: number };
+          sla?: { responseTimeHours: number; resolutionTimeHours: number };
         }>
       >(isOrganizationView ? "/contract-awards" : "/contract-awards/mine");
       const mapped = items.map(
         (item) =>
           ({
             id: item._id,
-            organization: isOrganizationView ? item.vendorId : item.organizationId,
-            value: "Not provided",
+            organization:
+              item.organizationName || (isOrganizationView ? item.vendorId : item.organizationId),
+            value: item.quotation
+              ? `${item.quotation.currency} ${(item.quotation.totalMinor / 100).toFixed(2)}`
+              : "Tracked operational agreement",
             status: item.status as ContractItem["status"],
             activeDates:
               [item.effectiveAt, item.expiresAt]
@@ -65,6 +74,9 @@ export function VendorContracts() {
                 .map((value) => new Date(value as string).toLocaleDateString())
                 .join(" – ") || "Dates not configured",
             scope: item.notes || `Awarded work order ${item.workOrderId}.`,
+            organizationName: item.organizationName,
+            quotation: item.quotation,
+            sla: item.sla,
           }) as ContractItem,
       );
       setContracts(mapped);
