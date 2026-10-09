@@ -17,6 +17,10 @@ interface BackendWorkOrder {
   assetId: string;
   assignedTechnicianId?: string;
   dueDate?: string;
+  facilityName?: string;
+  locationName?: string;
+  assigneeName?: string;
+  assignedVendorTechnicianId?: string;
   createdAt: string;
   updatedAt: string;
   fulfillmentType: string;
@@ -45,11 +49,12 @@ export function mapWorkOrder(item: BackendWorkOrder): WorkOrder {
     category: item.serviceCategory,
     facilityId: item.facilityId,
     locationId: item.locationId ?? "",
-    locationName: "",
+    locationName: item.locationName ?? item.facilityName ?? "",
     assetId: item.assetId,
     requesterId: "",
     requesterName: "",
-    assigneeId: item.assignedTechnicianId,
+    assigneeId: item.assignedTechnicianId ?? item.assignedVendorTechnicianId,
+    assigneeName: item.assigneeName,
     dueDate: item.dueDate ? new Date(item.dueDate) : undefined,
     createdAt: new Date(item.createdAt),
     updatedAt: new Date(item.updatedAt),
