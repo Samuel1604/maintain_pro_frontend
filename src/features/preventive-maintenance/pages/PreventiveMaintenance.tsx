@@ -639,7 +639,7 @@ function PMCalendarView() {
                     <p className="text-[11px] text-muted-foreground">
                       Due:{" "}
                       {Number.isNaN(getDate(item).getTime())
-                        ? "Date not available"
+                        ? "—"
                         : getDate(item).toLocaleDateString()}{" "}
                       {item.facilityName || item.locationName
                         ? `• ${item.facilityName ?? item.locationName}`
