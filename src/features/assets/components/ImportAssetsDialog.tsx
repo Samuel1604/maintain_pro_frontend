@@ -11,8 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { FieldError } from "@/components/feedback/FieldError";
 import { cn } from "@/utils/helpers";
 import { assetsApi } from "@/features/assets/api/assets.api";
@@ -28,14 +26,10 @@ export function ImportAssetsDialog({ open, onOpenChange, onImported }: ImportAss
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
-  const [updateExisting, setUpdateExisting] = useState(false);
-  const [skipInvalidRows, setSkipInvalidRows] = useState(true);
 
   const reset = () => {
     setFile(null);
     setFileError(null);
-    setUpdateExisting(false);
-    setSkipInvalidRows(true);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -47,8 +41,8 @@ export function ImportAssetsDialog({ open, onOpenChange, onImported }: ImportAss
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const picked = e.target.files?.[0];
     if (!picked) return;
-    if (!picked.name.match(/\.(csv|xlsx|xls)$/i)) {
-      setFileError("Please choose a CSV or Excel file");
+    if (!picked.name.match(/\.csv$/i)) {
+      setFileError("Please choose a CSV file");
       setFile(null);
       return;
     }
@@ -80,8 +74,8 @@ export function ImportAssetsDialog({ open, onOpenChange, onImported }: ImportAss
             Import assets
           </DialogTitle>
           <DialogDescription>
-            Upload a spreadsheet to bulk-create or update assets. Required columns: name, category,
-            location, serial number.
+            Upload a CSV file to bulk-create assets. Required columns: name, category, location, and
+            serial number.
           </DialogDescription>
         </DialogHeader>
 
@@ -89,7 +83,7 @@ export function ImportAssetsDialog({ open, onOpenChange, onImported }: ImportAss
           <input
             ref={inputRef}
             type="file"
-            accept=".csv,.xlsx,.xls"
+            accept=".csv"
             className="sr-only"
             onChange={handleFileChange}
           />
@@ -111,42 +105,13 @@ export function ImportAssetsDialog({ open, onOpenChange, onImported }: ImportAss
               </>
             ) : (
               <>
-                <p className="text-sm font-medium">Choose CSV or Excel file</p>
+                <p className="text-sm font-medium">Choose a CSV file</p>
                 <p className="text-xs text-muted-foreground">or drag and drop here</p>
               </>
             )}
           </button>
 
           <FieldError message={fileError} />
-
-          <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-3">
-            <div className="flex items-start gap-2">
-              <Checkbox
-                id="update-existing"
-                checked={updateExisting}
-                onCheckedChange={(v) => setUpdateExisting(v === true)}
-              />
-              <Label
-                htmlFor="update-existing"
-                className="text-sm font-normal leading-snug cursor-pointer"
-              >
-                Update existing assets when serial number matches
-              </Label>
-            </div>
-            <div className="flex items-start gap-2">
-              <Checkbox
-                id="skip-invalid"
-                checked={skipInvalidRows}
-                onCheckedChange={(v) => setSkipInvalidRows(v === true)}
-              />
-              <Label
-                htmlFor="skip-invalid"
-                className="text-sm font-normal leading-snug cursor-pointer"
-              >
-                Skip rows with missing required fields
-              </Label>
-            </div>
-          </div>
         </div>
 
         <DialogFooter>

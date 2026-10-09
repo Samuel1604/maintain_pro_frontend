@@ -24,7 +24,7 @@ import { ConfirmDialog } from "@/components/feedback/ConfirmDialog";
 import { downloadBlob } from "@/utils/downloadFile";
 import type { Asset } from "@/types/common.types";
 
-type ExportFormat = "csv" | "json" | "xlsx";
+type ExportFormat = "csv" | "json";
 type ExportScope = "filtered" | "all";
 
 interface ExportAssetsDialogProps {
@@ -91,11 +91,8 @@ export function ExportAssetsDialog({
 
     if (format === "json") {
       downloadBlob(`${base}.json`, JSON.stringify(dataToExport, null, 2), "application/json");
-    } else if (format === "csv") {
-      downloadBlob(`${base}.csv`, assetsToCsv(dataToExport), "text/csv;charset=utf-8");
     } else {
-      downloadBlob(`${base}.json`, JSON.stringify(dataToExport, null, 2), "application/json");
-      toast.info("Excel export uses CSV-compatible data until the API is connected");
+      downloadBlob(`${base}.csv`, assetsToCsv(dataToExport), "text/csv;charset=utf-8");
     }
 
     setExporting(false);
@@ -136,7 +133,6 @@ export function ExportAssetsDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="csv">CSV (Excel compatible)</SelectItem>
-                  <SelectItem value="xlsx">Excel (.xlsx)</SelectItem>
                   <SelectItem value="json">JSON</SelectItem>
                 </SelectContent>
               </Select>

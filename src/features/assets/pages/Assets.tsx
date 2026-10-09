@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +53,7 @@ const ASSET_CURRENCIES = ["NGN", "USD", "GBP", "EUR"] as const;
 
 export function Assets() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const assetsPath = usePortalPath("assets");
   const facilitiesPath = usePortalPath("facilities");
@@ -91,7 +92,7 @@ export function Assets() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 20;
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(() => location.pathname.endsWith("/assets/new"));
   const [form, setForm] = useState({
     assetTag: "",
     name: "",
@@ -365,7 +366,13 @@ export function Assets() {
       </div>
 
       {/* ── Add Asset Modal ── */}
-      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+      <Dialog
+        open={showAddModal}
+        onOpenChange={(open) => {
+          setShowAddModal(open);
+          if (!open && location.pathname.endsWith("/assets/new")) navigate(assetsPath);
+        }}
+      >
         <DialogContent className="!max-w-4xl w-[calc(100vw-2rem)] !h-[calc(100dvh-2rem)] !max-h-[calc(100dvh-2rem)] overflow-y-auto bg-card border-border">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold text-foreground">
