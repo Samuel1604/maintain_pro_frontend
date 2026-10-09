@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, Clock3, ShieldAlert } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/navigation/Navbar";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ type Sla = {
 };
 const hours = (value?: number) =>
   value == null
-    ? "Not configured"
+    ? "—"
     : value < 1
       ? `${Math.round(value * 60)} min`
       : `${value} hr${value === 1 ? "" : "s"}`;
@@ -98,9 +98,6 @@ export function VendorSLADetails() {
           toast.error(error instanceof Error ? error.message : "Unable to load SLA"),
         );
   }, [sla, slaId]);
-  const slaNotes =
-    sla?.notes ??
-    "Full unit replacement requests, duct modifications exceeding 10 meters, and works subcontracted out to third parties without prior authorization.";
   const base = location.pathname.split("/").slice(0, 3).join("/");
   return (
     <div className="min-h-full bg-background text-foreground">
@@ -151,27 +148,19 @@ export function VendorSLADetails() {
                 </div>
                 <div>
                   <p className={label}>Vendor</p>
-                  <b>{sla.vendorName ?? "Vendor information unavailable"}</b>
+                  <b>{sla.vendorName ?? "—"}</b>
                 </div>
                 <div>
                   <p className={label}>Contract ID</p>
-                  <b className="text-orange-500">{sla.contractId ?? "Not linked"}</b>
+                  <b className="text-orange-500">{sla.contractId ?? "—"}</b>
                 </div>
                 <div>
                   <p className={label}>Effective date</p>
-                  <b>
-                    {sla.effectiveAt
-                      ? new Date(sla.effectiveAt).toLocaleDateString()
-                      : "Not configured"}
-                  </b>
+                  <b>{sla.effectiveAt ? new Date(sla.effectiveAt).toLocaleDateString() : "—"}</b>
                 </div>
                 <div>
                   <p className={label}>Expiration date</p>
-                  <b>
-                    {sla.expiresAt
-                      ? new Date(sla.expiresAt).toLocaleDateString()
-                      : "Not configured"}
-                  </b>
+                  <b>{sla.expiresAt ? new Date(sla.expiresAt).toLocaleDateString() : "—"}</b>
                 </div>
               </div>
             </section>
@@ -207,7 +196,7 @@ export function VendorSLADetails() {
                   </>
                 ) : (
                   <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground sm:col-span-1 lg:col-span-3">
-                    Priority-specific targets are not provided by the live SLA endpoint.
+                    Priority-specific targets are not configured for this agreement.
                   </div>
                 )}
               </div>
@@ -218,28 +207,9 @@ export function VendorSLADetails() {
                   <h2 className="text-lg font-bold">SLA Coverage Rules &amp; Parameters</h2>
                   {false ? (
                     <>
-                      <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                        <div>
-                          <p className={label}>Service category</p>
-                          <p>HVAC &amp; Climate Control</p>
-                        </div>
-                        <div>
-                          <p className={label}>Operating hours</p>
-                          <p>24/7 (Critical/High) • Business hrs (Medium/Low)</p>
-                        </div>
-                        <div>
-                          <p className={label}>Covered facilities</p>
-                          <p>Lagos HQ, Ikeja Branch, Lekki Data Center</p>
-                        </div>
-                        <div>
-                          <p className={label}>Business calendar exceptions</p>
-                          <p>Nigerian public holidays excluded</p>
-                        </div>
-                      </div>
-                      <div className="mt-5 border-t border-border pt-4">
-                        <p className={label}>Explicit SLA exclusions</p>
-                        <p className="text-sm text-muted-foreground">{slaNotes}</p>
-                      </div>
+                      <p className="mt-4 text-sm text-muted-foreground">
+                        Coverage rules are configured by the organization.
+                      </p>
                     </>
                   ) : (
                     <p className="mt-4 text-sm text-muted-foreground">
@@ -250,9 +220,6 @@ export function VendorSLADetails() {
                 <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-bold">Related Work Orders</h2>
-                    <Button variant="outline" size="sm">
-                      Search WO...
-                    </Button>
                   </div>
                   <div className="mt-4 overflow-x-auto">
                     <table className="w-full min-w-[560px] text-sm">
@@ -283,44 +250,9 @@ export function VendorSLADetails() {
                 <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
                   <h2 className="text-lg font-bold">SLA Escalation Policy</h2>
                   {false ? (
-                    <div className="mt-5 space-y-5 text-sm">
-                      <p className="flex gap-3">
-                        <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
-                        <span>
-                          <b>75% Target Elapsed</b>
-                          <br />
-                          <span className="text-muted-foreground">Vendor Manager Alert</span>
-                          <br />
-                          <small className="text-muted-foreground">
-                            Automated trigger notifying Lagos HVAC Dispatcher.
-                          </small>
-                        </span>
-                      </p>
-                      <p className="flex gap-3">
-                        <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
-                        <span>
-                          <b>90% Target Elapsed</b>
-                          <br />
-                          <span className="text-muted-foreground">Facility Manager Alert</span>
-                          <br />
-                          <small className="text-muted-foreground">
-                            SLA approaching breach. High-priority dispatch trigger.
-                          </small>
-                        </span>
-                      </p>
-                      <p className="flex gap-3">
-                        <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                        <span>
-                          <b>SLA Target Breached</b>
-                          <br />
-                          <span className="text-muted-foreground">Organization Admin Alert</span>
-                          <br />
-                          <small className="text-muted-foreground">
-                            Breach logged automatically. Requires admin contract review.
-                          </small>
-                        </span>
-                      </p>
-                    </div>
+                    <p className="mt-4 text-sm text-muted-foreground">
+                      Escalation rules are configured by the organization.
+                    </p>
                   ) : (
                     <p className="mt-4 text-sm text-muted-foreground">
                       Escalation rules are not included in the live SLA response.
@@ -338,7 +270,7 @@ export function VendorSLADetails() {
                     </div>
                     <div>
                       <p className={label}>Avg response time</p>
-                      <p className="text-2xl font-bold">{hours(sla.responseTimeHours)}</p>
+                      <p className="text-2xl font-bold">—</p>
                     </div>
                     <div>
                       <p className={label}>Breached WOs</p>

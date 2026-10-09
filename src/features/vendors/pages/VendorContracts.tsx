@@ -71,7 +71,7 @@ export function VendorContracts() {
                 : item.organizationId),
             value: item.quotation
               ? `${item.quotation.currency} ${(item.quotation.totalMinor / 100).toFixed(2)}`
-              : "Tracked operational agreement",
+              : "—",
             status: item.status as ContractItem["status"],
             activeDates:
               [item.effectiveAt, item.expiresAt]
@@ -289,8 +289,7 @@ export function VendorContracts() {
               <div className="pt-4 border-t border-border space-y-3">
                 <p className="text-[12px] font-bold text-foreground">Linked Active Work Orders</p>
                 <p className="rounded-lg border border-dashed border-border p-3 text-[12px] text-muted-foreground">
-                  Linked work orders are available from the Work Orders area. This contract response
-                  does not include them yet.
+                  Open the full contract record to review its linked work orders.
                 </p>
               </div>
 
