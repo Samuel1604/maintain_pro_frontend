@@ -27,6 +27,7 @@ export function VendorContractDetails() {
   const [contract, setContract] = useState<{
     _id: string;
     organizationId: string;
+    vendorId?: string | { _id: string; name?: string };
     status: string;
     effectiveAt?: string;
     expiresAt?: string;
@@ -37,7 +38,7 @@ export function VendorContractDetails() {
   } | null>(null);
   const [workOrders, setWorkOrders] = useState<
     Array<{
-      workOrderId?: string;
+      workOrderId?: string | { _id: string; title?: string };
       _id?: string;
       title?: string;
       status?: string;
@@ -53,6 +54,7 @@ export function VendorContractDetails() {
         Array<{
           _id: string;
           organizationId: string;
+          vendorId?: string | { _id: string; name?: string };
           status: string;
           effectiveAt?: string;
           expiresAt?: string;
@@ -73,7 +75,7 @@ export function VendorContractDetails() {
         void apiClient
           .get<
             Array<{
-              workOrderId?: string;
+              workOrderId?: string | { _id: string; title?: string };
               _id?: string;
               title?: string;
               status?: string;
@@ -178,7 +180,10 @@ export function VendorContractDetails() {
                         {isOrganizationView ? "VENDOR PARTNER" : "ORGANIZATION CLIENT"}
                       </p>
                       <p className="text-[13px] font-bold text-foreground mt-1">
-                        {contract.organizationName || contract.organizationId}
+                        {contract.organizationName ||
+                          (typeof contract.vendorId === "string"
+                            ? contract.vendorId
+                            : (contract.vendorId?.name ?? contract.organizationId))}
                       </p>
                     </div>
                     <div>
@@ -263,7 +268,10 @@ export function VendorContractDetails() {
                             className="hover:bg-muted/20"
                           >
                             <td className="px-4 py-3.5 font-bold text-amber-500 font-mono">
-                              {workOrder.workOrderId || workOrder._id}
+                              {typeof workOrder.workOrderId === "string"
+                                ? workOrder.workOrderId
+                                : (workOrder.workOrderId?.title ?? workOrder.workOrderId?._id) ||
+                                  workOrder._id}
                             </td>
                             <td className="px-4 py-3.5 text-foreground font-medium">
                               {workOrder.title || "Linked work order"}
