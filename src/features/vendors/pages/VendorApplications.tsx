@@ -21,6 +21,15 @@ interface VendorApplication {
   note?: string;
   createdAt: string;
   updatedAt: string;
+  organizationName?: string;
+  workOrderTitle?: string;
+  quotation?: {
+    number: string;
+    currency: string;
+    totalMinor: number;
+    estimatedDurationHours: number;
+    status: string;
+  };
 }
 const statusLabel: Record<ApplicationStatus, string> = {
   submitted: "SUBMITTED",
@@ -147,10 +156,11 @@ export function VendorApplications() {
                               className="font-semibold text-primary hover:underline"
                               onClick={(event) => event.stopPropagation()}
                             >
-                              Work order {item.workOrderId.slice(0, 8)}
+                              {item.workOrderTitle || `Work order ${item.workOrderId.slice(0, 8)}`}
                             </Link>
                             <p className="text-[11px] text-muted-foreground">
-                              Organization {item.organizationId.slice(0, 8)}
+                              {item.organizationName ||
+                                `Organization ${item.organizationId.slice(0, 8)}`}
                             </p>
                           </td>
                           <td className="px-5 py-4 text-muted-foreground">
@@ -186,11 +196,13 @@ export function VendorApplications() {
                           to={`${workOrdersPath}/${selected.workOrderId}`}
                           className="text-primary hover:underline"
                         >
-                          Work order {selected.workOrderId.slice(0, 8)}
+                          {selected.workOrderTitle ||
+                            `Work order ${selected.workOrderId.slice(0, 8)}`}
                         </Link>
                       </h2>
                       <p className="text-[13px] text-muted-foreground">
-                        Organization {selected.organizationId.slice(0, 8)}
+                        {selected.organizationName ||
+                          `Organization ${selected.organizationId.slice(0, 8)}`}
                       </p>
                     </div>
                     <Badge>{statusLabel[selected.status]}</Badge>
@@ -225,6 +237,17 @@ export function VendorApplications() {
                       <div>
                         <p className="font-semibold">Submitted note</p>
                         <p className="mt-1 text-muted-foreground">{selected.note}</p>
+                      </div>
+                    )}
+                    {selected.quotation && (
+                      <div>
+                        <p className="font-semibold">Submitted quotation</p>
+                        <p className="mt-1 text-muted-foreground">
+                          {selected.quotation.number} · {selected.quotation.currency}{" "}
+                          {selected.quotation.totalMinor / 100} ·{" "}
+                          {selected.quotation.estimatedDurationHours} hours ·{" "}
+                          {selected.quotation.status.replaceAll("_", " ")}
+                        </p>
                       </div>
                     )}
                   </div>
