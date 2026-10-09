@@ -54,7 +54,7 @@ export function VendorOpportunities() {
       setApiOpportunities(
         result.data.map((item) => ({
           id: item.id,
-          organization: item.organizationName || "Organization opportunity",
+          organization: item.organizationName || "—",
           serviceCategory: item.category,
           categoryDetail: item.description,
           locationProximity:
@@ -65,7 +65,7 @@ export function VendorOpportunities() {
                 month: "short",
                 day: "numeric",
               })}`
-            : "No deadline provided",
+            : "—",
           status: (item.status || "open") as OpportunityRow["status"],
         })),
       );
@@ -79,8 +79,8 @@ export function VendorOpportunities() {
     void loadVendorOpportunities();
   }, []);
   const [selectedOpp, setSelectedOpp] = useState<OpportunityRow | null>(null);
-  const [bidAmount, setBidAmount] = useState("4500");
-  const [bidDuration, setBidDuration] = useState("3");
+  const [bidAmount, setBidAmount] = useState("");
+  const [bidDuration, setBidDuration] = useState("");
   const [bidNotes, setBidNotes] = useState("");
 
   const filtered = useMemo(() => {
@@ -144,6 +144,7 @@ export function VendorOpportunities() {
         notes: bidNotes || undefined,
       });
       toast.success(`Bid submitted for ${selectedOpp.id}`);
+      await loadVendorOpportunities();
       setSelectedOpp(null);
       setBidNotes("");
     } catch (error) {
@@ -255,7 +256,12 @@ export function VendorOpportunities() {
                       <td className="py-4 px-5 text-right">
                         {item.status === "open" ? (
                           <Button
-                            onClick={() => setSelectedOpp(item)}
+                            onClick={() => {
+                              setSelectedOpp(item);
+                              setBidAmount("");
+                              setBidDuration("");
+                              setBidNotes("");
+                            }}
                             className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[12px] h-8 px-4 rounded-xl shadow-sm"
                           >
                             Apply Bid
