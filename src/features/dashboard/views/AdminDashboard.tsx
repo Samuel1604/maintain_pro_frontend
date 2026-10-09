@@ -182,7 +182,7 @@ function VendorDispatchPanel({ orders }: { orders: WorkOrder[] }) {
   );
 }
 
-function PendingApprovalsPanel({ isFacilityManager, count, isLoading }: { isFacilityManager: boolean; count: number; isLoading: boolean }) {
+function PendingApprovalsPanel({ isFacilityManager, count, isLoading, path }: { isFacilityManager: boolean; count: number; isLoading: boolean; path: string }) {
   return (
     <SectionCard
       title={isFacilityManager ? "Service Request Reviews" : "Pending Approvals"}
@@ -193,7 +193,10 @@ function PendingApprovalsPanel({ isFacilityManager, count, isLoading }: { isFaci
       }
     >
       {isLoading ? <p className="text-sm text-muted-foreground">Loading pending approvals…</p> : (
-        <p className="text-3xl font-semibold text-foreground">{count}<span className="ml-2 text-sm font-normal text-muted-foreground">awaiting review</span></p>
+        <Link to={path} className="flex items-center justify-between hover:text-primary">
+          <span className="text-3xl font-semibold text-foreground">{count}</span>
+          <span className="text-sm text-muted-foreground">awaiting review</span>
+        </Link>
       )}
     </SectionCard>
   );
@@ -317,6 +320,7 @@ export function AdminDashboard() {
   const facilitiesPath = usePortalPath("facilities");
   const locationsPath = usePortalPath("locations");
   const inventoryPath = usePortalPath("inventory");
+  const approvalsPath = usePortalPath(isFacilityManager ? "service-requests" : "approvals");
   const critical = useMemo(
     () => activeWorkOrders.filter((o) => o.priority === "critical").slice(0, 3),
     [activeWorkOrders],
@@ -471,7 +475,7 @@ export function AdminDashboard() {
         {/* ── Row 3: Pending Approvals | Inventory Warnings ── */}
         <div className="mb-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-7">
-            <PendingApprovalsPanel isFacilityManager={isFacilityManager} count={approvalsQuery.data?.data?.length ?? 0} isLoading={approvalsQuery.isLoading} />
+            <PendingApprovalsPanel isFacilityManager={isFacilityManager} count={approvalsQuery.data?.data?.length ?? 0} isLoading={approvalsQuery.isLoading} path={approvalsPath} />
           </div>
           <div className="lg:col-span-5">
             <InventoryWarningsPanel data={inventoryQuery.data} isLoading={inventoryQuery.isLoading} path={inventoryPath} />
