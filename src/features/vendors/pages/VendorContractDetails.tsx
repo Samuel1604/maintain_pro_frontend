@@ -169,7 +169,7 @@ export function VendorContractDetails() {
                         {isOrganizationView ? "VENDOR PARTNER" : "ORGANIZATION CLIENT"}
                       </p>
                       <p className="text-[13px] font-bold text-foreground mt-1">
-                        {isOrganizationView ? "ProTech Services" : contract.organizationId}
+                        {contract.organizationId}
                       </p>
                     </div>
                     <div>
@@ -177,7 +177,7 @@ export function VendorContractDetails() {
                         AGREED SERVICE
                       </p>
                       <p className="text-[13px] font-bold text-foreground mt-1">
-                        24/7 preventative lift maintenance and diagnostics
+                        {contract.notes || "Service scope not provided"}
                       </p>
                     </div>
                     <div>
@@ -185,7 +185,7 @@ export function VendorContractDetails() {
                         SLA COMMITMENT
                       </p>
                       <p className="text-[13px] font-bold text-foreground mt-1">
-                        15 min emergency response, 98% compliance target
+                        SLA details not provided
                       </p>
                     </div>
                     <div>
@@ -203,15 +203,13 @@ export function VendorContractDetails() {
                       MONETARY TERMS & AUTHORIZATION
                     </p>
                     <p className="text-2xl font-extrabold text-amber-500">
-                      Tracked operational agreement
+                      Financial terms not provided
                     </p>
                     <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground pt-1">
                       <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                       <span>
-                        <strong>{isOrganizationView ? "Owner note:" : "Notice:"}</strong>{" "}
-                        {isOrganizationView
-                          ? "Use the linked work orders and SLA commitments to monitor vendor delivery against this award."
-                          : "Transactions authorized manually via work-order signoff. No automated credit card billing or automatic payments."}
+                        <strong>Notice:</strong> Contract financial terms are not included in the
+                        current contract response.
                       </span>
                     </div>
                   </div>
@@ -260,7 +258,9 @@ export function VendorContractDetails() {
                             <td className="px-4 py-3.5">
                               <StatusBadge status={workOrder.status || "open"} />
                             </td>
-                            <td className="px-4 py-3.5 text-right text-muted-foreground">—</td>
+                            <td className="px-4 py-3.5 text-right text-muted-foreground">
+                              Not provided
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -276,8 +276,7 @@ export function VendorContractDetails() {
                     Service Level Agreement
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    SLA targets are not included in this contract response yet. The organization
-                    owner can provide the linked SLA details.
+                    SLA targets are not included in this contract response.
                   </p>
                 </div>
                 <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
@@ -289,41 +288,37 @@ export function VendorContractDetails() {
                     <div className="relative pl-6 space-y-0.5">
                       <span className="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-amber-500 ring-4 ring-card" />
                       <div className="flex justify-between items-center">
-                        <p className="font-bold text-foreground">Contract Approved & Signed</p>
+                        <p className="font-bold text-foreground">Current contract status</p>
                         <span className="text-[11px] text-muted-foreground font-mono">
-                          Feb 10, 2026
+                          {formatDate(contract.effectiveAt)}
                         </span>
                       </div>
                       <p className="text-[11px] text-muted-foreground">
-                        Accepted by your vendor team and the organization client.
+                        Status: {contract.status.replaceAll("_", " ")}
                       </p>
                     </div>
 
                     <div className="relative pl-6 space-y-0.5">
                       <span className="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-muted-foreground/40 ring-4 ring-card" />
                       <div className="flex justify-between items-center">
-                        <p className="font-bold text-foreground">Contract Initial Creation</p>
+                        <p className="font-bold text-foreground">Contract expiry</p>
                         <span className="text-[11px] text-muted-foreground font-mono">
-                          Feb 08, 2026
+                          {formatDate(contract.expiresAt)}
                         </span>
                       </div>
                       <p className="text-[11px] text-muted-foreground">
-                        System auto-generated from accepted quotation QT-8802.
+                        Renewal and amendment history are not included in this response.
                       </p>
                     </div>
 
                     <div className="relative pl-6 space-y-0.5">
                       <span className="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-muted-foreground/40 ring-4 ring-card" />
                       <div className="flex justify-between items-center">
-                        <p className="font-bold text-foreground">
-                          Previous client agreement renewed
-                        </p>
-                        <span className="text-[11px] text-muted-foreground font-mono">
-                          Jan 15, 2026
-                        </span>
+                        <p className="font-bold text-foreground">Contract notes</p>
+                        <span className="text-[11px] text-muted-foreground font-mono">Current</span>
                       </div>
                       <p className="text-[11px] text-muted-foreground">
-                        Archived CON-0941 superseded by newer terms in CON-1192.
+                        {contract.notes || "No contract notes provided."}
                       </p>
                     </div>
                   </div>

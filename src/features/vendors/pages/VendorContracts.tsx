@@ -57,7 +57,7 @@ export function VendorContracts() {
           ({
             id: item._id,
             organization: isOrganizationView ? item.vendorId : item.organizationId,
-            value: "Tracked operational agreement",
+            value: "Not provided",
             status: item.status as ContractItem["status"],
             activeDates:
               [item.effectiveAt, item.expiresAt]
