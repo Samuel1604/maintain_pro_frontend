@@ -94,10 +94,9 @@ export function Inventory() {
     sku: "",
     description: "",
     categoryId: "",
-    unitCost: "15.00",
-    minLevel: "5",
+    minLevel: "",
     unitOfMeasure: "each",
-    reorderLevel: "10",
+    reorderLevel: "",
     maxLevel: "",
     facilityId: "",
     locationId: "",
@@ -150,7 +149,7 @@ export function Inventory() {
   }, []);
 
   const categoryName = (categoryId?: string) =>
-    categories.find((category) => category.id === categoryId)?.name ?? "Uncategorized";
+    categories.find((category) => category.id === categoryId)?.name ?? "—";
   const createCategory = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!categoryNameInput.trim()) {
@@ -482,9 +481,9 @@ export function Inventory() {
                   locationId: form.locationId,
                   ...(form.categoryId ? { categoryId: form.categoryId } : {}),
                   unitOfMeasure: form.unitOfMeasure,
-                  minimumStockLevel: Number(form.minLevel) || 5,
-                  reorderLevel: Number(form.reorderLevel) || 10,
-                  maximumStockLevel: form.maxLevel ? Number(form.maxLevel) : undefined,
+                  ...(form.minLevel ? { minimumStockLevel: Number(form.minLevel) } : {}),
+                  ...(form.reorderLevel ? { reorderLevel: Number(form.reorderLevel) } : {}),
+                  ...(form.maxLevel ? { maximumStockLevel: Number(form.maxLevel) } : {}),
                 })
                 .then(() => {
                   toast.success("Inventory item created");
@@ -702,7 +701,7 @@ export function Inventory() {
                   >
                     <p className="font-medium">{category.name}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {category.description || "No description provided"}
+                      {category.description || "—"}
                     </p>
                   </div>
                 ))}
