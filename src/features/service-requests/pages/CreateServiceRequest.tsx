@@ -186,8 +186,8 @@ export function CreateServiceRequest({
 
       const reqId =
         (result as { id?: string; _id?: string }).id ||
-        (result as { id?: string; _id?: string })._id ||
-        `SR-${Math.floor(100000 + Math.random() * 900000)}`;
+        (result as { id?: string; _id?: string })._id;
+      if (!reqId) throw new Error("Service request was created without an identifier");
       if (attachments.length > 0) {
         await Promise.all(
           attachments.map((attachment) =>
