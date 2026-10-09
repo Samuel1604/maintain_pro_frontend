@@ -36,9 +36,15 @@ export function VendorInvoices() {
       setApiInvoices(
         (result ?? []).map((invoice: TrackedInvoice) => ({
           id: invoice._id,
-          workOrderId: invoice.workOrderId ?? "",
-          vendorId: invoice.vendorId,
-          vendorName: invoice.vendorId,
+          workOrderId:
+            typeof invoice.workOrderId === "string"
+              ? invoice.workOrderId
+              : (invoice.workOrderId?._id ?? ""),
+          vendorId: typeof invoice.vendorId === "string" ? invoice.vendorId : invoice.vendorId._id,
+          vendorName:
+            typeof invoice.vendorId === "string"
+              ? invoice.vendorId
+              : (invoice.vendorId.name ?? "—"),
           amount:
             invoice.amountMinor == null
               ? invoice.amount
@@ -72,16 +78,6 @@ export function VendorInvoices() {
     if (filter === "all") return invoices;
     return invoices.filter((inv) => inv.status === filter);
   }, [filter, invoices]);
-
-  const markPaid = (inv: VendorInvoice) => {
-    void invoicesService
-      .recordExternalPayment(inv.id, `external-${Date.now()}`)
-      .then(() => {
-        toast.success(`Invoice ${inv.id} marked paid`);
-        return loadInvoices();
-      })
-      .catch(() => toast.error("Unable to record external payment"));
-  };
 
   const approve = (inv: VendorInvoice) => {
     void invoicesService
@@ -255,9 +251,6 @@ export function VendorInvoices() {
                     <div className="flex flex-wrap gap-2">
                       <Button size="sm" className="gap-1" onClick={() => approve(inv)}>
                         <CheckCircle2 className="h-3.5 w-3.5" /> Approve
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => markPaid(inv)}>
-                        Mark paid
                       </Button>
                       <Button
                         size="sm"

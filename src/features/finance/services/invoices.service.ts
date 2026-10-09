@@ -7,8 +7,8 @@ export type InvoiceStatus =
 export interface TrackedInvoice {
   _id: string;
   organizationId: string;
-  vendorId: string;
-  workOrderId?: string;
+  vendorId: string | { _id: string; name?: string };
+  workOrderId?: string | { _id: string; title?: string };
   contractId?: string;
   invoiceNumber: string;
   amount: number;
