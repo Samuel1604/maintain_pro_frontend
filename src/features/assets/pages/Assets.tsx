@@ -47,7 +47,7 @@ import { displayLabel, displayReference } from "@/utils/display-ids";
 import type { Location } from "@/features/locations/types/location.types";
 import type { Facility } from "@/features/facilities/types/facility.types";
 
-const ASSET_CATEGORIES = ["hardware", "infrastructure", "other"] as const;
+const ASSET_CATEGORIES = ["hardware", "software", "infrastructure", "other"] as const;
 const ASSET_STATUSES = ["active", "inactive", "under_maintenance", "retired"] as const;
 const ASSET_CURRENCIES = ["NGN", "USD", "GBP", "EUR"] as const;
 
@@ -68,15 +68,8 @@ export function Assets() {
   // Facility managers must use the facility scope assigned to their account.
   // Falling back to the first organization facility would hide a missing
   // invitation context and could request the wrong facility's assets.
-  const facilityId =
-    user?.role === "facility_manager"
-      ? user.facilityId
-      : (user?.facilityId ?? facilitiesResponse?.data?.[0]?.id);
+  const facilityId = user?.role === "facility_manager" ? user.facilityId : user?.facilityId;
   const queryFacilityId = facilityId;
-  const facilityLocations = (locationsResponse ?? []).filter(
-    (location: Location) => !facilityId || location.facilityId === facilityId,
-  );
-
   const locationFromQuery = searchParams.get("location");
   const {
     assets: apiAssets,
@@ -114,6 +107,9 @@ export function Assets() {
     currency: "NGN",
     description: "",
   });
+  const formFacilityLocations = (locationsResponse ?? []).filter(
+    (location: Location) => !form.facilityId || location.facilityId === form.facilityId,
+  );
   useEffect(() => {
     setPage(1);
   }, [search, categoryFilter, conditionFilter, statusFilter]);
@@ -179,9 +175,7 @@ export function Assets() {
       "—",
     facility:
       facilitiesResponse?.data?.find((facility: Facility) => facility.id === asset.facilityId)
-        ?.name ??
-      facilitiesResponse?.data?.[0]?.name ??
-      "Unknown facility",
+        ?.name ?? "—",
     status: asset.status,
     condition: asset.condition
       ? `${asset.condition.charAt(0).toUpperCase()}${asset.condition.slice(1)}`
@@ -391,6 +385,26 @@ export function Assets() {
               />
             </div>
             <div className="space-y-1.5">
+              <Label className="text-[12px] font-semibold text-foreground">Facility *</Label>
+              <Select
+                value={form.facilityId}
+                onValueChange={(value) =>
+                  setForm((p) => ({ ...p, facilityId: value, locationId: "" }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select facility" />
+                </SelectTrigger>
+                <SelectContent>
+                  {facilitiesResponse?.data?.map((facility: Facility) => (
+                    <SelectItem key={facility.id} value={facility.id}>
+                      {facility.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-foreground">Linked Location *</Label>
               <Select
                 value={form.locationId}
@@ -400,7 +414,7 @@ export function Assets() {
                   <SelectValue placeholder="Select mandatory location" />
                 </SelectTrigger>
                 <SelectContent>
-                  {facilityLocations.map((location: Location) => (
+                  {formFacilityLocations.map((location: Location) => (
                     <SelectItem key={location.id} value={location.id}>
                       {location.name}
                     </SelectItem>
@@ -543,6 +557,7 @@ export function Assets() {
             <Button
               disabled={
                 !form.name ||
+                !form.facilityId ||
                 !form.locationId ||
                 !form.assetTag ||
                 !form.category ||
@@ -553,12 +568,12 @@ export function Assets() {
               }
               onClick={async () => {
                 try {
-                  if (!facilityId) {
+                  if (!form.facilityId) {
                     toast.error("A facility context is required before registering an asset.");
                     return;
                   }
                   await assetMutations.create.mutateAsync({
-                    facilityId,
+                    facilityId: form.facilityId,
                     locationId: form.locationId,
                     assetTag: form.assetTag.trim(),
                     name: form.name.trim(),
