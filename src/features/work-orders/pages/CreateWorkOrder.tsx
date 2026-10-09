@@ -26,6 +26,7 @@ import { cn } from "@/utils/helpers";
 import { useAuthStore } from "@/app/store";
 import { usePortalPath } from "@/hooks/usePortal";
 import { toast } from "sonner";
+import { uploadFile } from "@/api/uploads.api";
 
 export function CreateWorkOrder({
   embedded = false,
@@ -48,6 +49,7 @@ export function CreateWorkOrder({
   >([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [attachments, setAttachments] = useState<File[]>([]);
 
   const isManager = user?.role === "facility_manager" || user?.role === "admin";
 
@@ -129,7 +131,7 @@ export function CreateWorkOrder({
     setValidationError(null);
     setIsLoading(true);
     try {
-      await workOrdersService.create({
+      const created = await workOrdersService.create({
         organizationId: user?.organizationId ?? "",
         facilityId: formData.facilityId,
         locationId: formData.locationId,
@@ -141,6 +143,13 @@ export function CreateWorkOrder({
         dueDate: dueDate?.toISOString(),
         fulfillmentType: formData.fulfillmentType,
       });
+      for (const file of attachments) {
+        const uploaded = await uploadFile(file, {
+          purpose: "work-order-attachment",
+          facilityId: formData.facilityId,
+        });
+        await workOrdersService.addAttachment(created.id, uploaded.id);
+      }
       toast.success("Work order created successfully");
       if (embedded && onComplete) onComplete();
       else navigate(workOrdersPath);
@@ -375,22 +384,46 @@ export function CreateWorkOrder({
               </Card>
               {loadError && <p className="text-sm text-destructive">{loadError}</p>}
 
-              {/* Photos */}
+              {/* Attachments */}
               <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle className="text-base">Photos</CardTitle>
-                  <CardDescription>Upload photos of the issue</CardDescription>
+                  <CardTitle className="text-base">Attachments</CardTitle>
+                  <CardDescription>
+                    Attach photos or supporting files to the work order
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
                     <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
                     <p className="mt-2 text-sm text-muted-foreground">
-                      Drag and drop files here, or click to browse
+                      Select files to upload after the work order is created
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 10MB</p>
-                    <Button variant="outline" size="sm" className="mt-4">
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Images up to 10MB; other files up to 50MB
+                    </p>
+                    <input
+                      id="work-order-attachments"
+                      type="file"
+                      multiple
+                      className="sr-only"
+                      onChange={(event) => setAttachments(Array.from(event.target.files ?? []))}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-4"
+                      onClick={() => document.getElementById("work-order-attachments")?.click()}
+                    >
                       Select Files
                     </Button>
+                    {attachments.length > 0 && (
+                      <ul className="mt-4 space-y-1 text-left text-xs text-muted-foreground">
+                        {attachments.map((file) => (
+                          <li key={`${file.name}-${file.size}`}>{file.name}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -449,33 +482,6 @@ export function CreateWorkOrder({
                           />
                         </PopoverContent>
                       </Popover>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Cost - Only for Managers */}
-              {isManager && (
-                <Card className="bg-card border-border">
-                  <CardHeader>
-                    <CardTitle className="text-base">Cost Estimate</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <Label htmlFor="cost">Estimated Cost ($)</Label>
-                      <Input
-                        id="cost"
-                        type="number"
-                        placeholder="0.00"
-                        value={formData.estimatedCost}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            estimatedCost: e.target.value,
-                          })
-                        }
-                        className="bg-secondary"
-                      />
                     </div>
                   </CardContent>
                 </Card>
