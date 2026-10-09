@@ -34,7 +34,6 @@ export interface OpportunityRow {
   serviceCategory: string;
   categoryDetail: string;
   locationProximity: string;
-  proximityDetail: string;
   priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
   slaRequirement: string;
   status: "open" | "completed" | "cancelled" | "assigned" | "in_progress" | "on_hold";
@@ -43,9 +42,7 @@ export interface OpportunityRow {
 export function VendorOpportunities() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [proximityFilter, setProximityFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
-  const [slaFilter, setSlaFilter] = useState("all");
   const [apiOpportunities, setApiOpportunities] = useState<OpportunityRow[]>([]);
   const [apiLoading, setApiLoading] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -57,13 +54,14 @@ export function VendorOpportunities() {
       setApiOpportunities(
         result.data.map((item) => ({
           id: item.id,
-          organization: "Organization opportunity",
+          organization: item.requesterName || "Organization opportunity",
           serviceCategory: item.category,
           categoryDetail: item.description,
           locationProximity: item.locationName || "—",
-          proximityDetail: "—",
           priority: item.priority.toUpperCase() as OpportunityRow["priority"],
-          slaRequirement: "See SLA details",
+          slaRequirement: item.dueDate
+            ? `Due ${new Date(item.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`
+            : "No deadline provided",
           status: (item.status || "open") as OpportunityRow["status"],
         })),
       );
@@ -92,12 +90,14 @@ export function VendorOpportunities() {
         item.serviceCategory.toLowerCase().includes(categoryFilter.toLowerCase());
       const matchPriority =
         priorityFilter === "all" || item.priority.toLowerCase() === priorityFilter.toLowerCase();
-      const matchSla =
-        slaFilter === "all" || item.slaRequirement.toLowerCase().includes(slaFilter.toLowerCase());
-
-      return matchSearch && matchCategory && matchPriority && matchSla;
+      return matchSearch && matchCategory && matchPriority;
     });
-  }, [apiOpportunities, search, categoryFilter, priorityFilter, slaFilter]);
+  }, [apiOpportunities, search, categoryFilter, priorityFilter]);
+
+  const categoryOptions = useMemo(
+    () => [...new Set(apiOpportunities.map((item) => item.serviceCategory).filter(Boolean))].sort(),
+    [apiOpportunities],
+  );
 
   if (apiLoading) return <PageLoader label="Loading opportunities..." />;
   if (apiError)
@@ -176,23 +176,11 @@ export function VendorOpportunities() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Category: All Categories</SelectItem>
-              <SelectItem value="elevator">Elevator Maintenance</SelectItem>
-              <SelectItem value="hvac">HVAC Systems</SelectItem>
-              <SelectItem value="conveyor">Conveyor Systems</SelectItem>
-              <SelectItem value="electrical">Electrical Grid</SelectItem>
-              <SelectItem value="dock">Dock Levelers</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={proximityFilter} onValueChange={setProximityFilter}>
-            <SelectTrigger className="h-9 min-w-[170px] rounded-xl border-border text-[13px] bg-card">
-              <SelectValue placeholder="Proximity: < 15 miles" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Proximity: All Distances</SelectItem>
-              <SelectItem value="5">&lt; 5 miles</SelectItem>
-              <SelectItem value="15">&lt; 15 miles</SelectItem>
-              <SelectItem value="30">&lt; 30 miles</SelectItem>
+              {categoryOptions.map((category) => (
+                <SelectItem key={category} value={category.toLowerCase()}>
+                  {category}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -206,18 +194,6 @@ export function VendorOpportunities() {
               <SelectItem value="high">High</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
               <SelectItem value="low">Low</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={slaFilter} onValueChange={setSlaFilter}>
-            <SelectTrigger className="h-9 min-w-[170px] rounded-xl border-border text-[13px] bg-card">
-              <SelectValue placeholder="SLA: < 4h Response" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">SLA: Any</SelectItem>
-              <SelectItem value="1h">&lt; 1h Response</SelectItem>
-              <SelectItem value="2h">&lt; 2h Response</SelectItem>
-              <SelectItem value="4h">&lt; 4h Response</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -261,8 +237,7 @@ export function VendorOpportunities() {
                         <p className="text-[11px] text-muted-foreground">{item.categoryDetail}</p>
                       </td>
                       <td className="py-4 px-5">
-                        <span className="text-foreground">{item.locationProximity}</span>{" "}
-                        <span className="text-muted-foreground">({item.proximityDetail})</span>
+                        <span className="text-foreground">{item.locationProximity}</span>
                       </td>
                       <td className="py-4 px-5">
                         <PriorityBadge priority={item.priority} />
