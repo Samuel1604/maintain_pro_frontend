@@ -162,6 +162,7 @@ export function useRoleAccess() {
     const canAccessInventory =
       isOrgPortal && Boolean(role && canAccessOrgSegment(role, "inventory"));
     const canManageInventory = isOrgPortal && (isAdmin || isFM);
+    const canManageInventoryStock = isOrgPortal && (isAdmin || isFM || isTech);
 
     // Settings — Admin configures (US-14); FM manages org profile
     const canOpenOrgSettings = isVendor
@@ -207,6 +208,7 @@ export function useRoleAccess() {
       // Inventory
       canAccessInventory,
       canManageInventory,
+      canManageInventoryStock,
 
       // Service Requests (US-08, US-09)
       canSubmitServiceRequest,

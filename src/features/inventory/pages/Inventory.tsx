@@ -48,7 +48,7 @@ import { locationsApi } from "@/features/locations/api/locations.api";
 
 export function Inventory() {
   const navigate = useNavigate();
-  const { canManageInventory } = useRoleAccess();
+  const { canManageInventory, canManageInventoryStock } = useRoleAccess();
   const [viewMode, setViewMode] = useState<"items" | "overview">("items");
   const [inventoryItems, setInventoryItems] = useState<InventoryItemRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -393,50 +393,54 @@ export function Inventory() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 px-2 text-xs"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                setEditItem(item);
-                              }}
-                            >
-                              <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit
-                            </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-8 w-8 p-0"
-                                  aria-label={`Inventory actions for ${item.name}`}
-                                  onClick={(event) => event.stopPropagation()}
-                                >
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                {(
-                                  [
-                                    ["receive", "Receive stock"],
-                                    ["issue", "Issue stock"],
-                                    ["adjust", "Adjust stock"],
-                                    ["transfer", "Transfer stock"],
-                                  ] as const
-                                ).map(([action, label]) => (
-                                  <DropdownMenuItem
-                                    key={action}
-                                    onClick={() => {
-                                      setInventoryAction(action);
-                                      setReceiveItem(item);
-                                    }}
+                            {canManageInventory && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-2 text-xs"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  setEditItem(item);
+                                }}
+                              >
+                                <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit
+                              </Button>
+                            )}
+                            {canManageInventoryStock && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 w-8 p-0"
+                                    aria-label={`Inventory actions for ${item.name}`}
+                                    onClick={(event) => event.stopPropagation()}
                                   >
-                                    {label}
-                                  </DropdownMenuItem>
-                                ))}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  {(
+                                    [
+                                      ["receive", "Receive stock"],
+                                      ["issue", "Issue stock"],
+                                      ["adjust", "Adjust stock"],
+                                      ["transfer", "Transfer stock"],
+                                    ] as const
+                                  ).map(([action, label]) => (
+                                    <DropdownMenuItem
+                                      key={action}
+                                      onClick={() => {
+                                        setInventoryAction(action);
+                                        setReceiveItem(item);
+                                      }}
+                                    >
+                                      {label}
+                                    </DropdownMenuItem>
+                                  ))}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>

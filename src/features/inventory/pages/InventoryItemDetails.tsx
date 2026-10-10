@@ -13,6 +13,7 @@ import { KPICard } from "@/features/dashboard/components/StatCard";
 import { facilitiesApi } from "@/features/facilities/api/facilities.api";
 import { locationsApi } from "@/features/locations/api/locations.api";
 import { EditInventoryItemDialog } from "../components/EditInventoryItemDialog";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
 import {
   inventoryService,
   type InventoryBalance,
@@ -25,6 +26,7 @@ import {
 export function InventoryItemDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { canManageInventory } = useRoleAccess();
   const [item, setItem] = useState<InventoryItemRecord | null>(null);
   const [balances, setBalances] = useState<InventoryBalance[]>([]);
   const [categories, setCategories] = useState<InventoryCategory[]>([]);
@@ -127,10 +129,12 @@ export function InventoryItemDetails() {
               <RefreshCw className="h-4 w-4" />
               Refresh
             </Button>
-            <Button onClick={() => setEditOpen(true)} className="gap-2">
-              <Pencil className="h-4 w-4" />
-              Edit item
-            </Button>
+            {canManageInventory && (
+              <Button onClick={() => setEditOpen(true)} className="gap-2">
+                <Pencil className="h-4 w-4" />
+                Edit item
+              </Button>
+            )}
           </div>
         </div>
       </div>
