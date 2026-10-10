@@ -28,6 +28,7 @@ import type { Facility } from "@/features/facilities/types/facility.types";
 import type { Location } from "@/features/locations/types/location.types";
 import { displayLabel, displayReference } from "@/utils/display-ids";
 import { formatMoney } from "@/lib/money";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
 
 const displayValue = (value: unknown) =>
   value === undefined || value === null || value === "" ? "—" : String(value);
@@ -46,6 +47,7 @@ export function AssetDetails() {
   const assetsPath = usePortalPath("assets");
   const workOrdersPath = usePortalPath("work-orders");
   const pmPath = usePortalPath("preventive-maintenance");
+  const { canManageAssets } = useRoleAccess();
   const [asset, setAsset] = useState<BackendAsset | null>(null);
   const [history, setHistory] = useState<AssetHistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -162,14 +164,16 @@ export function AssetDetails() {
       <div className="space-y-6 p-8">
         <div className="flex justify-end gap-3">
           <StatusBadge status={String(asset.status ?? "unknown")} />
-          <Button
-            variant="outline"
-            onClick={() => setEditOpen(true)}
-            className="h-9 rounded-lg border-border bg-card text-[13px] font-medium"
-          >
-            <Pencil className="mr-2 h-3.5 w-3.5" />
-            Edit Asset
-          </Button>
+          {canManageAssets && (
+            <Button
+              variant="outline"
+              onClick={() => setEditOpen(true)}
+              className="h-9 rounded-lg border-border bg-card text-[13px] font-medium"
+            >
+              <Pencil className="mr-2 h-3.5 w-3.5" />
+              Edit Asset
+            </Button>
+          )}
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {[
@@ -278,7 +282,7 @@ export function AssetDetails() {
           </div>
         </section>
         <div className="flex flex-wrap gap-3">
-          <Button onClick={() => navigate(workOrdersPath)}>
+          <Button onClick={() => navigate(`${workOrdersPath}/new`)}>
             <Wrench className="mr-2 h-4 w-4" />
             Create Work Order
           </Button>
