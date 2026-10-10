@@ -58,8 +58,8 @@ export function OrganizationPage() {
     ["Status", data.status],
     ["Email", data.email],
     ["Phone", data.phone],
-    ["Website", data.website || "—"],
-    ["Address", Object.values(data.address).filter(Boolean).join(", ") || "—"],
+    ["Website", data.website || "No website configured"],
+    ["Address", Object.values(data.address).filter(Boolean).join(", ") || "No address configured"],
   ];
   return (
     <>

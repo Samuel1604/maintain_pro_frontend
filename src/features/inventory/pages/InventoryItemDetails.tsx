@@ -32,8 +32,8 @@ export function InventoryItemDetails() {
   const [categories, setCategories] = useState<InventoryCategory[]>([]);
   const [stockLocations, setStockLocations] = useState<StockLocation[]>([]);
   const [history, setHistory] = useState<InventoryHistoryRecord[]>([]);
-  const [facilityName, setFacilityName] = useState("—");
-  const [locationName, setLocationName] = useState("—");
+  const [facilityName, setFacilityName] = useState("Facility unavailable");
+  const [locationName, setLocationName] = useState("Location unavailable");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [editOpen, setEditOpen] = useState(false);
@@ -66,9 +66,12 @@ export function InventoryItemDetails() {
       setStockLocations(itemLocations);
       setHistory(itemHistory);
       setFacilityName(
-        facilityResponse.data.find((entry) => entry.id === found?.facilityId)?.name ?? "—",
+        facilityResponse.data.find((entry) => entry.id === found?.facilityId)?.name ??
+          "Facility unavailable",
       );
-      setLocationName(locations.find((entry) => entry.id === found?.locationId)?.name ?? "—");
+      setLocationName(
+        locations.find((entry) => entry.id === found?.locationId)?.name ?? "Location unavailable",
+      );
     } catch (cause) {
       setError(cause instanceof Error ? cause : new Error("Unable to load inventory item"));
     } finally {
@@ -114,7 +117,8 @@ export function InventoryItemDetails() {
   const category =
     categories.find((entry) => entry.id === item.categoryId)?.name ?? "Uncategorized";
   const stockLocationName = (stockLocationId: string) =>
-    stockLocations.find((location) => location.id === stockLocationId)?.name ?? "—";
+    stockLocations.find((location) => location.id === stockLocationId)?.name ??
+    "Stock location unavailable";
   return (
     <div className="min-h-full bg-background text-foreground">
       <AppHeader title="Inventory Item Detail" hideQuickCreate />

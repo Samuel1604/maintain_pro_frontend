@@ -149,7 +149,7 @@ export function Inventory() {
   }, []);
 
   const categoryName = (categoryId?: string) =>
-    categories.find((category) => category.id === categoryId)?.name ?? "—";
+    categories.find((category) => category.id === categoryId)?.name ?? "Category unavailable";
   const createCategory = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!categoryNameInput.trim()) {
@@ -705,7 +705,7 @@ export function Inventory() {
                   >
                     <p className="font-medium">{category.name}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {category.description || "—"}
+                      {category.description || "No description provided"}
                     </p>
                   </div>
                 ))}

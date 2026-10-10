@@ -42,12 +42,15 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const reference = (id: string) => `PM-${id.slice(-6).toUpperCase()}`;
-const dateLabel = (value?: string) => (value ? new Date(value).toLocaleDateString() : "—");
-const displayValue = (value?: string | null) => value || "—";
+const dateLabel = (value?: string) =>
+  value ? new Date(value).toLocaleDateString() : "Date not set";
+const displayValue = (value?: string | null) => value || "Not configured";
 const displayLabel = (value?: string | null) =>
-  value ? value.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()) : "—";
+  value
+    ? value.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())
+    : "Not configured";
 const durationLabel = (minutes?: number) => {
-  if (!minutes || minutes <= 0) return "—";
+  if (!minutes || minutes <= 0) return "Duration not set";
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
   return [
@@ -203,7 +206,8 @@ export function PreventiveMaintenanceDetails() {
         ? `Every ${recurrenceInterval} ${displayLabel(recurrenceFrequency).toLowerCase()}${recurrenceInterval === 1 ? "" : "s"}`
         : displayLabel(recurrenceFrequency);
   const technicianName = (technicianId?: string) =>
-    technicians.find((technician) => technician.id === technicianId)?.name ?? "—";
+    technicians.find((technician) => technician.id === technicianId)?.name ??
+    "Technician unassigned";
 
   return (
     <div className="min-h-full bg-background text-foreground">
@@ -373,7 +377,8 @@ export function PreventiveMaintenanceDetails() {
                 </p>
               </div>
               <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                {occurrenceTotal ?? "—"} {occurrenceTotal === 1 ? "occurrence" : "occurrences"}
+                {occurrenceTotal ?? "No occurrences"}{" "}
+                {occurrenceTotal === 1 ? "occurrence" : "occurrences"}
               </span>
             </div>
             {occurrencesLoading ? (
