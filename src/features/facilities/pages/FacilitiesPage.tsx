@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Plus, ChevronLeft, ChevronRight, Eye, Pencil } from "lucide-react";
+import { Search, Plus, ChevronLeft, ChevronRight, Eye, Pencil, MapPin } from "lucide-react";
 import { useFacilities, useFacilityMutations } from "../hooks/useFacilities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,8 +61,34 @@ export function FacilitiesPage() {
   const [formManagerName, setFormManagerName] = useState("");
   const [formPrimaryPhone, setFormPrimaryPhone] = useState("");
   const [formEmergencyContact, setFormEmergencyContact] = useState("");
+  const [locating, setLocating] = useState(false);
 
   const canManage = user.data?.role === "admin" || user.data?.role === "facility_manager";
+
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Location services are not available in this browser");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setFormLatitude(position.coords.latitude.toFixed(6));
+        setFormLongitude(position.coords.longitude.toFixed(6));
+        setLocating(false);
+        toast.success("Facility coordinates updated from your current location");
+      },
+      (error) => {
+        setLocating(false);
+        toast.error(
+          error.code === error.PERMISSION_DENIED
+            ? "Location access was denied. Enter coordinates manually or allow location access."
+            : "Unable to determine your current location",
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
+    );
+  };
 
   useEffect(() => {
     setPage(1);
@@ -467,6 +493,15 @@ export function FacilitiesPage() {
                 <Input value={formLongitude} onChange={(e) => setFormLongitude(e.target.value)} />
               </div>
             </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={useCurrentLocation}
+              disabled={locating}
+            >
+              <MapPin className="mr-2 h-4 w-4" />
+              {locating ? "Locating…" : "Use my current location"}
+            </Button>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-foreground">
                 Facility Description
@@ -562,6 +597,15 @@ export function FacilitiesPage() {
                 onChange={(e) => setFormState(e.target.value)}
               />
             </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={useCurrentLocation}
+              disabled={locating}
+            >
+              <MapPin className="mr-2 h-4 w-4" />
+              {locating ? "Locating…" : "Use my current location"}
+            </Button>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-[12px] font-semibold text-foreground">Latitude *</Label>
