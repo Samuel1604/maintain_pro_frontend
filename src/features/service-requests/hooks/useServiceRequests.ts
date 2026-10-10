@@ -13,6 +13,7 @@ export function useServiceRequests(
     to?: string;
   } = {},
 ) {
+  const { page, limit, status, from, to } = filters;
   const [data, setData] = useState<ServiceRequestRecord[]>([]);
   const [pagination, setPagination] = useState({
     total: 0,
@@ -30,7 +31,7 @@ export function useServiceRequests(
       else setIsLoading(true);
       setError(null);
       try {
-        const result = await serviceRequestsService.list(filters);
+        const result = await serviceRequestsService.list({ page, limit, status, from, to });
         setData(result.data);
         setPagination({
           total: result.total,
@@ -45,7 +46,7 @@ export function useServiceRequests(
         setIsRefreshing(false);
       }
     },
-    [filters],
+    [from, limit, page, status, to],
   );
 
   useEffect(() => {
