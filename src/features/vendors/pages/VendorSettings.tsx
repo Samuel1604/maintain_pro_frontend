@@ -66,6 +66,8 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
   // Service Areas State
   const [baseLocation, setBaseLocation] = useState("");
   const [radius, setRadius] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
 
   // Marketplace Preferences State
   const [autoApply, setAutoApply] = useState(false);
@@ -175,6 +177,8 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
         ? `${value.coverageRadiusKm} km`
         : "",
     );
+    setLatitude(value.baseCoordinates?.coordinates[1]?.toString() ?? "");
+    setLongitude(value.baseCoordinates?.coordinates[0]?.toString() ?? "");
   }, [vendorProfile.data]);
 
   if (vendorSettings.isLoading || vendorProfile.isLoading)
@@ -251,13 +255,28 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
 
   const saveVendorCapabilities = async () => {
     const coverageRadiusKm = Number.parseFloat(radius);
+    const latitudeValue = Number.parseFloat(latitude);
+    const longitudeValue = Number.parseFloat(longitude);
     if (!Number.isFinite(coverageRadiusKm) || coverageRadiusKm < 0) {
       toast.error("Enter a valid service radius in kilometres");
+      return;
+    }
+    if (
+      !Number.isFinite(latitudeValue) ||
+      latitudeValue < -90 ||
+      latitudeValue > 90 ||
+      !Number.isFinite(longitudeValue) ||
+      longitudeValue < -180 ||
+      longitudeValue > 180
+    ) {
+      toast.error("Enter valid vendor base coordinates");
       return;
     }
     try {
       await vendorProfileUpdate.mutateAsync({
         coverageRadiusKm,
+        latitude: latitudeValue,
+        longitude: longitudeValue,
         address: { street: baseLocation.trim() },
       });
       toast.success("Vendor service area saved");
@@ -609,6 +628,32 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                     onChange={(e) => setRadius(e.target.value)}
                     className="bg-background border-border"
                   />
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5 text-[13px]">
+                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      BASE LATITUDE
+                    </Label>
+                    <Input
+                      inputMode="decimal"
+                      value={latitude}
+                      onChange={(e) => setLatitude(e.target.value)}
+                      placeholder="e.g. 6.5244"
+                      className="bg-background border-border"
+                    />
+                  </div>
+                  <div className="space-y-1.5 text-[13px]">
+                    <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      BASE LONGITUDE
+                    </Label>
+                    <Input
+                      inputMode="decimal"
+                      value={longitude}
+                      onChange={(e) => setLongitude(e.target.value)}
+                      placeholder="e.g. 3.3792"
+                      className="bg-background border-border"
+                    />
+                  </div>
                 </div>
                 <div className="flex justify-end gap-3 pt-4 border-t border-border">
                   <Button
