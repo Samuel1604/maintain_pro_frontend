@@ -171,7 +171,6 @@ export function AssignWorkOrderDialog({
     setPath("vendor");
     setSelectedVendorId(null);
     setSelectedVendorTechId(null);
-    setSelectedIndependentId(null);
     setNotes("");
   }, [workOrder, open]);
 
