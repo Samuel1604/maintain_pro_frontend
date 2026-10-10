@@ -16,14 +16,7 @@ import {
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import type { CreateSubscriptionPayload } from "@/services/billingService";
 
-import { useBillingMutations, useSubscription } from "../hooks/useBilling";
-
-const plans: CreateSubscriptionPayload["plan"][] = [
-  "free",
-  "starter",
-  "professional",
-  "enterprise",
-];
+import { useBillingMutations, usePlanCatalog, useSubscription } from "../hooks/useBilling";
 const providers: NonNullable<CreateSubscriptionPayload["provider"]>[] = [
   "stripe",
   "paystack",
@@ -32,6 +25,7 @@ const providers: NonNullable<CreateSubscriptionPayload["provider"]>[] = [
 
 export function BillingPage() {
   const { data: subscription, isLoading, isError, error } = useSubscription();
+  const { data: catalog } = usePlanCatalog("organization");
   const user = useCurrentUser();
   const mutations = useBillingMutations();
   const [plan, setPlan] = useState<CreateSubscriptionPayload["plan"]>("starter");
@@ -54,7 +48,8 @@ export function BillingPage() {
         await mutations.create.mutateAsync({ plan, billingCycle, provider });
       } else if (subscription.plan !== plan) {
         const order =
-          plans.indexOf(plan) > plans.indexOf(subscription.plan)
+          (catalog?.plans.findIndex((item) => item.id === plan) ?? -1) >
+          (catalog?.plans.findIndex((item) => item.id === subscription.plan) ?? -1)
             ? mutations.upgrade
             : mutations.downgrade;
         await order.mutateAsync({ plan, billingCycle });
@@ -121,9 +116,9 @@ export function BillingPage() {
                       <SelectValue placeholder="Select a plan" />
                     </SelectTrigger>
                     <SelectContent>
-                      {plans.map((item) => (
-                        <SelectItem key={item} value={item}>
-                          {item}
+                      {(catalog?.plans ?? []).map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.id}
                         </SelectItem>
                       ))}
                     </SelectContent>

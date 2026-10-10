@@ -7,7 +7,18 @@ import {
 } from "@/services/billingService";
 
 export const billingKeys = { subscription: ["billing", "subscription"] as const };
+export const planCatalogKeys = { organization: ["billing", "plans", "organization"] as const };
 export const paymentMethodKeys = { list: ["billing", "payment-methods"] as const };
+
+export function usePlanCatalog(audience: "organization" | "vendor") {
+  return useQuery({
+    queryKey:
+      audience === "organization" ? planCatalogKeys.organization : ["billing", "plans", audience],
+    queryFn: () => billingService.getPlanCatalog(audience),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+}
 
 export function useSubscription() {
   return useQuery<SubscriptionResponseData | null>({
@@ -31,7 +42,13 @@ export function usePaymentMethodMutations() {
       mutationFn: (payload: Omit<PaymentMethodData, "id" | "isDefault">) =>
         billingService.savePaymentMethod(payload),
       onSuccess: (method: PaymentMethodData) =>
-        client.setQueryData(paymentMethodKeys.list, [method]),
+        client.setQueryData<PaymentMethodData[]>(paymentMethodKeys.list, (methods = []) => {
+          const next = methods.filter((item) => item.id !== method.id);
+          return [method, ...next].map((item) => ({
+            ...item,
+            isDefault: item.id === method.id ? method.isDefault : item.isDefault,
+          }));
+        }),
     }),
     remove: useMutation({
       mutationFn: (id: string) => billingService.removePaymentMethod(id),
