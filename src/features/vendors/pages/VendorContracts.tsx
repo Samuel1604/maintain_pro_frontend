@@ -23,6 +23,8 @@ interface ContractItem {
   organizationName?: string;
   quotation?: { currency: string; totalMinor: number };
   sla?: { responseTimeHours: number; resolutionTimeHours: number };
+  quotationId?: string;
+  slaAgreementId?: string;
 }
 
 export function VendorContracts() {
@@ -56,6 +58,8 @@ export function VendorContracts() {
           organizationName?: string;
           quotation?: { currency: string; totalMinor: number };
           sla?: { responseTimeHours: number; resolutionTimeHours: number };
+          quotationId?: string;
+          slaAgreementId?: string;
         }>
       >(isOrganizationView ? "/contract-awards" : "/contract-awards/mine");
       const mapped = items.map(
@@ -71,7 +75,9 @@ export function VendorContracts() {
                 : item.organizationId),
             value: item.quotation
               ? `${item.quotation.currency} ${(item.quotation.totalMinor / 100).toFixed(2)}`
-              : "—",
+              : item.quotationId
+                ? "Quotation linked"
+                : "—",
             status: item.status as ContractItem["status"],
             activeDates:
               [item.effectiveAt, item.expiresAt]
@@ -84,6 +90,8 @@ export function VendorContracts() {
             organizationName: item.organizationName,
             quotation: item.quotation,
             sla: item.sla,
+            quotationId: item.quotationId,
+            slaAgreementId: item.slaAgreementId,
           }) as ContractItem,
       );
       setContracts(mapped);
@@ -183,7 +191,9 @@ export function VendorContracts() {
                   <thead>
                     <tr className="border-b border-border bg-muted/30 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       <th className="px-5 py-3.5">Contract #</th>
-                      <th className="px-5 py-3.5">Organization Client</th>
+                      <th className="px-5 py-3.5">
+                        {isOrganizationView ? "Vendor Partner" : "Organization Client"}
+                      </th>
                       <th className="px-5 py-3.5">Value</th>
                       <th className="px-5 py-3.5">Status</th>
                       <th className="px-5 py-3.5 text-right">Active Dates</th>
@@ -255,7 +265,7 @@ export function VendorContracts() {
               <div className="space-y-4 text-[13px]">
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Organization Client
+                    {isOrganizationView ? "Vendor Partner" : "Organization Client"}
                   </p>
                   <p className="font-bold text-foreground mt-0.5">
                     {selectedContract.organization}
