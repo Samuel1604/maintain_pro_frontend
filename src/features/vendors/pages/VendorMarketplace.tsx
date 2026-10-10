@@ -124,7 +124,13 @@ export function VendorMarketplace() {
             distance: "",
             rating: vendor.averageRating ?? 0,
             slaCompliance: 0,
-            serviceCategories: vendor.serviceCategories ?? [],
+            serviceCategories: (vendor.serviceCategories ?? []).map((category) =>
+              typeof category === "string"
+                ? category
+                : ((category as unknown as { name?: string; _id?: string }).name ??
+                  (category as unknown as { _id?: string })._id ??
+                  "—"),
+            ),
             description: vendor.description ?? "—",
             certifications: vendor.certifications ?? [],
             insuranceLimit: "—",
