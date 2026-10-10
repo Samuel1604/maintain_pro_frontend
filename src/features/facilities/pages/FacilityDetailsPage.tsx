@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { KPICard } from "@/features/dashboard/components/StatCard";
 import { InviteUserModal } from "@/features/auth/components/InviteUserModal";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
 
 type FacilityRelationships = {
   locations?: unknown[];
@@ -43,6 +44,7 @@ const emptyRelationships = {
 export function FacilityDetailsPage() {
   const { facilityId = "" } = useParams();
   const navigate = useNavigate();
+  const { canManageLocations } = useRoleAccess();
   const { data: facility, isLoading, isError, refetch } = useFacility(facilityId);
   const [activeTab, setActiveTab] = useState<"overview" | "locations" | "assets" | "pm">(
     "overview",
@@ -171,14 +173,16 @@ export function FacilityDetailsPage() {
       />
       <div className="p-8 space-y-6">
         <div className="flex justify-end">
-          <Button
-            variant="outline"
-            onClick={openEdit}
-            className="h-9 rounded-lg border-border bg-card text-[13px] font-medium text-foreground hover:bg-muted/30"
-          >
-            <Pencil className="mr-2 h-3.5 w-3.5" />
-            Edit Facility
-          </Button>
+          {canManageLocations && (
+            <Button
+              variant="outline"
+              onClick={openEdit}
+              className="h-9 rounded-lg border-border bg-card text-[13px] font-medium text-foreground hover:bg-muted/30"
+            >
+              <Pencil className="mr-2 h-3.5 w-3.5" />
+              Edit Facility
+            </Button>
+          )}
         </div>
         {relationshipError && (
           <p className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning">
@@ -329,10 +333,10 @@ export function FacilityDetailsPage() {
                 </div>
               </div>
 
-              {/* Recent Work Orders */}
+              {/* Open Work Orders */}
               <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
                 <div className="flex items-center justify-between border-b border-border pb-4">
-                  <h3 className="text-[15px] font-bold text-foreground">Recent Work Orders</h3>
+                  <h3 className="text-[15px] font-bold text-foreground">Open Work Orders</h3>
                   <button
                     onClick={() => navigate(workOrdersPath)}
                     className="text-[12px] font-semibold text-primary hover:underline"
@@ -340,24 +344,16 @@ export function FacilityDetailsPage() {
                     View All
                   </button>
                 </div>
-                <div className="mt-4 divide-y divide-border">
-                  {relationships.workOrders.map((wo: any) => (
-                    <div key={wo.id} className="flex items-center justify-between py-3">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[13px] font-bold text-foreground">{wo.id}</span>
-                          <span className="text-[13px] text-muted-foreground">{wo.title}</span>
-                        </div>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">{wo.time}</p>
-                      </div>
-                      <span
-                        className="rounded px-2 py-0.5 text-[11px] font-bold uppercase"
-                        style={{ backgroundColor: wo.bg, color: wo.text }}
-                      >
-                        {wo.status}
-                      </span>
-                    </div>
-                  ))}
+                <div className="mt-4 flex items-center justify-between gap-4 rounded-lg bg-muted/30 p-4">
+                  <div>
+                    <p className="text-2xl font-bold text-foreground">{openWorkOrderCount}</p>
+                    <p className="mt-1 text-[12px] text-muted-foreground">
+                      Active work orders associated with this facility
+                    </p>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => navigate(workOrdersPath)}>
+                    View directory
+                  </Button>
                 </div>
               </div>
             </div>
@@ -518,12 +514,14 @@ export function FacilityDetailsPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <InviteUserModal
-          isOpen={showManagerInvite}
-          onClose={() => setShowManagerInvite(false)}
-          facilityId={facility?.id}
-          facilityName={facility?.name}
-        />
+        {canManageLocations && (
+          <InviteUserModal
+            isOpen={showManagerInvite}
+            onClose={() => setShowManagerInvite(false)}
+            facilityId={facility?.id}
+            facilityName={facility?.name}
+          />
+        )}
       </div>
     </div>
   );
