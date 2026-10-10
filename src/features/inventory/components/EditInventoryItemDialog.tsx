@@ -47,10 +47,8 @@ export function EditInventoryItemDialog({
     name: "",
     sku: "",
     category: "",
-    quantity: "",
     minStock: "",
-    unitPrice: "",
-    supplier: "",
+    reorderLevel: "",
     facilityId: "",
     locationId: "",
   });
@@ -61,10 +59,8 @@ export function EditInventoryItemDialog({
       name: item.name,
       sku: item.sku,
       category: item.categoryId ?? "",
-      quantity: "",
       minStock: String(item.minimumStockLevel),
-      unitPrice: "",
-      supplier: "",
+      reorderLevel: String(item.reorderLevel),
       facilityId: item.facilityId ?? "",
       locationId: item.locationId ?? "",
     });
@@ -105,7 +101,7 @@ export function EditInventoryItemDialog({
           ? { categoryId: form.category }
           : {}),
         minimumStockLevel: Number(form.minStock),
-        reorderLevel: Number(form.minStock),
+        reorderLevel: Number(form.reorderLevel),
       });
       toast.success(`${item.name} updated`);
       onSaved?.();
@@ -210,15 +206,6 @@ export function EditInventoryItemDialog({
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
-              <Label>Qty</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.quantity}
-                onChange={(e) => setForm((p) => ({ ...p, quantity: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1.5">
               <Label>Min stock</Label>
               <Input
                 type="number"
@@ -228,22 +215,14 @@ export function EditInventoryItemDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label>Unit price</Label>
+              <Label>Reorder level</Label>
               <Input
                 type="number"
                 min={0}
-                step="0.01"
-                value={form.unitPrice}
-                onChange={(e) => setForm((p) => ({ ...p, unitPrice: e.target.value }))}
+                value={form.reorderLevel}
+                onChange={(e) => setForm((p) => ({ ...p, reorderLevel: e.target.value }))}
               />
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Supplier</Label>
-            <Input
-              value={form.supplier}
-              onChange={(e) => setForm((p) => ({ ...p, supplier: e.target.value }))}
-            />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
