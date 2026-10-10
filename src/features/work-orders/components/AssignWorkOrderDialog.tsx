@@ -43,6 +43,16 @@ import type { WorkOrder } from "@/types/common.types";
 import { displayReference } from "@/utils/display-ids";
 import { displayLabel } from "@/utils/display-ids";
 
+function displayRelation(value: unknown) {
+  if (!value) return "—";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const relation = value as { name?: string; title?: string; _id?: string };
+    return relation.name ?? relation.title ?? relation._id ?? "—";
+  }
+  return String(value);
+}
+
 interface AssignWorkOrderDialogProps {
   workOrder: WorkOrder | null;
   open: boolean;
@@ -239,7 +249,7 @@ export function AssignWorkOrderDialog({
                 <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1">
                     <MapPin className="h-3 w-3 shrink-0" />
-                    {workOrder.locationName}
+                    {displayRelation(workOrder.locationName)}
                   </span>
                   <span aria-hidden>·</span>
                   <span>{displayLabel(workOrder.category)}</span>

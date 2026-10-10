@@ -23,6 +23,16 @@ import type { WorkOrderFilters } from "../types/workOrder.types";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CreateWorkOrder } from "./CreateWorkOrder";
+
+function displayRelation(value: unknown, fallback: string) {
+  if (!value) return fallback;
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const relation = value as { name?: string; title?: string; _id?: string };
+    return relation.name ?? relation.title ?? relation._id ?? fallback;
+  }
+  return String(value);
+}
 import { displayReference } from "@/utils/display-ids";
 
 export function WorkOrders() {
@@ -205,10 +215,10 @@ export function WorkOrders() {
                         <StatusBadge status={item.status} />
                       </td>
                       <td className="px-5 py-4 text-muted-foreground">
-                        {item.locationName || "—"}
+                        {displayRelation(item.locationName, "—")}
                       </td>
                       <td className="px-5 py-4 text-muted-foreground">
-                        {item.assigneeName || "Unassigned"}
+                        {displayRelation(item.assigneeName, "Unassigned")}
                       </td>
                       <td className="px-5 py-4 text-muted-foreground">
                         {item.createdAt.toLocaleDateString()}
@@ -253,10 +263,10 @@ export function WorkOrders() {
                           : "Manual"}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {item.locationName || "No location"}
+                      {displayRelation(item.locationName, "No location")}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {item.assigneeName || "Unassigned"}
+                      {displayRelation(item.assigneeName, "Unassigned")}
                     </span>
                   </div>
                 </button>
