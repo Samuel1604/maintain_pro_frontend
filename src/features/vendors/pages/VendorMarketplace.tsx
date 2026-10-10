@@ -1,16 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  Search,
-  Star,
-  MapPin,
-  Building,
-  ShieldCheck,
-  PhoneCall,
-  ExternalLink,
-  Filter,
-} from "lucide-react";
+import { Star, Building, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,22 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { AppHeader } from "@/components/navigation/Navbar";
 import { toast } from "sonner";
 import { cn } from "@/utils/helpers";
-import { apiClient } from "@/api/client";
 import { Skeleton, SkeletonCard } from "@/components/feedback/Skeletons";
 import { organizationVendorsApi } from "../api/organizationVendors.api";
 import { PageIntro } from "@/components/layout/PageIntro";
+import { Label } from "@/components/ui/label";
 
 interface MarketplaceVendor {
   id: string;
@@ -126,8 +107,6 @@ export function VendorMarketplace() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [selectedVendor, setSelectedVendor] = useState<MarketplaceVendor | null>(null);
-  const [rfqVendor, setRfqVendor] = useState<MarketplaceVendor | null>(null);
-  const [rfqDetails, setRfqDetails] = useState("");
   const [liveVendors, setLiveVendors] = useState<MarketplaceVendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -219,14 +198,10 @@ export function VendorMarketplace() {
     try {
       await organizationVendorsApi.requestRelationship(vendor.id);
       toast.success(`Relationship request sent to ${vendor.name}`);
-      setRfqVendor(null);
-      setRfqDetails("");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to send vendor request";
       if (message.toLowerCase().includes("already exists")) {
         toast.info(`A relationship with ${vendor.name} is already active or pending.`);
-        setRfqVendor(null);
-        setRfqDetails("");
         return;
       }
       toast.error(message);
@@ -361,14 +336,6 @@ export function VendorMarketplace() {
                   >
                     Connect vendor
                   </Button>
-                  <Button
-                    variant="outline"
-                    disabled
-                    title="Contact details are available after a vendor relationship is accepted"
-                    className="w-full border-border text-foreground font-semibold text-[13px]"
-                  >
-                    Call Dispatch System
-                  </Button>
                 </div>
 
                 <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
@@ -420,7 +387,7 @@ export function VendorMarketplace() {
                 <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
                   {liveVendors.length === 0
                     ? "No vendor profiles are currently available for discovery in this marketplace."
-                    : "Try broadening your search or relaxing the service, proximity, or SLA filters."}
+                    : "Try broadening your search or choosing a different service category."}
                 </p>
               </div>
             ) : (
@@ -494,46 +461,6 @@ export function VendorMarketplace() {
           </div>
         )}
       </div>
-
-      {/* RFQ Dialog */}
-      <Dialog open={!!rfqVendor} onOpenChange={() => setRfqVendor(null)}>
-        <DialogContent className="max-w-md bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="text-foreground">Request Quotation</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            <p className="text-[13px] text-muted-foreground">
-              Requesting a vendor relationship with{" "}
-              <strong className="text-foreground">{rfqVendor?.name}</strong>
-            </p>
-            <div className="space-y-1.5">
-              <Label className="text-xs text-foreground">Notes (optional)</Label>
-              <Textarea
-                placeholder="Describe your maintenance requirement, facility location, and target timeline..."
-                rows={4}
-                value={rfqDetails}
-                onChange={(e) => setRfqDetails(e.target.value)}
-                className="bg-background text-foreground border-border"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setRfqVendor(null)}
-              className="border-border text-foreground"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => rfqVendor && void handleRequestRelationship(rfqVendor)}
-              className="bg-primary text-primary-foreground"
-            >
-              Send request
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
