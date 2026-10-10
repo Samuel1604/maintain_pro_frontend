@@ -16,7 +16,7 @@ export const facilityKeys = {
 export function useFacilities() {
   return useQuery<FacilitiesResponse>({
     queryKey: facilityKeys.all,
-    queryFn: () => facilitiesApi.list(),
+    queryFn: () => facilitiesApi.list({ page: 1, limit: 100 }),
     ...queryTiming.reference,
     retry: false,
   });

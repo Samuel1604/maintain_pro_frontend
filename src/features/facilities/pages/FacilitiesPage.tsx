@@ -145,6 +145,9 @@ export function FacilitiesPage() {
     if (
       !organization.data ||
       !formName.trim() ||
+      formStreet.trim().length < 3 ||
+      formCity.trim().length < 2 ||
+      formState.trim().length < 2 ||
       !formCountry.trim() ||
       !Number.isFinite(latitude) ||
       !Number.isFinite(longitude) ||
@@ -153,7 +156,7 @@ export function FacilitiesPage() {
       longitude < -180 ||
       longitude > 180
     ) {
-      toast.error("Enter a valid country and facility coordinates");
+      toast.error("Enter a complete address, country, and valid facility coordinates");
       return;
     }
     try {
@@ -494,7 +497,16 @@ export function FacilitiesPage() {
             </Button>
             <Button
               onClick={handleCreateFacility}
-              disabled={!formName.trim()}
+              disabled={
+                !formName.trim() ||
+                formStreet.trim().length < 3 ||
+                formCity.trim().length < 2 ||
+                formState.trim().length < 2 ||
+                formCountry.trim().length < 2 ||
+                !formLatitude.trim() ||
+                !formLongitude.trim() ||
+                mutations.create.isPending
+              }
               className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               Create Facility
