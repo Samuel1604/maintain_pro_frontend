@@ -85,7 +85,7 @@ export function VendorContractDetails() {
         setLoadError(error instanceof Error ? error.message : "Unable to load contract"),
       )
       .finally(() => setLoading(false));
-  }, [contractId]);
+  }, [contractId, isOrganizationView]);
 
   const formatDate = (value?: string) => (value ? new Date(value).toLocaleDateString() : "—");
 

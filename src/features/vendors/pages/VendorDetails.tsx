@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 
@@ -34,7 +34,7 @@ export function VendorDetails() {
   const [error, setError] = useState<Error | null>(null);
   const [updating, setUpdating] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!vendorId) return;
     setLoading(true);
     setError(null);
@@ -50,13 +50,13 @@ export function VendorDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [vendorId]);
 
   useEffect(() => {
     void load();
-  }, [vendorId]);
+  }, [load]);
 
-  const updateStatus = async (status: "active" | "inactive" | "suspended") => {
+  const updateStatus = async (status: "inactive" | "suspended") => {
     if (!vendorId) return;
     setUpdating(true);
     try {
@@ -119,11 +119,6 @@ export function VendorDetails() {
             </dl>
             {canManageVendors && (
               <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4">
-                {vendor.status !== "active" && (
-                  <Button disabled={updating} onClick={() => void updateStatus("active")}>
-                    Activate
-                  </Button>
-                )}
                 {vendor.status === "active" && (
                   <Button
                     variant="outline"
@@ -143,6 +138,11 @@ export function VendorDetails() {
                   </Button>
                 )}
               </div>
+            )}
+            {canManageVendors && vendor.status !== "active" && (
+              <p className="mt-4 text-xs text-muted-foreground">
+                Activation must be accepted by the vendor organization.
+              </p>
             )}
           </div>
 

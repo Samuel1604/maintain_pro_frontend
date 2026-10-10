@@ -19,6 +19,7 @@ export function LocationDetails() {
   const { id } = useParams();
   const { data: locationData, isLoading, isError, refetch } = useLocationApi(id ?? "");
   const { data: facilityData } = useFacility(locationData?.facilityId ?? "");
+  const { canManageLocations } = useRoleAccess();
   const [activeTab, setActiveTab] = useState<"overview" | "assets">("overview");
   const [openWorkOrderCount, setOpenWorkOrderCount] = useState<number>();
   const [assetCount, setAssetCount] = useState<number>();
@@ -73,7 +74,6 @@ export function LocationDetails() {
   const parentFacility = facilityData?.name || "—";
   const floor = locationData?.floor || "—";
   const description = locationData?.description || "—";
-  const { canManageLocations } = useRoleAccess();
   const editableLocation: CommonLocation | null = locationData
     ? {
         id: locationData.id,
