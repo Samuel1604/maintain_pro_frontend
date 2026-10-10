@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { WorkOrder } from "@/types/common.types";
 import { Link } from "react-router-dom";
 import { usePortalPath } from "@/hooks/usePortal";
-import { displayReference } from "@/utils/display-ids";
+import { displayLabel, displayReference } from "@/utils/display-ids";
 import {
   Table,
   TableBody,
