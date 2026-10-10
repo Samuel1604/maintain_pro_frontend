@@ -178,8 +178,11 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
         ? `${value.coverageRadiusKm} km`
         : "",
     );
-    setLatitude(value.baseCoordinates?.coordinates[1]?.toString() ?? "");
-    setLongitude(value.baseCoordinates?.coordinates[0]?.toString() ?? "");
+    const coordinates = Array.isArray(value.baseCoordinates?.coordinates)
+      ? value.baseCoordinates.coordinates
+      : [];
+    setLatitude(coordinates[1]?.toString() ?? "");
+    setLongitude(coordinates[0]?.toString() ?? "");
   }, [vendorProfile.data]);
 
   if (vendorSettings.isLoading || vendorProfile.isLoading)
