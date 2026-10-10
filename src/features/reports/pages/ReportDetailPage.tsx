@@ -18,26 +18,22 @@ const REPORTS = {
     title: "Work Order Analysis",
     subtitle: "Backlog, completion volume, priority and status analysis.",
     icon: BarChart3,
-    supported: true,
   },
   "sla-compliance": {
     title: "SLA Compliance Report",
     subtitle: "Vendor response and resolution compliance against active agreements.",
     icon: ShieldCheck,
-    supported: false,
   },
   "pm-compliance": {
     title: "PM Schedule Report",
     subtitle:
       "Preventive maintenance schedules, approvals, generated work, and completion performance.",
     icon: ClipboardList,
-    supported: true,
   },
   "vendor-performance": {
     title: "Vendor Performance Report",
     subtitle: "Vendor dispatch volume, service quality and invoice accuracy.",
     icon: Users,
-    supported: false,
   },
 } as const;
 
@@ -54,7 +50,10 @@ export function ReportDetailPage() {
   const { reportType } = useParams<{ reportType: ReportSlug }>();
   const report = reportType ? REPORTS[reportType] : undefined;
   const query = useMemo(() => defaultQuery(), []);
-  const data = useReports(query);
+  const data = useReports(
+    query,
+    reportType === "work-order-analysis" || reportType === "pm-compliance",
+  );
 
   if (!report)
     return <PageError title="Report not found" message="This report type is not available." />;
@@ -63,10 +62,13 @@ export function ReportDetailPage() {
     <div className="min-h-full bg-background">
       <AppHeader title={report.title} subtitle="Reports" hideQuickCreate />
       <main className="page-body space-y-6">
-        {report.supported && data.loading ? (
+        {(reportType === "work-order-analysis" || reportType === "pm-compliance") &&
+        data.loading ? (
           <PageLoader label={`Loading ${report.title.toLowerCase()}…`} />
         ) : null}
-        {report.supported && data.error ? <PageError message={data.error} /> : null}
+        {(reportType === "work-order-analysis" || reportType === "pm-compliance") && data.error ? (
+          <PageError message={data.error} />
+        ) : null}
         {reportType === "work-order-analysis" && !data.loading && !data.error ? (
           <WorkOrderAnalysis data={data} />
         ) : null}
@@ -81,7 +83,7 @@ export function ReportDetailPage() {
 }
 
 function SlaCompliance({ query }: { query: ReturnType<typeof defaultQuery> }) {
-  const report = useSlaComplianceReport(query);
+  const report = useSlaComplianceReport(query, true);
   if (report.isLoading) return <PageLoader label="Loading SLA compliance…" />;
   if (report.error) return <PageError message="We could not load SLA compliance data." />;
   const data = report.data;
@@ -149,7 +151,7 @@ function SlaCompliance({ query }: { query: ReturnType<typeof defaultQuery> }) {
 }
 
 function VendorPerformance({ query }: { query: ReturnType<typeof defaultQuery> }) {
-  const report = useVendorPerformanceReport(query);
+  const report = useVendorPerformanceReport(query, true);
   if (report.isLoading) return <PageLoader label="Loading vendor performance…" />;
   if (report.error) return <PageError message="We could not load vendor performance data." />;
   const data = report.data;

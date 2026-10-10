@@ -13,7 +13,7 @@ import {
   type VendorPerformanceReport,
 } from "../api/reports.api";
 
-export function useReports(query: ReportQuery) {
+export function useReports(query: ReportQuery, enabled = true) {
   type ReportPayload = {
     summary: MaintenanceSummary;
     trends: TrendPoint[];
@@ -32,7 +32,7 @@ export function useReports(query: ReportQuery) {
       return { summary, trends, workOrders, preventiveMaintenance };
     },
     ...queryTiming.report,
-    enabled: true,
+    enabled,
     placeholderData: keepPreviousData,
     retry: false,
   });
@@ -52,20 +52,22 @@ export function useReports(query: ReportQuery) {
   };
 }
 
-export function useSlaComplianceReport(query: ReportQuery) {
+export function useSlaComplianceReport(query: ReportQuery, enabled = true) {
   return useQuery<SlaComplianceReport>({
     queryKey: ["reports", "sla-compliance", query],
     queryFn: () => reportsApi.slaCompliance(query),
     ...queryTiming.report,
     retry: false,
+    enabled,
   });
 }
 
-export function useVendorPerformanceReport(query: ReportQuery) {
+export function useVendorPerformanceReport(query: ReportQuery, enabled = true) {
   return useQuery<VendorPerformanceReport>({
     queryKey: ["reports", "vendor-performance", query],
     queryFn: () => reportsApi.vendorPerformance(query),
     ...queryTiming.report,
     retry: false,
+    enabled,
   });
 }
