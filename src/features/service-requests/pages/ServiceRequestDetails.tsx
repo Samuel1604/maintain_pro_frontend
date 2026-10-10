@@ -221,11 +221,15 @@ export function ServiceRequestDetails() {
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Facility</dt>
-                <dd className="mt-1">{facilityName ?? request.facilityName ?? "—"}</dd>
+                <dd className="mt-1">
+                  {facilityName ?? request.facilityName ?? "Facility unavailable"}
+                </dd>
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Location</dt>
-                <dd className="mt-1">{locationName ?? request.locationName ?? "—"}</dd>
+                <dd className="mt-1">
+                  {locationName ?? request.locationName ?? "Location unavailable"}
+                </dd>
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Asset</dt>
@@ -235,7 +239,7 @@ export function ServiceRequestDetails() {
               </div>
               <div>
                 <dt className="text-xs uppercase text-muted-foreground">Requested by</dt>
-                <dd className="mt-1">{request.requesterName ?? "—"}</dd>
+                <dd className="mt-1">{request.requesterName ?? "Requester unavailable"}</dd>
               </div>
             </dl>
             <p className="mt-6 border-t border-border pt-5 text-sm leading-6 text-muted-foreground">

@@ -25,11 +25,11 @@ import { facilitiesApi } from "@/features/facilities/api/facilities.api";
 import { USER_ROLES } from "@/types/user.types";
 
 function displayRelation(value: unknown) {
-  if (!value) return "—";
+  if (!value) return "Not configured";
   if (typeof value === "string") return value;
   if (typeof value === "object") {
     const relation = value as { name?: string; title?: string; _id?: string };
-    return relation.name ?? relation.title ?? relation._id ?? "—";
+    return relation.name ?? relation.title ?? "Related record unavailable";
   }
   return String(value);
 }
@@ -263,7 +263,7 @@ export function WorkOrderDetails() {
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Due date</dt>
                       <dd className="mt-1 font-medium">
-                        {workOrder.dueDate?.toLocaleDateString() || "—"}
+                        {workOrder.dueDate?.toLocaleDateString() || "No deadline set"}
                       </dd>
                     </div>
                   </dl>

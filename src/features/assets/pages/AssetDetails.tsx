@@ -31,7 +31,7 @@ import { formatMoney } from "@/lib/money";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
 
 const displayValue = (value: unknown) =>
-  value === undefined || value === null || value === "" ? "—" : String(value);
+  value === undefined || value === null || value === "" ? "Not provided" : String(value);
 const formatDate = (value?: string) =>
   value
     ? new Date(value).toLocaleDateString("en-US", {
@@ -39,7 +39,7 @@ const formatDate = (value?: string) =>
         day: "numeric",
         year: "numeric",
       })
-    : "—";
+    : "No maintenance status available";
 
 export function AssetDetails() {
   const { id } = useParams();
@@ -207,7 +207,7 @@ export function AssetDetails() {
           />
           <KPICard
             title="Open Work Orders"
-            value={openWorkOrders ?? "—"}
+            value={openWorkOrders ?? "No work orders"}
             changeLabel={openWorkOrders === undefined ? "No count available" : "Currently open"}
             icon="work-orders"
             href={workOrdersPath}
@@ -217,7 +217,7 @@ export function AssetDetails() {
             value={
               asset.installationDate
                 ? `${Math.max(0, new Date().getFullYear() - new Date(asset.installationDate).getFullYear())} yrs`
-                : "—"
+                : "No warranty information"
             }
             changeLabel="Since installation"
             icon="clock"
@@ -226,7 +226,7 @@ export function AssetDetails() {
             title="Estimated Value"
             value={
               asset.estimatedValueMinor === undefined && asset.estimatedValue === undefined
-                ? "—"
+                ? "No maintenance date"
                 : formatMoney(
                     asset.estimatedValueMinor ?? Math.round((asset.estimatedValue ?? 0) * 100),
                     asset.currency ?? "NGN",
@@ -234,7 +234,7 @@ export function AssetDetails() {
             }
             changeLabel={
               asset.estimatedValueMinor === undefined && asset.estimatedValue === undefined
-                ? "—"
+                ? "No maintenance date"
                 : "Recorded value"
             }
             icon="cost"

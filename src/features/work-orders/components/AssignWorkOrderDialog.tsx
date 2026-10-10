@@ -44,11 +44,11 @@ import { displayReference } from "@/utils/display-ids";
 import { displayLabel } from "@/utils/display-ids";
 
 function displayRelation(value: unknown) {
-  if (!value) return "—";
+  if (!value) return "Not configured";
   if (typeof value === "string") return value;
   if (typeof value === "object") {
     const relation = value as { name?: string; title?: string; _id?: string };
-    return relation.name ?? relation.title ?? relation._id ?? "—";
+    return relation.name ?? relation.title ?? "Related record unavailable";
   }
   return String(value);
 }

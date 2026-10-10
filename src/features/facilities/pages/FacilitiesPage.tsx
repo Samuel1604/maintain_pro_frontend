@@ -112,7 +112,8 @@ export function FacilitiesPage() {
     id: f.id,
     name: f.name,
     address:
-      `${f.address.street || ""} ${f.address.city || ""}, ${f.address.state || ""}`.trim() || "—",
+      `${f.address.street || ""} ${f.address.city || ""}, ${f.address.state || ""}`.trim() ||
+      "No address configured",
     status: f.status,
     locations: f.locationCount ?? 0,
     assets: f.assetCount ?? 0,
@@ -370,13 +371,13 @@ export function FacilitiesPage() {
                       />
                     </td>
                     <td className="px-6 py-4 text-center font-medium text-muted-foreground">
-                      {facility.locations ?? "—"}
+                      {facility.locations ?? "No locations"}
                     </td>
                     <td className="px-6 py-4 text-center font-medium text-muted-foreground">
-                      {facility.assets ?? "—"}
+                      {facility.assets ?? "No assets"}
                     </td>
                     <td className="px-6 py-4 text-center font-bold text-destructive">
-                      {facility.openWos ?? "—"}
+                      {facility.openWos ?? "No open work orders"}
                     </td>
                     <td className="px-6 py-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1">
