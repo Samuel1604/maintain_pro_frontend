@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { apiClient } from "@/api/client";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ export function MarketplacePoliciesPanel() {
   const [locating, setLocating] = useState(false);
   const facilitiesQuery = useFacilities();
   const facilityMutations = useFacilityMutations();
-  const facilities = facilitiesQuery.data?.data ?? [];
+  const facilities = useMemo(() => facilitiesQuery.data?.data ?? [], [facilitiesQuery.data?.data]);
   const [facilityId, setFacilityId] = useState("");
   const selectedFacility = facilities.find((facility) => facility.id === facilityId);
   const [latitude, setLatitude] = useState("");
