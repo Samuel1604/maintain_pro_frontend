@@ -563,19 +563,22 @@ export function Assets() {
               Cancel
             </Button>
             <Button
-              disabled={
-                !form.name ||
-                !form.facilityId ||
-                !form.locationId ||
-                !form.assetTag ||
-                !form.category ||
-                !form.purchaseDate ||
-                !form.installationDate ||
-                !form.estimatedValue ||
-                assetMutations.create.isPending
-              }
+              disabled={assetMutations.create.isPending}
               onClick={async () => {
                 try {
+                  if (
+                    !form.name.trim() ||
+                    !form.facilityId ||
+                    !form.locationId ||
+                    !form.assetTag.trim() ||
+                    !form.category ||
+                    !form.purchaseDate ||
+                    !form.installationDate ||
+                    !form.estimatedValue
+                  ) {
+                    toast.error("Complete all required asset fields before registering.");
+                    return;
+                  }
                   if (!form.facilityId) {
                     toast.error("A facility context is required before registering an asset.");
                     return;
