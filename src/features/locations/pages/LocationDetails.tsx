@@ -294,55 +294,17 @@ export function LocationDetails() {
           </div>
         )}
 
-        {/* Related records */}
-        {activeTab !== "overview" && (
+        {activeTab === "assets" && (
           <div className="rounded-xl border border-border bg-card p-12 text-center text-muted-foreground">
-            {(() => {
-              const records: Record<string, unknown[]> = {
-                assets: relationships.assets,
-                "work-orders": relationships.workOrders,
-                "service-requests": relationships.serviceRequests,
-                pm: relationships.preventiveMaintenance,
-                history: relationships.workOrders,
-              };
-              const items = records[activeTab] ?? [];
-              return (
-                <>
-                  <p className="text-[14px] font-medium">
-                    {items.length} {activeTab.replace("-", " ")} records for {locationName}.
-                  </p>
-                  <div className="mx-auto mt-5 max-w-xl space-y-2 text-left">
-                    {items.slice(0, 5).map((item: any, index) => (
-                      <div
-                        key={item.id ?? item._id ?? index}
-                        className="rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm"
-                      >
-                        <span className="font-semibold text-foreground">
-                          {item.name ?? item.title ?? item.id ?? "Related record"}
-                        </span>
-                        <span className="ml-2 text-muted-foreground">
-                          {item.status ?? item.category ?? ""}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              );
-            })()}
-            {activeTab !== "history" && (
-              <Button
-                onClick={() => {
-                  if (activeTab === "assets")
-                    navigate(`${assetsPath}?location=${locationData?.id || ""}`);
-                  if (activeTab === "work-orders") navigate(workOrdersPath);
-                  if (activeTab === "service-requests") navigate(serviceRequestsPath);
-                  if (activeTab === "pm") navigate(pmPath);
-                }}
-                className="mt-4 bg-primary text-primary-foreground text-[13px] hover:bg-primary/90"
-              >
-                Open Full {activeTab.replace("-", " ")} Directory
-              </Button>
-            )}
+            <p className="text-[14px] font-medium">
+              {relationships.assets.length} assets for {locationName}.
+            </p>
+            <Button
+              onClick={() => navigate(`${assetsPath}?location=${locationData?.id || ""}`)}
+              className="mt-4 bg-primary text-primary-foreground text-[13px] hover:bg-primary/90"
+            >
+              Open Full Assets Directory
+            </Button>
           </div>
         )}
       </div>

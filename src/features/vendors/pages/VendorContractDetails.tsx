@@ -237,7 +237,11 @@ export function VendorContractDetails() {
                       <tbody className="divide-y divide-border/60">
                         {workOrders.map((workOrder) => (
                           <tr
-                            key={workOrder.workOrderId || workOrder._id}
+                            key={
+                              typeof workOrder.workOrderId === "string"
+                                ? workOrder.workOrderId
+                                : workOrder.workOrderId?._id || workOrder._id
+                            }
                             className="hover:bg-muted/20"
                           >
                             <td className="px-4 py-3.5 font-bold text-amber-500 font-mono">

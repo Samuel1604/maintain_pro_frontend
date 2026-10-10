@@ -47,12 +47,11 @@ export function WorkOrderDetails() {
   const [resolvedAssigneeName, setResolvedAssigneeName] = useState<string | undefined>();
 
   const { canAssignWorkOrder, role } = useRoleAccess();
-  const canPostComment = [
-    USER_ROLES.ADMIN,
-    USER_ROLES.FACILITY_MANAGER,
-    USER_ROLES.TECHNICIAN,
-    USER_ROLES.VENDOR_TECHNICIAN,
-  ].includes(role as (typeof USER_ROLES)[keyof typeof USER_ROLES]);
+  const canPostComment =
+    role === USER_ROLES.ADMIN ||
+    role === USER_ROLES.FACILITY_MANAGER ||
+    role === USER_ROLES.TECHNICIAN ||
+    role === USER_ROLES.VENDOR_TECHNICIAN;
 
   const load = async () => {
     if (!id) return;
@@ -144,7 +143,7 @@ export function WorkOrderDetails() {
             <div className="flex flex-wrap items-center gap-2">
               <PriorityBadge priority={workOrder.priority} />
               <StatusBadge status={workOrder.status} />
-              {canAssignWorkOrder && !isWorkOrderReadOnly && (
+              {canAssignWorkOrder && (
                 <Button variant="outline" onClick={() => setAssignOpen(true)} className="gap-2">
                   <UserPlus className="h-4 w-4" />
                   Assign technician

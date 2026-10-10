@@ -212,16 +212,6 @@ export function Vendors() {
         vendor={viewVendor}
         open={!!viewVendor}
         onOpenChange={(o) => !o && setViewVendor(null)}
-        onEdit={
-          canManageVendors
-            ? () => {
-                if (viewVendor) {
-                  setEditVendor(viewVendor);
-                  setViewVendor(null);
-                }
-              }
-            : undefined
-        }
       />
       <ConfirmDialog
         open={!!deactivateVendor}

@@ -38,6 +38,7 @@ interface BidOption {
 const QUOTATIONS: QuotationItem[] = [
   {
     id: "QT-8802",
+    recordId: "QT-8802",
     vendorPartner: "Apex Elevator Co.",
     serviceRequested: "ASME Annual Inspection",
     totalAmount: "$12,400",
@@ -47,6 +48,7 @@ const QUOTATIONS: QuotationItem[] = [
   },
   {
     id: "QT-8803",
+    recordId: "QT-8803",
     vendorPartner: "Elevator Systems Inc.",
     serviceRequested: "ASME Annual Inspection",
     totalAmount: "$14,100",
@@ -56,6 +58,7 @@ const QUOTATIONS: QuotationItem[] = [
   },
   {
     id: "QT-8804",
+    recordId: "QT-8804",
     vendorPartner: "Lift Tech Partners",
     serviceRequested: "ASME Annual Inspection",
     totalAmount: "$11,900",
@@ -65,6 +68,7 @@ const QUOTATIONS: QuotationItem[] = [
   },
   {
     id: "QT-8750",
+    recordId: "QT-8750",
     vendorPartner: "Pro HVAC Solutions",
     serviceRequested: "Chiller Overhaul",
     totalAmount: "$8,500",
@@ -74,6 +78,7 @@ const QUOTATIONS: QuotationItem[] = [
   },
   {
     id: "QT-8742",
+    recordId: "QT-8742",
     vendorPartner: "Reliable Plumbing",
     serviceRequested: "Restroom Renovation",
     totalAmount: "$24,000",
@@ -83,6 +88,7 @@ const QUOTATIONS: QuotationItem[] = [
   },
   {
     id: "QT-8611",
+    recordId: "QT-8611",
     vendorPartner: "Vanguard Electrical",
     serviceRequested: "Substation Repair",
     totalAmount: "$16,500",

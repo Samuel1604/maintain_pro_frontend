@@ -100,7 +100,7 @@ export function AcceptInvite() {
             <PasswordField
               id="password"
               value={form.password}
-              onChange={(password) => setForm({ password })}
+              onChange={(password) => setForm((current) => ({ ...current, password }))}
               placeholder="Create a strong password"
               hint="At least 8 characters with a number and symbol"
               showStrength
