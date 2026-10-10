@@ -7,20 +7,13 @@ import { ArrowLeft, RefreshCw, Send, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/helpers";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PriorityBadge, StatusBadge } from "@/components/ui/badge";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { AppHeader } from "@/components/navigation/Navbar";
 import { SkeletonCard } from "@/components/feedback/Skeletons";
 import { usePortalPath } from "@/hooks/usePortal";
 import { workOrdersService } from "../services/workOrders.service";
-import type { WorkOrder, WorkOrderStatus } from "@/types/common.types";
+import type { WorkOrder } from "@/types/common.types";
 import { WorkOrderRolePanel } from "@/features/work-orders/components/WorkOrderRolePanel";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
 import { AssignWorkOrderDialog } from "@/features/work-orders/components/AssignWorkOrderDialog";
@@ -29,6 +22,7 @@ import { displayLabel } from "@/utils/display-ids";
 import { locationsApi } from "@/features/locations/api/locations.api";
 import { assetsApi } from "@/features/assets/api/assets.api";
 import { facilitiesApi } from "@/features/facilities/api/facilities.api";
+import { USER_ROLES } from "@/types/user.types";
 
 export function WorkOrderDetails() {
   const { id } = useParams<{ id: string }>();
@@ -42,7 +36,6 @@ export function WorkOrderDetails() {
   const [activity, setActivity] = useState<
     Array<{ _id: string; action: string; outcome: string; createdAt: string }>
   >([]);
-  const [status, setStatus] = useState<WorkOrderStatus>("open");
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -52,13 +45,14 @@ export function WorkOrderDetails() {
   const [resolvedAssetName, setResolvedAssetName] = useState<string | undefined>();
   const [resolvedFacilityName, setResolvedFacilityName] = useState<string | undefined>();
   const [resolvedAssigneeName, setResolvedAssigneeName] = useState<string | undefined>();
-  const statusOptions: Array<"in_progress" | "on_hold" | "pending_completion"> = [
-    "in_progress",
-    "on_hold",
-    "pending_completion",
-  ];
 
-  const { canManageWorkOrders, canAssignWorkOrder, isWorkOrderReadOnly } = useRoleAccess();
+  const { canAssignWorkOrder, role } = useRoleAccess();
+  const canPostComment = [
+    USER_ROLES.ADMIN,
+    USER_ROLES.FACILITY_MANAGER,
+    USER_ROLES.TECHNICIAN,
+    USER_ROLES.VENDOR_TECHNICIAN,
+  ].includes(role as (typeof USER_ROLES)[keyof typeof USER_ROLES]);
 
   const load = async () => {
     if (!id) return;
@@ -67,7 +61,6 @@ export function WorkOrderDetails() {
     try {
       const item = await workOrdersService.getById(id);
       setWorkOrder(item);
-      setStatus(item.status);
       setResolvedLocationName(item.locationName || undefined);
       setResolvedAssetName(item.assetName || undefined);
       setResolvedFacilityName(undefined);
@@ -116,32 +109,6 @@ export function WorkOrderDetails() {
   useEffect(() => {
     void load();
   }, [id]);
-
-  const transition = async () => {
-    if (!workOrder?.assigneeId) {
-      setError("Assign a technician before starting or changing work progress.");
-      return;
-    }
-    if (
-      !id ||
-      status === workOrder?.status ||
-      !["in_progress", "on_hold", "pending_completion"].includes(status)
-    )
-      return;
-    setSaving(true);
-    setError(null);
-    try {
-      const updated = await workOrdersService.transition(
-        id,
-        status as "in_progress" | "on_hold" | "pending_completion",
-      );
-      setWorkOrder(updated);
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to update status.");
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const addComment = async () => {
     if (!id || !comment.trim()) return;
@@ -309,24 +276,26 @@ export function WorkOrderDetails() {
                       ))
                     )}
                   </div>
-                  <div className="mt-4 space-y-2">
-                    <Textarea
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                      placeholder="Add an operational comment…"
-                      rows={3}
-                    />
-                    <div className="flex justify-end">
-                      <Button
-                        disabled={saving || !comment.trim()}
-                        onClick={() => void addComment()}
-                        className="gap-2"
-                      >
-                        <Send className="h-4 w-4" />
-                        Post comment
-                      </Button>
+                  {canPostComment && (
+                    <div className="mt-4 space-y-2">
+                      <Textarea
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        placeholder="Add an operational comment…"
+                        rows={3}
+                      />
+                      <div className="flex justify-end">
+                        <Button
+                          disabled={saving || !comment.trim()}
+                          onClick={() => void addComment()}
+                          className="gap-2"
+                        >
+                          <Send className="h-4 w-4" />
+                          Post comment
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </section>
               </div>
 
@@ -336,7 +305,6 @@ export function WorkOrderDetails() {
                   workOrder={workOrder}
                   onWorkOrderUpdated={(updated) => {
                     setWorkOrder(updated);
-                    setStatus(updated.status);
                   }}
                 />
 
@@ -350,44 +318,6 @@ export function WorkOrderDetails() {
                     toast.success("Work order assignment updated");
                   }}
                 />
-
-                {canManageWorkOrders && !isWorkOrderReadOnly && (
-                  <section className="rounded-xl border border-border bg-card p-5">
-                    <h2 className="text-lg font-semibold">Change Status</h2>
-                    {!workOrder.assigneeId && (
-                      <p className="mt-3 rounded-lg bg-muted/40 p-3 text-sm text-muted-foreground">
-                        Assign a technician before moving this work order into progress.
-                      </p>
-                    )}
-                    <Select
-                      value={
-                        statusOptions.includes(
-                          status as "in_progress" | "on_hold" | "pending_completion",
-                        )
-                          ? status
-                          : "in_progress"
-                      }
-                      disabled={!workOrder.assigneeId}
-                      onValueChange={(value) => setStatus(value as WorkOrderStatus)}
-                    >
-                      <SelectTrigger className="mt-4">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="in_progress">In progress</SelectItem>
-                        <SelectItem value="on_hold">On hold</SelectItem>
-                        <SelectItem value="pending_completion">Pending completion</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      className="mt-3 w-full"
-                      disabled={saving || !workOrder.assigneeId || status === workOrder.status}
-                      onClick={() => void transition()}
-                    >
-                      Update status
-                    </Button>
-                  </section>
-                )}
 
                 {/* Activity log */}
                 <section className="rounded-xl border border-border bg-card p-5">
