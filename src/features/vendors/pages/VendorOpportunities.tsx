@@ -67,7 +67,7 @@ export function VendorOpportunities() {
                 month: "short",
                 day: "numeric",
               })}`
-            : "—",
+            : "No SLA configured",
           status: (item.status || "open") as OpportunityRow["status"],
         })),
       );
