@@ -15,6 +15,7 @@ import { useRoleAccess } from "@/hooks/useRoleAccess";
 interface QuotationItem {
   id: string;
   recordId: string;
+  vendorApplicationId: string;
   vendorPartner: string;
   serviceRequested: string;
   totalAmount: string;
@@ -143,6 +144,7 @@ export function VendorQuotations() {
         Array<{
           _id: string;
           quotationNumber: string;
+          vendorApplicationId: string;
           vendorId: string | { _id: string; name?: string };
           workOrderId: string | { _id: string; title?: string };
           totalMinor: number;
@@ -156,6 +158,7 @@ export function VendorQuotations() {
         items.map((item) => ({
           id: item.quotationNumber || item._id,
           recordId: item._id,
+          vendorApplicationId: item.vendorApplicationId,
           vendorPartner:
             typeof item.vendorId === "string" ? item.vendorId : (item.vendorId.name ?? "—"),
           serviceRequested:
@@ -203,6 +206,18 @@ export function VendorQuotations() {
       await loadQuotes();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Unable to update quotation");
+    }
+  };
+
+  const awardVendor = async (quote: QuotationItem) => {
+    try {
+      await apiClient.patch(`/vendor-applications/${quote.vendorApplicationId}/status`, {
+        status: "awarded",
+      });
+      toast.success(`${quote.vendorPartner} awarded the work order`);
+      await loadQuotes();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to award vendor");
     }
   };
 
@@ -289,6 +304,11 @@ export function VendorQuotations() {
                                 Reject
                               </Button>
                             </>
+                          )}
+                          {q.status === "accepted" && (
+                            <Button size="sm" onClick={() => void awardVendor(q)}>
+                              Award Vendor
+                            </Button>
                           )}
                         </div>
                       </td>
