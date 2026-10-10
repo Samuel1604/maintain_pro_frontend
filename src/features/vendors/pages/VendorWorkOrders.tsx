@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, UserPlus } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -59,7 +59,7 @@ export function VendorWorkOrders() {
       setApiRows(
         result.data.map((item) => ({
           id: item.id,
-          facility: item.locationName || "—",
+          facility: item.facilityName || item.locationName || "—",
           location: item.locationName || "—",
           assetTask: item.title,
           priority: item.priority.toUpperCase() as VendorWorkOrderRow["priority"],
@@ -177,14 +177,6 @@ export function VendorWorkOrders() {
                 Kanban
               </button>
             </div>
-
-            <Button
-              onClick={() => navigate("../team")}
-              className="font-bold text-[13px] px-4 py-2 flex items-center gap-2"
-            >
-              <UserPlus className="h-4 w-4" />
-              Dispatch Tech
-            </Button>
           </div>
         </div>
 
