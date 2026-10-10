@@ -164,9 +164,12 @@ export function CreateServiceRequest({
     if (!form.facilityId) newErrors.facilityId = "Please select a facility.";
     if (!form.locationId) newErrors.locationId = "Please select a location.";
     if (!form.assetId) newErrors.assetId = "Please select the affected asset.";
-    if (!form.title.trim()) newErrors.title = "Issue title is required.";
-    if (!form.serviceCategory) newErrors.serviceCategory = "Please select a category.";
-    if (!form.description.trim()) newErrors.description = "Detailed description is required.";
+    if (form.title.trim().length < 2)
+      newErrors.title = "Issue title must be at least 2 characters.";
+    if (form.serviceCategory.trim().length < 2)
+      newErrors.serviceCategory = "Please select a category.";
+    if (form.description.trim().length < 5)
+      newErrors.description = "Description must be at least 5 characters.";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
