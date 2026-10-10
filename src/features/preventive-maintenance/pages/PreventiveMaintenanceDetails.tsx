@@ -66,6 +66,7 @@ export function PreventiveMaintenanceDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [occurrences, setOccurrences] = useState<PMOccurrenceRecord[]>([]);
+  const [occurrenceTotal, setOccurrenceTotal] = useState<number>();
   const [occurrencesLoading, setOccurrencesLoading] = useState(true);
   const [occurrencesError, setOccurrencesError] = useState<Error | null>(null);
   const [skipOpen, setSkipOpen] = useState(false);
@@ -95,9 +96,9 @@ export function PreventiveMaintenanceDetails() {
     setOccurrencesLoading(true);
     setOccurrencesError(null);
     try {
-      setOccurrences(
-        (await preventiveMaintenanceApi.planOccurrences(id, { page: 1, limit: 50 })).data ?? [],
-      );
+      const result = await preventiveMaintenanceApi.planOccurrences(id, { page: 1, limit: 50 });
+      setOccurrences(result.data ?? []);
+      setOccurrenceTotal(result.pagination?.total ?? result.data?.length ?? 0);
     } catch (cause) {
       setOccurrencesError(
         cause instanceof Error ? cause : new Error("Unable to load PM occurrences"),
@@ -372,7 +373,7 @@ export function PreventiveMaintenanceDetails() {
                 </p>
               </div>
               <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-                {occurrences.length} {occurrences.length === 1 ? "occurrence" : "occurrences"}
+                {occurrenceTotal ?? "—"} {occurrenceTotal === 1 ? "occurrence" : "occurrences"}
               </span>
             </div>
             {occurrencesLoading ? (
