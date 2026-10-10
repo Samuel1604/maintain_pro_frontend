@@ -59,6 +59,7 @@ export function Assets() {
   const facilitiesPath = usePortalPath("facilities");
   const { canManageAssets } = useRoleAccess();
   const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.role === "admin";
   const {
     data: facilitiesResponse,
     isLoading: facilitiesLoading,
@@ -135,7 +136,7 @@ export function Assets() {
       </div>
     );
 
-  if (!facilityId)
+  if (!facilityId && !isAdmin)
     return (
       <div className="min-h-full bg-background text-foreground">
         <AppHeader title="Assets" hideQuickCreate />
