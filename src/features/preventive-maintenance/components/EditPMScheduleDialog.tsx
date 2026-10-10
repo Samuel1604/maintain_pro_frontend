@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ import type { PMFrequency } from "@/types/common.types";
 import type { PreventiveMaintenanceRecord } from "../types/preventiveMaintenance.types";
 import { preventiveMaintenanceApi } from "@/features/preventive-maintenance/api/preventiveMaintenance.api";
 
-const FREQUENCIES: PMFrequency[] = ["daily", "weekly", "monthly", "quarterly", "yearly", "custom"];
+const FREQUENCIES: PMFrequency[] = ["daily", "weekly", "monthly", "yearly"];
 
 interface EditPMScheduleDialogProps {
   schedule: PreventiveMaintenanceRecord | null;
@@ -38,7 +37,6 @@ export function EditPMScheduleDialog({ schedule, open, onOpenChange }: EditPMSch
     title: "",
     description: "",
     frequency: "monthly" as PMFrequency,
-    isActive: true,
   });
 
   useEffect(() => {
@@ -47,7 +45,6 @@ export function EditPMScheduleDialog({ schedule, open, onOpenChange }: EditPMSch
       title: schedule.title,
       description: schedule.description,
       frequency: schedule.frequency as PMFrequency,
-      isActive: schedule.isActive,
     });
   }, [schedule, open]);
 
@@ -112,21 +109,6 @@ export function EditPMScheduleDialog({ schedule, open, onOpenChange }: EditPMSch
                       {f}
                     </SelectItem>
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>Status</Label>
-              <Select
-                value={form.isActive ? "active" : "paused"}
-                onValueChange={(v) => setForm((p) => ({ ...p, isActive: v === "active" }))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="paused">Paused</SelectItem>
                 </SelectContent>
               </Select>
             </div>

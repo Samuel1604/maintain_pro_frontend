@@ -412,13 +412,7 @@ export function PreventiveMaintenanceDetails() {
                           <StatusBadge status={occurrence.approvalState} />
                         </td>
                         <td className="px-3 py-3">
-                          {occurrence.id === occurrences[0]?.id ? (
-                            <span className="text-sm font-medium">
-                              {occurrence.assignment?.targetId
-                                ? technicianName(occurrence.assignment.targetId)
-                                : "Unassigned"}
-                            </span>
-                          ) : technicians.length === 0 ? (
+                          {technicians.length === 0 ? (
                             <span className="text-xs text-muted-foreground">
                               No technicians available
                             </span>
