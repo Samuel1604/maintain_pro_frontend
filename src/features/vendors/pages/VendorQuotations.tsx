@@ -242,7 +242,6 @@ export function VendorQuotations() {
                 <tr className="border-b border-border bg-muted/30 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   <th className="px-6 py-3.5">Quotation #</th>
                   <th className="px-6 py-3.5">Vendor Partner</th>
-                  <th className="px-6 py-3.5">Service Requested</th>
                   <th className="px-6 py-3.5">Total Amount</th>
                   <th className="px-6 py-3.5">Revisions</th>
                   <th className="px-6 py-3.5">Status</th>

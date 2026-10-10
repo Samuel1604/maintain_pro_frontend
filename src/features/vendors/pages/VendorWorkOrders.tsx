@@ -142,8 +142,8 @@ export function VendorWorkOrders() {
     <div className="flex flex-col bg-background min-h-full text-foreground">
       <AppHeader title="Work Orders" hideQuickCreate />
 
-      <div className="p-6 max-w-[1400px] w-full mx-auto space-y-5">
-        <div className="rounded-xl border border-border bg-card px-6 py-5">
+      <div className="max-w-[1400px] w-full mx-auto space-y-5">
+        <div className="border-b border-border bg-card px-8 py-5">
           <PageIntro
             title="Work Orders"
             description="Assigned maintenance tasks for your team, including dispatch status, technician ownership, and SLA deadlines."
