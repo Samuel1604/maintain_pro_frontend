@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Search,
   Star,
@@ -103,6 +103,7 @@ function RatingStars({ value, max = 5 }: { value: number; max?: number }) {
 
 export function Vendors() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { requestConfirm, ActionConfirmDialog } = useActionConfirm();
   const { canManageVendors } = useRoleAccess();
   const [showCreate, setShowCreate] = useState(false);
@@ -134,6 +135,12 @@ export function Vendors() {
   const [allVendors, setAllVendors] = useState<Vendor[]>([]);
   const [vendorLoadError, setVendorLoadError] = useState<string | null>(null);
   const [vendorsLoading, setVendorsLoading] = useState(true);
+
+  useEffect(() => {
+    if (location.pathname.endsWith("/vendors/new")) {
+      navigate("../vendors/marketplace", { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   useEffect(() => {
     setVendorsLoading(true);
