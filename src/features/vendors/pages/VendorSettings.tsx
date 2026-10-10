@@ -240,6 +240,15 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
     }
   };
 
+  const saveServiceCategories = async () => {
+    try {
+      await vendorProfileUpdate.mutateAsync({ serviceCategories: categories });
+      toast.success("Service categories saved");
+    } catch {
+      toast.error("Unable to save service categories");
+    }
+  };
+
   const saveVendorCapabilities = async () => {
     const coverageRadiusKm = Number.parseFloat(radius);
     if (!Number.isFinite(coverageRadiusKm) || coverageRadiusKm < 0) {
@@ -248,13 +257,12 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
     }
     try {
       await vendorProfileUpdate.mutateAsync({
-        serviceCategories: categories,
         coverageRadiusKm,
         address: { street: baseLocation.trim() },
       });
-      toast.success("Vendor capabilities saved");
+      toast.success("Vendor service area saved");
     } catch {
-      toast.error("Unable to save vendor capabilities");
+      toast.error("Unable to save vendor service area");
     }
   };
 
@@ -561,7 +569,7 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                     </Button>
                     <Button
                       disabled={vendorProfileUpdate.isPending}
-                      onClick={saveVendorCapabilities}
+                      onClick={saveServiceCategories}
                       className="bg-primary hover:bg-primary-hover text-primary-foreground text-[13px] font-semibold"
                     >
                       Save Categories
