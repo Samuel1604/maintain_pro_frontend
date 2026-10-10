@@ -46,6 +46,8 @@ function toNotification(item: BackendNotification, role: UserRole): Notification
     invoice: "invoices",
     preventive_maintenance: "preventive-maintenance",
   };
+  const resourcePath = resourcePaths[item.resourceType ?? ""];
+  const pathNeedsId = !["invoice", "sla_agreement"].includes(item.resourceType ?? "");
   return {
     id: item.id,
     type: types[item.type] ?? "system",
@@ -55,8 +57,10 @@ function toNotification(item: BackendNotification, role: UserRole): Notification
     priority: item.priority === "high" || item.priority === "critical" ? "high" : "normal",
     createdAt: new Date(item.createdAt),
     actionUrl:
-      item.resourceType && item.resourceId && resourcePaths[item.resourceType]
-        ? `${resourcePaths[item.resourceType]}/${item.resourceId}`
+      resourcePath && (pathNeedsId ? item.resourceId : true)
+        ? pathNeedsId
+          ? `${resourcePath}/${item.resourceId}`
+          : resourcePath
         : undefined,
   };
 }
