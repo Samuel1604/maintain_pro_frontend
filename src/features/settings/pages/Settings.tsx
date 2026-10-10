@@ -1097,14 +1097,14 @@ export function OrganizationSettings() {
                               LOCATIONS
                             </p>
                             <p className="text-lg font-bold text-foreground">
-                              {facility.locationCount ?? "—"}
+                              {facility.locationCount ?? "No locations"}
                             </p>
                           </div>
                           <div>
                             <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                               MONITORED ASSETS
                             </p>
-                            <p className="text-lg font-bold text-foreground">—</p>
+                            <p className="text-lg font-bold text-foreground">No data yet</p>
                           </div>
                         </div>
 
@@ -1195,7 +1195,7 @@ export function OrganizationSettings() {
                     </div>
 
                     <div>
-                      <span className="text-3xl font-extrabold text-foreground">—</span>
+                      <span className="text-3xl font-extrabold text-foreground">No data yet</span>
                       <span className="text-[13px] text-muted-foreground">
                         {" billing amount unavailable"}
                       </span>

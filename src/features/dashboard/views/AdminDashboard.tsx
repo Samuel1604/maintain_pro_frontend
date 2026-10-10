@@ -70,7 +70,7 @@ function CriticalIssuesPanel({ orders, path }: { orders: WorkOrder[]; path: stri
       ? orders.slice(0, 3).map((o) => ({
           id: o.id,
           title: o.title,
-          location: o.locationName ?? "—",
+          location: o.locationName ?? "Location unavailable",
           time: relativeTime(o.updatedAt),
         }))
       : [];
@@ -292,7 +292,7 @@ function RecentActivityPanel({
           time: new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
             new Date(o.updatedAt),
           ),
-          user: o.assigneeName?.slice(0, 2).toUpperCase() ?? "—",
+          user: o.assigneeName?.slice(0, 2).toUpperCase() ?? "Unassigned",
           userBg: "var(--primary, #4f46e5)",
         }))
       : [];

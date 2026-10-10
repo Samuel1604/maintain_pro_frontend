@@ -401,7 +401,7 @@ export function UserProfile() {
                     </Label>
                     <Input
                       id="email"
-                      value={user.email ?? "—"}
+                      value={user.email ?? "No email configured"}
                       disabled
                       className="bg-muted/40 rounded-xl font-semibold"
                     />

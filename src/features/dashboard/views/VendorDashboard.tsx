@@ -100,7 +100,7 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
   const activeCount = dashboardData?.kpis.activeWorkOrders ?? 0;
   const applicationsCount = applicationsQuery.data?.length ?? 0;
   const contractsCount = dashboardData?.kpis.awardedContracts ?? 0;
-  const slaPct = dashboardData ? `${dashboardData.kpis.complianceRate}%` : "—";
+  const slaPct = dashboardData ? `${dashboardData.kpis.complianceRate}%` : "No SLA data yet";
   const teamCount = dashboardData?.kpis.teamMembers ?? 0;
   const activeDispatchRows = (dashboardData?.activeDispatch ?? []).map((workOrder) => ({
     id: workOrder.id,
