@@ -44,9 +44,9 @@ export function FacilityDetailsPage() {
   const { facilityId = "" } = useParams();
   const navigate = useNavigate();
   const { data: facility, isLoading, isError, refetch } = useFacility(facilityId);
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "locations" | "assets" | "work-orders" | "pm" | "vendors"
-  >("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "locations" | "assets" | "pm">(
+    "overview",
+  );
   const [relationships, setRelationships] = useState<
     Required<Pick<FacilityRelationships, "locations" | "assets" | "workOrders" | "vendors">> &
       Omit<FacilityRelationships, "locations" | "assets" | "workOrders" | "vendors">
@@ -242,26 +242,24 @@ export function FacilityDetailsPage() {
 
         {/* ── Sub-navigation Tabs ── */}
         <div className="border-b border-border flex items-center gap-6">
-          {(["overview", "locations", "assets", "work-orders", "pm", "vendors"] as const).map(
-            (tab) => {
-              const isActive = activeTab === tab;
-              return (
-                <button
-                  key={tab}
-                  type="button"
-                  aria-current={isActive ? "page" : undefined}
-                  onClick={() => setActiveTab(tab)}
-                  className={`pb-3 text-[13px] font-semibold capitalize transition-colors border-b-2 ${
-                    isActive
-                      ? "border-primary text-primary"
-                      : "border-transparent text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {tab.replace("-", " ")}
-                </button>
-              );
-            },
-          )}
+          {(["overview", "locations", "assets", "pm"] as const).map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                type="button"
+                aria-current={isActive ? "page" : undefined}
+                onClick={() => setActiveTab(tab)}
+                className={`pb-3 text-[13px] font-semibold capitalize transition-colors border-b-2 ${
+                  isActive
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {tab.replace("-", " ")}
+              </button>
+            );
+          })}
         </div>
 
         {/* ── Overview Tab Content ── */}
@@ -374,9 +372,7 @@ export function FacilityDetailsPage() {
                 {
                   locations: relationships.locations,
                   assets: relationships.assets,
-                  "work-orders": relationships.workOrders,
                   pm: [],
-                  vendors: relationships.vendors,
                 } as Record<string, unknown[]>
               )[activeTab]?.length ?? 0}{" "}
               {activeTab.replace("-", " ")} records for {facilityName}.
@@ -387,9 +383,7 @@ export function FacilityDetailsPage() {
                   {
                     locations: relationships.locations,
                     assets: relationships.assets,
-                    "work-orders": relationships.workOrders,
                     pm: [],
-                    vendors: relationships.vendors,
                   } as Record<string, unknown[]>
                 )[activeTab] ?? []
               )
@@ -412,7 +406,7 @@ export function FacilityDetailsPage() {
               onClick={() => {
                 if (activeTab === "locations") navigate(locationsPath);
                 if (activeTab === "assets") navigate(assetsPath);
-                if (activeTab === "work-orders") navigate(workOrdersPath);
+                if (activeTab === "pm") navigate(pmSchedulesPath);
               }}
               className="mt-4 bg-primary text-primary-foreground text-[13px] hover:bg-primary/90"
             >

@@ -86,8 +86,7 @@ export function FacilitiesPage() {
     id: f.id,
     name: f.name,
     address:
-      `${f.address.street || ""} ${f.address.city || ""}, ${f.address.state || ""}`.trim() ||
-      "Address unlisted",
+      `${f.address.street || ""} ${f.address.city || ""}, ${f.address.state || ""}`.trim() || "—",
     status: f.status,
     locations: f.locationCount ?? 0,
     assets: f.assetCount ?? 0,
@@ -104,9 +103,11 @@ export function FacilitiesPage() {
       statusFilter === "all" || item.status.toLowerCase() === statusFilter.toLowerCase();
     return matchSearch && matchStatus;
   });
-  const sortedRows = [...filteredRows].sort((a, b) =>
-    sortBy === "name" ? a.name.localeCompare(b.name) : 0,
-  );
+  const sortedRows = [...filteredRows].sort((a, b) => {
+    if (sortBy === "openWos") return b.openWos - a.openWos;
+    if (sortBy === "assets") return b.assets - a.assets;
+    return a.name.localeCompare(b.name);
+  });
   const pageCount = Math.max(1, Math.ceil(sortedRows.length / PAGE_SIZE));
   const visibleRows = sortedRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
