@@ -18,6 +18,15 @@ import { formatMoney } from "@/lib/money";
 
 import { DisputeInvoiceDialog } from "../components/DisputeInvoiceDialog";
 import { PageIntro } from "@/components/layout/PageIntro";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function VendorInvoices() {
   const [apiInvoices, setApiInvoices] = useState<VendorInvoice[]>([]);
@@ -25,6 +34,8 @@ export function VendorInvoices() {
   const workOrdersPath = usePortalPath("work-orders");
   const [filter, setFilter] = useState<"all" | VendorInvoice["status"]>("pending");
   const [disputeInvoice, setDisputeInvoice] = useState<VendorInvoice | null>(null);
+  const [paymentInvoice, setPaymentInvoice] = useState<VendorInvoice | null>(null);
+  const [paymentReference, setPaymentReference] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -45,11 +56,8 @@ export function VendorInvoices() {
             typeof invoice.vendorId === "string"
               ? invoice.vendorId
               : (invoice.vendorId.name ?? "—"),
-          amount:
-            invoice.amountMinor == null
-              ? invoice.amount
-              : invoice.amountMinor /
-                (invoice.currency === "JPY" || invoice.currency === "XOF" ? 1 : 100),
+          amount: invoice.amount,
+          amountMinor: invoice.amountMinor,
           currency: invoice.currency,
           status:
             invoice.status === "submitted" || invoice.status === "under_review"
@@ -110,6 +118,19 @@ export function VendorInvoices() {
         return loadInvoices();
       })
       .catch(() => toast.error("Unable to reject invoice"));
+  };
+
+  const recordPayment = async () => {
+    if (!paymentInvoice || !paymentReference.trim()) return;
+    try {
+      await invoicesService.recordExternalPayment(paymentInvoice.id, paymentReference.trim());
+      toast.success(`Payment recorded for ${paymentInvoice.invoiceNumber ?? paymentInvoice.id}`);
+      setPaymentInvoice(null);
+      setPaymentReference("");
+      await loadInvoices();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to record payment");
+    }
   };
 
   return (
@@ -194,10 +215,11 @@ export function VendorInvoices() {
                     <div className="text-right">
                       <p className="text-lg font-semibold">
                         {formatMoney(
-                          Math.round(
-                            inv.amount *
-                              (inv.currency === "JPY" || inv.currency === "XOF" ? 1 : 100),
-                          ),
+                          inv.amountMinor ??
+                            Math.round(
+                              inv.amount *
+                                (inv.currency === "JPY" || inv.currency === "XOF" ? 1 : 100),
+                            ),
                           inv.currency ?? "NGN",
                         )}
                       </p>
@@ -270,6 +292,11 @@ export function VendorInvoices() {
                       </Button>
                     </div>
                   )}
+                  {inv.status === "approved" && (
+                    <Button size="sm" onClick={() => setPaymentInvoice(inv)}>
+                      Record payment
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             );
@@ -282,6 +309,38 @@ export function VendorInvoices() {
           onOpenChange={(open) => !open && setDisputeInvoice(null)}
           onDispute={handleDispute}
         />
+        <Dialog
+          open={Boolean(paymentInvoice)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setPaymentInvoice(null);
+              setPaymentReference("");
+            }
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Record invoice payment</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2 py-3">
+              <Label htmlFor="payment-reference">External payment reference</Label>
+              <Input
+                id="payment-reference"
+                value={paymentReference}
+                onChange={(event) => setPaymentReference(event.target.value)}
+                placeholder="e.g. bank transfer reference"
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setPaymentInvoice(null)}>
+                Cancel
+              </Button>
+              <Button disabled={!paymentReference.trim()} onClick={() => void recordPayment()}>
+                Mark as paid
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

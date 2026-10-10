@@ -92,6 +92,7 @@ export interface VendorInvoice {
   vendorId: string;
   vendorName: string;
   amount: number;
+  amountMinor?: number;
   currency?: string;
   estimatedAmount?: number;
   status: "pending" | "approved" | "rejected" | "paid" | "disputed";
