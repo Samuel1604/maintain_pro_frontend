@@ -50,6 +50,12 @@ const hours = (value?: number) =>
       ? `${Math.round(value * 60)} min`
       : `${value} hr${value === 1 ? "" : "s"}`;
 const label = "text-[11px] font-medium uppercase tracking-wide text-muted-foreground";
+const allowedTransitions: Record<string, string[]> = {
+  draft: ["proposed"],
+  proposed: ["accepted", "rejected"],
+  accepted: ["active"],
+  active: ["terminated"],
+};
 
 function TargetCard({
   name,
@@ -173,49 +179,18 @@ export function VendorSLADetails() {
                   resolution={hours(sla.resolutionTimeHours)}
                   tone="bg-red-50 text-red-500"
                 />
-                {false ? (
-                  <>
-                    <TargetCard
-                      name="High"
-                      response="1 hr"
-                      resolution="8 hrs"
-                      tone="bg-orange-50 text-orange-500"
-                    />
-                    <TargetCard
-                      name="Medium"
-                      response="4 hrs"
-                      resolution="24 hrs"
-                      tone="bg-orange-50 text-orange-500"
-                    />
-                    <TargetCard
-                      name="Low"
-                      response="1 bus. day"
-                      resolution="3 bus. days"
-                      tone="bg-slate-100 text-slate-600"
-                    />
-                  </>
-                ) : (
-                  <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground sm:col-span-1 lg:col-span-3">
-                    Priority-specific targets are not configured for this agreement.
-                  </div>
-                )}
+                <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground sm:col-span-1 lg:col-span-3">
+                  Priority-specific targets are not configured for this agreement.
+                </div>
               </div>
             </section>
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
               <div className="space-y-6 lg:col-span-3">
                 <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
                   <h2 className="text-lg font-bold">SLA Coverage Rules &amp; Parameters</h2>
-                  {false ? (
-                    <>
-                      <p className="mt-4 text-sm text-muted-foreground">
-                        Coverage rules are configured by the organization.
-                      </p>
-                    </>
-                  ) : (
-                    <p className="mt-4 text-sm text-muted-foreground">
-                      Coverage rules are not included in the live SLA response.
-                    </p>
-                  )}
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    No coverage rules are recorded for this agreement.
+                  </p>
                 </section>
                 <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
                   <div className="flex items-center justify-between">
@@ -265,7 +240,7 @@ export function VendorSLADetails() {
                     <div>
                       <p className={label}>SLA compliance</p>
                       <p className="text-2xl font-bold text-emerald-500">
-                        {sla.performance?.breached ? "0%" : "100%"}
+                        {sla.performance ? (sla.performance.breached ? "0%" : "100%") : "—"}
                       </p>
                     </div>
                     <div>
@@ -275,7 +250,7 @@ export function VendorSLADetails() {
                     <div>
                       <p className={label}>Breached WOs</p>
                       <p className="text-2xl font-bold text-red-500">
-                        {sla.performance?.breached ? 1 : 0}
+                        {sla.performance ? (sla.performance.breached ? 1 : 0) : "—"}
                       </p>
                     </div>
                     <div>
@@ -286,44 +261,9 @@ export function VendorSLADetails() {
                 </section>
                 <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
                   <h2 className="text-lg font-bold">SLA Timeline &amp; History</h2>
-                  {false ? (
-                    <div className="mt-5 space-y-5 text-sm">
-                      <p className="flex gap-3">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-slate-400" />
-                        <span>
-                          <b>SLA reviewed by admin</b>
-                          <br />
-                          <span className="text-muted-foreground">
-                            Samuel Dane completed bi-weekly SLA validation.
-                          </span>
-                        </span>
-                      </p>
-                      <p className="flex gap-3">
-                        <Clock3 className="h-4 w-4 shrink-0 text-red-400" />
-                        <span>
-                          <b>SLA breached on WO-4135</b>
-                          <br />
-                          <span className="text-muted-foreground">
-                            High Vibration diagnostics resolution target elapsed limit.
-                          </span>
-                        </span>
-                      </p>
-                      <p className="flex gap-3">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-slate-400" />
-                        <span>
-                          <b>SLA modified</b>
-                          <br />
-                          <span className="text-muted-foreground">
-                            Medium target response adjusted from 2h to 4h.
-                          </span>
-                        </span>
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="mt-4 text-sm text-muted-foreground">
-                      SLA history is not available from the live endpoint.
-                    </p>
-                  )}
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    No SLA history is recorded for this agreement.
+                  </p>
                 </section>
               </div>
             </div>
@@ -347,15 +287,7 @@ export function VendorSLADetails() {
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {[
-                    "draft",
-                    "proposed",
-                    "accepted",
-                    "active",
-                    "expired",
-                    "terminated",
-                    "rejected",
-                  ].map((status) => (
+                  {(sla ? (allowedTransitions[sla.status] ?? []) : []).map((status) => (
                     <SelectItem key={status} value={status}>
                       {status.replace("_", " ").replace(/^./, (value) => value.toUpperCase())}
                     </SelectItem>
