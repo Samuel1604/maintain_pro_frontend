@@ -24,6 +24,16 @@ import { assetsApi } from "@/features/assets/api/assets.api";
 import { facilitiesApi } from "@/features/facilities/api/facilities.api";
 import { USER_ROLES } from "@/types/user.types";
 
+function displayRelation(value: unknown) {
+  if (!value) return "—";
+  if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const relation = value as { name?: string; title?: string; _id?: string };
+    return relation.name ?? relation.title ?? relation._id ?? "—";
+  }
+  return String(value);
+}
+
 export function WorkOrderDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -225,28 +235,29 @@ export function WorkOrderDetails() {
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Facility</dt>
                       <dd className="mt-1 font-medium">
-                        {resolvedFacilityName || workOrder.facilityId || "—"}
+                        {resolvedFacilityName || displayRelation(workOrder.facilityId)}
                       </dd>
                     </div>
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Location</dt>
                       <dd className="mt-1 font-medium">
                         {resolvedLocationName ||
-                          workOrder.locationName ||
-                          workOrder.locationId ||
-                          "—"}
+                          displayRelation(workOrder.locationName || workOrder.locationId)}
                       </dd>
                     </div>
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Asset</dt>
                       <dd className="mt-1 font-medium">
-                        {resolvedAssetName || workOrder.assetName || workOrder.assetId || "—"}
+                        {resolvedAssetName ||
+                          displayRelation(workOrder.assetName || workOrder.assetId)}
                       </dd>
                     </div>
                     <div>
                       <dt className="text-xs uppercase text-muted-foreground">Assigned</dt>
                       <dd className="mt-1 font-medium">
-                        {resolvedAssigneeName || workOrder.assigneeName || "Unassigned"}
+                        {resolvedAssigneeName ||
+                          displayRelation(workOrder.assigneeName) ||
+                          "Unassigned"}
                       </dd>
                     </div>
                     <div>
