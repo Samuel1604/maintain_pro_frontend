@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AppHeader as Navbar } from "@/components/navigation/Navbar";
 import { KPICard } from "@/features/dashboard/components/StatCard";
+import { CategoryBreakdownChart } from "@/features/dashboard/components/DashboardWidgets";
 import { HandWaveGreeting } from "@/components/ui/HandWaveGreeting";
 import { useAuthStore } from "@/app/store";
 import { useVendorProfile } from "@/features/vendors/hooks/useVendorProfile";
@@ -111,6 +112,17 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
       ? `Due ${new Date(workOrder.dueDate).toLocaleDateString()}`
       : "No deadline",
     tech: workOrder.technicianId || "Unassigned",
+  }));
+  const dispatchStatusData = Object.entries(
+    (dashboardData?.activeDispatch ?? []).reduce<Record<string, number>>((counts, workOrder) => {
+      const label = workOrder.status.replaceAll("_", " ");
+      counts[label] = (counts[label] ?? 0) + 1;
+      return counts;
+    }, {}),
+  ).map(([name, value], index) => ({
+    name: name.replace(/\b\w/g, (letter) => letter.toUpperCase()),
+    value,
+    fill: ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"][index % 4],
   }));
   const opportunityRows = (opportunitiesQuery.data?.data ?? []).map((opportunity: WorkOrder) => ({
     id: opportunity.id,
@@ -362,6 +374,34 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
                         <p className="text-[12px] text-muted-foreground">{t.status}</p>
                       </div>
                       <span className="text-[13px] font-bold text-foreground">{t.wos}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </SectionCard>
+          </div>
+        </div>
+
+        {/* ── Operational Analytics ── */}
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-7">
+            <CategoryBreakdownChart data={dispatchStatusData} />
+          </div>
+          <div className="lg:col-span-5">
+            <SectionCard
+              title="Dispatch Summary"
+              subtitle="Current live workload across your vendor operation"
+            >
+              <div className="space-y-3">
+                {dispatchStatusData.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    No active dispatch data is available yet.
+                  </p>
+                ) : (
+                  dispatchStatusData.map((status) => (
+                    <div key={status.name} className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">{status.name}</span>
+                      <span className="text-sm font-semibold text-foreground">{status.value}</span>
                     </div>
                   ))
                 )}
