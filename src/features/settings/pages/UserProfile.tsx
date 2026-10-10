@@ -333,7 +333,19 @@ export function UserProfile() {
                                 "Your current profile photo will be removed from your account.",
                               confirmLabel: "Remove photo",
                               destructive: true,
-                              onConfirm: () => updateUser({ avatar: undefined }),
+                              onConfirm: async () => {
+                                try {
+                                  const updated = await userApi.updateMe({ avatar: undefined });
+                                  updateUser(updated);
+                                  toast.success("Profile photo removed");
+                                } catch (error) {
+                                  toast.error(
+                                    error instanceof Error
+                                      ? error.message
+                                      : "Unable to remove profile photo",
+                                  );
+                                }
+                              },
                             })
                           }
                           className="text-rose-500 hover:text-rose-600 border-border text-[12px] font-semibold px-3 py-2 h-auto rounded-lg"
@@ -389,7 +401,7 @@ export function UserProfile() {
                     </Label>
                     <Input
                       id="email"
-                      value={user.email ?? "samuel.dane@maintainpro.io"}
+                      value={user.email ?? "—"}
                       disabled
                       className="bg-muted/40 rounded-xl font-semibold"
                     />
