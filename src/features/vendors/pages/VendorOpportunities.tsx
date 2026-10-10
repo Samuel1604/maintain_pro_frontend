@@ -139,7 +139,7 @@ export function VendorOpportunities() {
     }
     try {
       const application = await apiClient.post<{ id?: string; _id?: string }>(
-        ENDPOINTS.VENDOR_APPLICATIONS.CREATE,
+        "/vendor-applications",
         {
           workOrderId: selectedOpp.id,
           note: bidNotes || undefined,
@@ -147,14 +147,14 @@ export function VendorOpportunities() {
       );
       const applicationId = application.id ?? application._id;
       if (!applicationId) throw new Error("The application was created without an identifier.");
-      await apiClient.post(ENDPOINTS.QUOTATIONS.CREATE, {
+      await apiClient.post("/quotations", {
         vendorApplicationId: applicationId,
         laborCost: amount,
         materialCost: 0,
         estimatedDurationHours: durationDays * 8,
         notes: bidNotes || undefined,
       });
-      toast.success(`Bid submitted for ${selectedOpp.id}`);
+      toast.success(`Bid submitted for ${displayReference("WO", selectedOpp.id)}`);
       await loadVendorOpportunities();
       setSelectedOpp(null);
       setBidNotes("");
