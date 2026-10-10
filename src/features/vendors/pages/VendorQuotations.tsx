@@ -15,7 +15,7 @@ import { useRoleAccess } from "@/hooks/useRoleAccess";
 interface QuotationItem {
   id: string;
   recordId: string;
-  vendorApplicationId: string;
+  vendorApplicationId?: string;
   vendorPartner: string;
   serviceRequested: string;
   totalAmount: string;
@@ -210,6 +210,10 @@ export function VendorQuotations() {
   };
 
   const awardVendor = async (quote: QuotationItem) => {
+    if (!quote.vendorApplicationId) {
+      toast.error("This quotation has no linked vendor application.");
+      return;
+    }
     try {
       await apiClient.patch(`/vendor-applications/${quote.vendorApplicationId}/status`, {
         status: "awarded",
