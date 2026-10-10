@@ -2,6 +2,7 @@ import { useOrganization } from "../hooks/useOrganization";
 import { SkeletonCard } from "@/components/feedback/Skeletons";
 import { AppHeader } from "@/components/navigation/Navbar";
 import { PageIntro } from "@/components/layout/PageIntro";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export function OrganizationPage() {
   const { data, isLoading, isError, error } = useOrganization();
   if (isLoading)
@@ -68,6 +69,18 @@ export function OrganizationPage() {
           title="Organization"
           description="View your organization profile and operating details."
         />
+        <section className="flex items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <Avatar className="h-14 w-14 rounded-xl">
+            <AvatarImage src={data.logo} alt={data.name} />
+            <AvatarFallback className="rounded-xl bg-primary text-primary-foreground">
+              {data.name.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Organization</p>
+            <h2 className="text-xl font-semibold text-foreground">{data.name}</h2>
+          </div>
+        </section>
         <section className="grid gap-4 md:grid-cols-2">
           {fields.map(([label, value]) => (
             <div key={label} className="rounded-2xl border border-border bg-card p-5 shadow-sm">
