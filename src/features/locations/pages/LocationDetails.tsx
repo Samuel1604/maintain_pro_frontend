@@ -13,14 +13,14 @@ import { PageHeader } from "@/components/ui/page-header";
 import { KPICard } from "@/features/dashboard/components/StatCard";
 import { EditLocationDialog } from "@/features/locations/components/EditLocationDialog";
 import type { Location as CommonLocation } from "@/types/common.types";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
 
 export function LocationDetails() {
   const { id } = useParams();
   const { data: locationData, isLoading, isError, refetch } = useLocationApi(id ?? "");
   const { data: facilityData } = useFacility(locationData?.facilityId ?? "");
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "assets" | "work-orders" | "service-requests" | "pm" | "history"
-  >("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "assets">("overview");
+  const [openWorkOrderCount, setOpenWorkOrderCount] = useState(0);
   const [relationships, setRelationships] = useState<{
     assets: unknown[];
     workOrders: unknown[];
@@ -33,7 +33,8 @@ export function LocationDetails() {
     if (!id) return;
     void locationsApi
       .relationships(id)
-      .then((result) =>
+      .then((result) => {
+        setOpenWorkOrderCount(result.openWorkOrderCount ?? 0);
         setRelationships({
           assets: Array.isArray(result.assets) ? result.assets : [],
           workOrders: Array.isArray(result.workOrders) ? result.workOrders : [],
@@ -41,8 +42,8 @@ export function LocationDetails() {
           preventiveMaintenance: Array.isArray(result.preventiveMaintenance)
             ? result.preventiveMaintenance
             : [],
-        }),
-      )
+        });
+      })
       .catch((error) =>
         setRelationshipError(
           error instanceof Error ? error.message : "Unable to load location relationships",
@@ -71,9 +72,7 @@ export function LocationDetails() {
   const floor = locationData?.floor || "—";
   const description = locationData?.description || "—";
   const assetCount = relationships.assets.length;
-  const openWorkOrderCount = relationships.workOrders.length;
-  const serviceRequestCount = relationships.serviceRequests.length;
-  const pmCount = relationships.preventiveMaintenance.length;
+  const { canManageLocations } = useRoleAccess();
   const editableLocation: CommonLocation | null = locationData
     ? {
         id: locationData.id,
@@ -102,15 +101,17 @@ export function LocationDetails() {
       />
       <div className="p-8 space-y-6">
         <div className="flex justify-end">
-          <Button
-            variant="outline"
-            onClick={() => setEditOpen(true)}
-            className="h-9 rounded-lg border-border bg-card text-[13px] font-medium text-foreground hover:bg-muted/30"
-            title="Edit location"
-          >
-            <Pencil className="mr-2 h-3.5 w-3.5" />
-            Edit Location
-          </Button>
+          {canManageLocations && (
+            <Button
+              variant="outline"
+              onClick={() => setEditOpen(true)}
+              className="h-9 rounded-lg border-border bg-card text-[13px] font-medium text-foreground hover:bg-muted/30"
+              title="Edit location"
+            >
+              <Pencil className="mr-2 h-3.5 w-3.5" />
+              Edit Location
+            </Button>
+          )}
         </div>
         {relationshipError && (
           <p className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning">
@@ -176,9 +177,7 @@ export function LocationDetails() {
 
         {/* ── Sub-navigation Tabs ── */}
         <div className="border-b border-border flex items-center gap-6">
-          {(
-            ["overview", "assets", "work-orders", "service-requests", "pm", "history"] as const
-          ).map((tab) => {
+          {(["overview", "assets"] as const).map((tab) => {
             const isActive = activeTab === tab;
             return (
               <button
@@ -216,20 +215,6 @@ export function LocationDetails() {
                 icon="work-orders"
                 href={workOrdersPath}
                 variant={openWorkOrderCount > 0 ? "warning" : "default"}
-              />
-              <KPICard
-                title="Service Requests"
-                value={serviceRequestCount}
-                changeLabel="Requests associated with this location"
-                icon="facilities"
-                href={workOrdersPath}
-              />
-              <KPICard
-                title="PM Schedules"
-                value={pmCount}
-                changeLabel="Preventive maintenance schedules"
-                icon="calendar"
-                href={pmPath}
               />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
