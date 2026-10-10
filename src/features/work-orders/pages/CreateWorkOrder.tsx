@@ -27,6 +27,7 @@ import { useAuthStore } from "@/app/store";
 import { usePortalPath } from "@/hooks/usePortal";
 import { toast } from "sonner";
 import { uploadFile } from "@/api/uploads.api";
+import { apiClient } from "@/api/client";
 
 export function CreateWorkOrder({
   embedded = false,
@@ -47,6 +48,7 @@ export function CreateWorkOrder({
   const [assets, setAssets] = useState<
     Array<{ id: string; assetTag: string; name: string; locationId: string }>
   >([]);
+  const [technicians, setTechnicians] = useState<Array<{ id: string; name: string }>>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [attachments, setAttachments] = useState<File[]>([]);
@@ -63,6 +65,7 @@ export function CreateWorkOrder({
     assetId: "",
     estimatedCost: "",
     fulfillmentType: "marketplace" as "internal" | "marketplace",
+    assigneeId: "",
   });
 
   useEffect(() => {
@@ -74,6 +77,21 @@ export function CreateWorkOrder({
           setFormData((current) => ({ ...current, facilityId: result.data[0].id }));
       })
       .catch(() => setLoadError("Unable to load facilities"));
+    void apiClient
+      .get<
+        Array<{ id: string; firstName?: string; lastName?: string; name?: string; role: string }>
+      >("/users")
+      .then((users) =>
+        setTechnicians(
+          users
+            .filter((item) => item.role === "technician")
+            .map((item) => ({
+              id: item.id,
+              name: item.name || `${item.firstName ?? ""} ${item.lastName ?? ""}`.trim() || item.id,
+            })),
+        ),
+      )
+      .catch(() => setTechnicians([]));
   }, []);
 
   useEffect(() => {
@@ -128,6 +146,10 @@ export function CreateWorkOrder({
       );
       return;
     }
+    if (formData.fulfillmentType === "internal" && !formData.assigneeId) {
+      setValidationError("Select an internal technician before creating this work order.");
+      return;
+    }
     setValidationError(null);
     setIsLoading(true);
     try {
@@ -142,6 +164,7 @@ export function CreateWorkOrder({
         priority: formData.priority || "medium",
         dueDate: dueDate?.toISOString(),
         fulfillmentType: formData.fulfillmentType,
+        assigneeId: formData.fulfillmentType === "internal" ? formData.assigneeId : undefined,
       });
       for (const file of attachments) {
         const uploaded = await uploadFile(file, {
@@ -458,6 +481,32 @@ export function CreateWorkOrder({
                         </SelectContent>
                       </Select>
                     </div>
+                    {formData.fulfillmentType === "internal" && (
+                      <div className="space-y-2">
+                        <Label>Internal technician *</Label>
+                        <Select
+                          value={formData.assigneeId}
+                          onValueChange={(value) => setFormData({ ...formData, assigneeId: value })}
+                        >
+                          <SelectTrigger className="bg-secondary">
+                            <SelectValue
+                              placeholder={
+                                technicians.length
+                                  ? "Select technician"
+                                  : "No technicians available"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {technicians.map((technician) => (
+                              <SelectItem key={technician.id} value={technician.id}>
+                                {technician.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <Label>Due Date</Label>
                       <Popover>
