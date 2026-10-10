@@ -179,7 +179,21 @@ export function FacilitiesPage() {
   }
 
   async function handleUpdateFacility() {
-    if (!editingFacility || !formName.trim()) return;
+    const latitude = Number(formLatitude);
+    const longitude = Number(formLongitude);
+    if (
+      !editingFacility ||
+      !formName.trim() ||
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude) ||
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      toast.error("Enter valid facility coordinates");
+      return;
+    }
     try {
       await mutations.update.mutateAsync({
         id: editingFacility.id,
@@ -192,6 +206,8 @@ export function FacilitiesPage() {
             postalCode: editingFacility.address.postalCode,
             country: formCountry || editingFacility.address.country,
           },
+          latitude,
+          longitude,
           description: formDescription.trim() || undefined,
           primaryPhone: formPrimaryPhone.trim() || undefined,
           emergencyContact: formEmergencyContact.trim() || undefined,
@@ -545,6 +561,16 @@ export function FacilitiesPage() {
                 value={formState}
                 onChange={(e) => setFormState(e.target.value)}
               />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-[12px] font-semibold text-foreground">Latitude *</Label>
+                <Input value={formLatitude} onChange={(e) => setFormLatitude(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[12px] font-semibold text-foreground">Longitude *</Label>
+                <Input value={formLongitude} onChange={(e) => setFormLongitude(e.target.value)} />
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-foreground">
