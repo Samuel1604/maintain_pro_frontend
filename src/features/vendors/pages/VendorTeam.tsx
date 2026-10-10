@@ -194,7 +194,8 @@ export function VendorTeam({ embedded = false }: { embedded?: boolean }) {
     }
 
     // Expired (or first time from session restart): call backend resendInvitation if we have the ID
-    const invId = member.invitationId || existing?.invitationId;
+    const invId =
+      user?.role === "vendor_lead" ? member.invitationId || existing?.invitationId : undefined;
     const nameParts = member.name.trim().split(" ");
     const firstName = nameParts[0] || "User";
     const lastName = nameParts.slice(1).join(" ") || "Member";
