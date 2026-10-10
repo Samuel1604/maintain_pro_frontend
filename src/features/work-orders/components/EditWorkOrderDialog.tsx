@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { displayReference } from "@/utils/display-ids";
 import {
   Select,
   SelectContent,
@@ -83,7 +84,7 @@ export function EditWorkOrderDialog({
         priority: form.priority || undefined,
         dueDate: form.dueDate ? new Date(form.dueDate) : undefined,
       });
-      toast.success(`${workOrder.id} updated`);
+      toast.success(`${displayReference("WO", workOrder.id)} updated`);
       onSaved?.(updated);
       onOpenChange(false);
     } catch {
@@ -99,7 +100,9 @@ export function EditWorkOrderDialog({
         <DialogHeader>
           <DialogTitle>Edit work order</DialogTitle>
           <DialogDescription>
-            {workOrder ? `Update details for ${workOrder.id}` : "Update work order details"}
+            {workOrder
+              ? `Update details for ${displayReference("WO", workOrder.id)}`
+              : "Update work order details"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">

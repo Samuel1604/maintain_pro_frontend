@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { workOrdersService } from "@/features/work-orders/services/workOrders.service";
 import { apiClient } from "@/api/client";
 import type { WorkOrder } from "@/types/common.types";
+import { displayLabel, displayReference } from "@/utils/display-ids";
 
 type ContractRow = { title: string; score: string; meta: string };
 type TechnicianRow = { name: string; status: string; wos: number; dotColor: string };
@@ -111,7 +112,7 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
     sla: workOrder.dueDate
       ? `Due ${new Date(workOrder.dueDate).toLocaleDateString()}`
       : "No deadline",
-    tech: workOrder.technicianId || "Unassigned",
+    tech: "Unassigned",
   }));
   const dispatchStatusData = Object.entries(
     (dashboardData?.activeDispatch ?? []).reduce<Record<string, number>>((counts, workOrder) => {
@@ -129,15 +130,15 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
     title: opportunity.title,
     distance: opportunity.locationName || "Location unavailable",
     desc: opportunity.description || opportunity.category,
-    details: `${opportunity.priority.toUpperCase()} priority`,
+    details: `${displayLabel(opportunity.priority)} priority`,
   }));
   const applicationRows = (applicationsQuery.data ?? [])
     .slice(0, 10)
     .map((application: { id: string; workOrderId: string; status: string }) => ({
       id: application.id,
-      title: `Work order ${application.workOrderId.slice(0, 8)}`,
+      title: `Work order ${displayReference("WO", application.workOrderId)}`,
       desc: "Submitted marketplace application",
-      badge: application.status.replace("_", " "),
+      badge: displayLabel(application.status),
       badgeBg: "var(--muted)",
       badgeColor: "var(--foreground)",
       time: "Live application",
@@ -145,7 +146,7 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
   const contractRows: ContractRow[] = (dashboardData?.contractPerformance ?? []).map(
     (contract) => ({
       title: contract.title,
-      score: contract.status.replaceAll("_", " "),
+      score: displayLabel(contract.status),
       meta: contract.meta,
     }),
   );
@@ -153,7 +154,7 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
     .filter((member) => member.role === "vendor_technician")
     .map((member) => ({
       name: member.name,
-      status: member.role.replaceAll("_", " "),
+      status: displayLabel(member.role),
       wos: member.workOrders,
       dotColor: "var(--primary)",
     }));
@@ -228,7 +229,7 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
                     className="flex items-center gap-3 px-5 py-3.5 hover:bg-accent/50 transition-colors"
                   >
                     <span className="text-[13px] font-semibold text-primary w-20 shrink-0">
-                      {wo.id}
+                      {displayReference("WO", wo.id)}
                     </span>
                     <span className="text-[13px] font-medium text-foreground w-28 truncate shrink-0">
                       {wo.location}

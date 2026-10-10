@@ -1,8 +1,5 @@
 /** Human-friendly references for display only; API routes continue using real IDs. */
-export function displayReference(
-  prefix: "AST" | "SR" | "WO" | "FAC" | "LOC",
-  value?: string | null,
-) {
+export function displayReference(prefix: string, value?: string | null) {
   if (!value) return "Not configured";
   const normalized = value.toUpperCase();
   return normalized.startsWith(`${prefix}-`) ? value : `${prefix}-${value.slice(-6).toUpperCase()}`;

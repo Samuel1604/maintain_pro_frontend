@@ -14,6 +14,7 @@ import { KPICard } from "@/features/dashboard/components/StatCard";
 import { EditLocationDialog } from "@/features/locations/components/EditLocationDialog";
 import type { Location as CommonLocation } from "@/types/common.types";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
+import { displayLabel, displayReference } from "@/utils/display-ids";
 
 export function LocationDetails() {
   const { id } = useParams();
@@ -161,7 +162,7 @@ export function LocationDetails() {
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Status</span>
                 <span className="font-semibold capitalize text-foreground">
-                  {locationData?.status || "—"}
+                  {displayLabel(locationData?.status)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -246,13 +247,15 @@ export function LocationDetails() {
                     <div key={asset.id} className="flex items-center justify-between py-3.5">
                       <div>
                         <p className="text-[13px] font-bold text-foreground">{asset.name}</p>
-                        <p className="text-[11px] font-mono text-muted-foreground">{asset.id}</p>
+                        <p className="text-[11px] font-mono text-muted-foreground">
+                          {displayReference("AST", asset.assetTag ?? asset.id)}
+                        </p>
                       </div>
                       <span
                         className="rounded px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide"
                         style={{ backgroundColor: asset.bg, color: asset.text }}
                       >
-                        {asset.status}
+                        {displayLabel(asset.status)}
                       </span>
                     </div>
                   ))}

@@ -7,6 +7,7 @@ import { useRoleDashboardDateRange } from "@/features/dashboard/hooks/useRoleDas
 import { usePortalPath } from "@/hooks/usePortal";
 import type { WorkOrder } from "@/types/common.types";
 import { HandWaveGreeting } from "@/components/ui/HandWaveGreeting";
+import { displayReference } from "@/utils/display-ids";
 
 type DispatchedTicket = {
   id: string;
@@ -125,7 +126,7 @@ export function TechnicianDashboard() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-[13px] font-semibold text-primary">
-                        <span>{ticket.id}</span>
+                        <span>{displayReference("WO", ticket.id)}</span>
                         <span className="text-muted-foreground"> • </span>
                         <span className="text-muted-foreground font-normal">{ticket.location}</span>
                       </div>

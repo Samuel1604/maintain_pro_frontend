@@ -14,6 +14,7 @@ import { SkeletonCard } from "@/components/feedback/Skeletons";
 import { usePortalPath } from "@/hooks/usePortal";
 import { financeApprovalsService } from "../services/financeApprovals.service";
 import type { WorkOrder } from "@/types/common.types";
+import { displayLabel, displayReference } from "@/utils/display-ids";
 
 export function FinanceApprovals() {
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
@@ -65,17 +66,17 @@ export function FinanceApprovals() {
     void financeApprovalsService
       .approve(wo.id)
       .then(() => {
-        toast.success(`${wo.id} approved`);
+        toast.success(`${displayReference("WO", wo.id)} approved`);
         void loadApprovals();
       })
-      .catch(() => toast.error(`Unable to approve ${wo.id}`));
+      .catch(() => toast.error(`Unable to approve ${displayReference("WO", wo.id)}`));
   };
 
   const handleReject = (wo: WorkOrder) => {
     void financeApprovalsService
       .reject(wo.id, notesById[wo.id] || "Rejected by finance")
       .then(() => {
-        toast.success(`${wo.id} rejected`);
+        toast.success(`${displayReference("WO", wo.id)} rejected`);
         void loadApprovals();
       })
       .catch(() => toast.error(`Unable to reject ${wo.id}`));
@@ -94,7 +95,7 @@ export function FinanceApprovals() {
     void financeApprovalsService
       .requestInformation(wo.id, note)
       .then(() => {
-        toast.success(`More info requested for ${wo.id}`);
+        toast.success(`More info requested for ${displayReference("WO", wo.id)}`);
         void loadApprovals();
       })
       .catch(() => toast.error(`Unable to request information for ${wo.id}`));
@@ -138,14 +139,16 @@ export function FinanceApprovals() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="mb-1 flex items-center gap-2">
-                      <span className="font-mono text-xs text-muted-foreground">{wo.id}</span>
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {displayReference("WO", wo.id)}
+                      </span>
                       <Badge variant="outline" className="capitalize">
-                        {wo.priority}
+                        {displayLabel(wo.priority)}
                       </Badge>
                     </div>
                     <p className="font-medium">{wo.title}</p>
                     <p className="text-sm text-muted-foreground">
-                      {wo.locationName} · {wo.category}
+                      {wo.locationName} · {displayLabel(wo.category)}
                     </p>
                   </div>
                   <div className="text-right">

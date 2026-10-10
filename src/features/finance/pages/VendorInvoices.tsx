@@ -16,6 +16,7 @@ import { PageError } from "@/components/feedback/PageError";
 import { SkeletonCard } from "@/components/feedback/Skeletons";
 import { formatMoney } from "@/lib/money";
 import { useRoleAccess } from "@/hooks/useRoleAccess";
+import { displayReference } from "@/utils/display-ids";
 
 import { DisputeInvoiceDialog } from "../components/DisputeInvoiceDialog";
 import { PageIntro } from "@/components/layout/PageIntro";
@@ -206,7 +207,7 @@ export function VendorInvoices() {
                           to={`${workOrdersPath}/${inv.workOrderId}`}
                           className="text-primary hover:underline"
                         >
-                          {inv.workOrderId}
+                          {displayReference("WO", inv.workOrderId)}
                         </Link>
                       </p>
                       <p className="text-xs text-muted-foreground">

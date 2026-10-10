@@ -28,6 +28,7 @@ import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/endpoints";
 import { PageHeader } from "@/components/ui/page-header";
 import { useVendorProfile } from "../hooks/useVendorProfile";
+import { displayReference } from "@/utils/display-ids";
 
 export interface OpportunityRow {
   id: string;
@@ -245,7 +246,9 @@ export function VendorOpportunities() {
                 ) : (
                   filtered.map((item) => (
                     <tr key={item.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="py-4 px-5 font-bold text-indigo-500">{item.id}</td>
+                      <td className="py-4 px-5 font-bold text-indigo-500">
+                        {displayReference("WO", item.id)}
+                      </td>
                       <td className="py-4 px-5 font-bold text-foreground">{item.organization}</td>
                       <td className="py-4 px-5">
                         <p className="font-bold text-foreground">{item.serviceCategory}</p>

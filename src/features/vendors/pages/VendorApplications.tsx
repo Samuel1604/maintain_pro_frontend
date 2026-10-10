@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiClient } from "@/api/client";
 import { useActionConfirm } from "@/hooks/useActionConfirm";
 import { usePortalPath } from "@/hooks/usePortal";
+import { displayReference } from "@/utils/display-ids";
 
 type ApplicationStatus = "submitted" | "under_review" | "withdrawn" | "rejected" | "awarded";
 interface VendorApplication {
@@ -148,7 +149,7 @@ export function VendorApplications() {
                           className={`cursor-pointer hover:bg-muted/20 ${selected?.id === item.id ? "bg-indigo-500/10" : ""}`}
                         >
                           <td className="px-5 py-4 font-bold text-indigo-500">
-                            {item.id.slice(0, 8).toUpperCase()}
+                            {displayReference("APP", item.id)}
                           </td>
                           <td className="px-5 py-4">
                             <Link
@@ -156,11 +157,11 @@ export function VendorApplications() {
                               className="font-semibold text-primary hover:underline"
                               onClick={(event) => event.stopPropagation()}
                             >
-                              {item.workOrderTitle || `Work order ${item.workOrderId.slice(0, 8)}`}
+                              {item.workOrderTitle ||
+                                `Work order ${displayReference("WO", item.workOrderId)}`}
                             </Link>
                             <p className="text-[11px] text-muted-foreground">
-                              {item.organizationName ||
-                                `Organization ${item.organizationId.slice(0, 8)}`}
+                              {item.organizationName || "Organization account"}
                             </p>
                           </td>
                           <td className="px-5 py-4 text-muted-foreground">
@@ -197,12 +198,11 @@ export function VendorApplications() {
                           className="text-primary hover:underline"
                         >
                           {selected.workOrderTitle ||
-                            `Work order ${selected.workOrderId.slice(0, 8)}`}
+                            `Work order ${displayReference("WO", selected.workOrderId)}`}
                         </Link>
                       </h2>
                       <p className="text-[13px] text-muted-foreground">
-                        {selected.organizationName ||
-                          `Organization ${selected.organizationId.slice(0, 8)}`}
+                        {selected.organizationName || "Organization account"}
                       </p>
                     </div>
                     <Badge>{statusLabel[selected.status]}</Badge>

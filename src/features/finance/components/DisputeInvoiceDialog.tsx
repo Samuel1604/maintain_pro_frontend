@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { VendorInvoice } from "@/types/common.types";
+import { displayReference } from "@/utils/display-ids";
 
 interface DisputeInvoiceDialogProps {
   invoice: VendorInvoice | null;
@@ -59,7 +60,7 @@ export function DisputeInvoiceDialog({
             <DialogDescription>
               Disputing invoice{" "}
               <span className="font-mono font-medium text-foreground">
-                {invoice?.invoiceNumber || invoice?.id}
+                {invoice?.invoiceNumber || displayReference("INV", invoice?.id)}
               </span>{" "}
               ({invoice?.vendorName}).
             </DialogDescription>

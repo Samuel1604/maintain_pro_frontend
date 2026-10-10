@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { WorkOrder } from "@/types/common.types";
 import { Link } from "react-router-dom";
 import { usePortalPath } from "@/hooks/usePortal";
+import { displayReference } from "@/utils/display-ids";
 import {
   Table,
   TableBody,
@@ -67,9 +68,9 @@ export function WorkOrderList({
                         {order.title}
                       </p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                        <span className="font-mono">{order.id}</span>
+                        <span className="font-mono">{displayReference("WO", order.id)}</span>
                         <span>•</span>
-                        <span>{order.category}</span>
+                        <span>{displayLabel(order.category)}</span>
                       </div>
                     </Link>
                   </TableCell>

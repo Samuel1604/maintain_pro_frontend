@@ -17,6 +17,7 @@ import { workOrdersService } from "@/features/work-orders/services/workOrders.se
 import { PageLoader } from "@/components/feedback/PageLoader";
 import { PageError } from "@/components/feedback/PageError";
 import { PageHeader } from "@/components/ui/page-header";
+import { displayReference } from "@/utils/display-ids";
 
 export interface VendorWorkOrderRow {
   id: string;
@@ -281,7 +282,9 @@ export function VendorWorkOrders() {
                         className="hover:bg-muted/20 transition-colors group cursor-pointer"
                         onClick={() => navigate(`${workOrdersPath}/${item.id}`)}
                       >
-                        <td className="py-4 px-5 font-bold text-indigo-500">{item.id}</td>
+                        <td className="py-4 px-5 font-bold text-indigo-500">
+                          {displayReference("WO", item.id)}
+                        </td>
                         <td className="py-4 px-5 font-bold text-foreground">{item.facility}</td>
                         <td className="py-4 px-5 text-muted-foreground">{item.assetTask}</td>
                         <td className="py-4 px-5">
@@ -363,7 +366,7 @@ export function VendorWorkOrders() {
                           >
                             <div className="flex items-center justify-between">
                               <span className="font-bold text-indigo-500 text-[12px]">
-                                {item.id}
+                                {displayReference("WO", item.id)}
                               </span>
                               <span className="text-[11px] font-semibold text-muted-foreground">
                                 {item.priority}
