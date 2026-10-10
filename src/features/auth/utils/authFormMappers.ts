@@ -34,6 +34,7 @@ export interface VendorSignupForm extends AddressFields {
   confirmPassword: string;
   vendorName: string;
   companyRegistrationNumber: string;
+  serviceCategories: string;
   phone: string;
 }
 
@@ -77,6 +78,10 @@ export function toRegisterVendorRequest(form: VendorSignupForm): RegisterVendorR
     vendorName: form.vendorName.trim(),
     companyRegistrationNumber: form.companyRegistrationNumber.trim() || undefined,
     phone: form.phone.trim(),
+    serviceCategories: form.serviceCategories
+      .split(",")
+      .map((category) => category.trim())
+      .filter(Boolean),
     address: toAddress(form),
   } as unknown;
 

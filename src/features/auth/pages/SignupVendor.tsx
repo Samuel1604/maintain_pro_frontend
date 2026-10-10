@@ -27,6 +27,7 @@ export function SignupVendor() {
     confirmPassword: "",
     vendorName: "",
     companyRegistrationNumber: "",
+    serviceCategories: "",
     phone: "",
     street: "",
     city: "",
@@ -120,6 +121,22 @@ export function SignupVendor() {
                       className="bg-secondary"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="serviceCategories">Service categories</Label>
+                  <Input
+                    id="serviceCategories"
+                    value={formData.serviceCategories}
+                    onChange={(e) => update({ serviceCategories: e.target.value })}
+                    required
+                    placeholder="e.g. HVAC, Electrical, Plumbing"
+                    className="bg-secondary"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Separate multiple services with commas. Organizations will use these categories
+                    when finding vendors.
+                  </p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">

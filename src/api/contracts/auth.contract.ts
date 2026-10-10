@@ -86,6 +86,9 @@ export const registerVendorRequestSchema = z
     phone: z.string().min(7, "Phone number is required"),
     address: addressSchema,
     companyRegistrationNumber: z.string().optional(),
+    serviceCategories: z
+      .array(z.string().trim().min(2))
+      .min(1, "At least one service category is required"),
     firstName: z.string().min(2, "First name must be at least 2 characters"),
     lastName: z.string().min(2, "Last name must be at least 2 characters"),
     password: z.string().min(8, "Password must be at least 8 characters"),
