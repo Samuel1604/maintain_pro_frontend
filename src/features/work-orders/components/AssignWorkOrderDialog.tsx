@@ -148,7 +148,6 @@ export function AssignWorkOrderDialog({
   const [selectedInternalId, setSelectedInternalId] = useState<string | null>(null);
   const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
   const [selectedVendorTechId, setSelectedVendorTechId] = useState<string | null>(null);
-  const [selectedIndependentId, setSelectedIndependentId] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
 
   const options = useMemo(
@@ -165,11 +164,6 @@ export function AssignWorkOrderDialog({
     if (!selectedVendor) return [];
     return getVendorTechniciansSorted(selectedVendor, sort);
   }, [selectedVendor, sort]);
-
-  const selectedIndependent = useMemo(
-    () => options.independents.find((t) => t.id === selectedIndependentId) ?? null,
-    [options.independents, selectedIndependentId],
-  );
 
   useEffect(() => {
     if (!workOrder || !open) return;
@@ -190,9 +184,7 @@ export function AssignWorkOrderDialog({
   const canSubmit =
     path === "internal"
       ? Boolean(selectedInternalId)
-      : path === "vendor"
-        ? Boolean(selectedVendorId && selectedVendorTechId)
-        : Boolean(selectedIndependentId && selectedIndependent?.availability === "available");
+      : Boolean(selectedVendorId && selectedVendorTechId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,7 +234,7 @@ export function AssignWorkOrderDialog({
             <div className="space-y-2 pt-0.5">
               <p className="text-sm leading-relaxed">
                 {workOrder
-                  ? `Select a vendor company or independent technician for ${displayReference("WO", workOrder.id)}`
+                  ? `Select a vendor company or internal technician for ${displayReference("WO", workOrder.id)}`
                   : "Choose who will perform this work"}
               </p>
               {workOrder && (
@@ -293,22 +285,6 @@ export function AssignWorkOrderDialog({
                 <p className="text-sm font-medium">Vendor company</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                   Manager account + field technician from their team
-                </p>
-              </button>
-              <button
-                type="button"
-                onClick={() => setPath("independent")}
-                className={cn(
-                  "rounded-xl border p-4 text-left transition-colors",
-                  path === "independent"
-                    ? "border-primary bg-primary/5 shadow-sm"
-                    : "border-border bg-card hover:bg-muted/50",
-                )}
-              >
-                <User className="mb-2 h-5 w-5 text-primary" />
-                <p className="text-sm font-medium">Independent technician</p>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Sends offer — tech accepts or rejects with reason
                 </p>
               </button>
             </div>
@@ -362,13 +338,7 @@ export function AssignWorkOrderDialog({
                   selectedVendorTechId={selectedVendorTechId}
                   onSelectTech={setSelectedVendorTechId}
                 />
-              ) : (
-                <IndependentAssignmentPanel
-                  technicians={options.independents}
-                  selectedId={selectedIndependentId}
-                  onSelect={setSelectedIndependentId}
-                />
-              )}
+              ) : null}
 
               <section className="space-y-2 border-t border-border pt-8">
                 <Label htmlFor="assign-notes">Instructions (optional)</Label>
@@ -390,7 +360,7 @@ export function AssignWorkOrderDialog({
             </Button>
             <Button type="submit" disabled={saving || !canSubmit}>
               {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {path === "independent" ? "Send job offer" : "Assign"}
+              Assign
             </Button>
           </DialogFooter>
         </form>
