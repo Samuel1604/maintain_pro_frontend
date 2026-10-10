@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { X, Plus } from "lucide-react";
+import { X, Plus, LocateFixed } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { VendorTeam } from "./VendorTeam";
@@ -68,6 +68,7 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
   const [radius, setRadius] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [locating, setLocating] = useState(false);
 
   // Marketplace Preferences State
   const [autoApply, setAutoApply] = useState(false);
@@ -283,6 +284,31 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
     } catch {
       toast.error("Unable to save vendor service area");
     }
+  };
+
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Location services are not available in this browser");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude.toFixed(6));
+        setLongitude(position.coords.longitude.toFixed(6));
+        setLocating(false);
+        toast.success("Vendor base coordinates updated from your current location");
+      },
+      (error) => {
+        setLocating(false);
+        toast.error(
+          error.code === error.PERMISSION_DENIED
+            ? "Location access was denied. Enter coordinates manually or allow location access."
+            : "Unable to determine your current location",
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
+    );
   };
 
   return (
@@ -655,6 +681,16 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                     />
                   </div>
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={useCurrentLocation}
+                  disabled={locating}
+                  className="gap-2"
+                >
+                  <LocateFixed className="h-4 w-4" />
+                  {locating ? "Detecting location…" : "Use my current location"}
+                </Button>
                 <div className="flex justify-end gap-3 pt-4 border-t border-border">
                   <Button
                     variant="outline"
