@@ -61,10 +61,11 @@ export function VendorSLAs() {
     <div className="min-h-full bg-background text-foreground">
       <AppHeader title="SLA Agreements" subtitle="Vendors" hideQuickCreate />
       <div className="px-8 py-6 space-y-6">
-        <div>
-          <p className="mt-1 text-[13px] text-muted-foreground">
-            Review your contracted response, resolution, and service delivery benchmarks.
-          </p>
+        <div className="border-b border-border bg-card px-8 py-5">
+          <PageIntro
+            title="SLA Agreements"
+            description="Review your contracted response, resolution, and service delivery benchmarks."
+          />
         </div>
         <div className="flex items-center justify-between">
           <div className="relative w-80">

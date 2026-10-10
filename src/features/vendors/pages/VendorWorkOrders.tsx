@@ -16,7 +16,7 @@ import { usePortalPath } from "@/hooks/usePortal";
 import { workOrdersService } from "@/features/work-orders/services/workOrders.service";
 import { PageLoader } from "@/components/feedback/PageLoader";
 import { PageError } from "@/components/feedback/PageError";
-import { PageHeader } from "@/components/ui/page-header";
+import { PageIntro } from "@/components/layout/PageIntro";
 import { displayReference } from "@/utils/display-ids";
 
 export interface VendorWorkOrderRow {
@@ -143,12 +143,12 @@ export function VendorWorkOrders() {
       <AppHeader title="Work Orders" hideQuickCreate />
 
       <div className="p-6 max-w-[1400px] w-full mx-auto space-y-5">
-        {/* Top Control Bar & Header */}
-        <PageHeader
-          className="rounded-xl border border-border"
-          title="Work Orders"
-          subtitle="Assigned maintenance tasks for your team, including dispatch status, technician ownership, and SLA deadlines."
-        />
+        <div className="rounded-xl border border-border bg-card px-6 py-5">
+          <PageIntro
+            title="Work Orders"
+            description="Assigned maintenance tasks for your team, including dispatch status, technician ownership, and SLA deadlines."
+          />
+        </div>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <p className="text-[12px] text-muted-foreground mt-0.5">

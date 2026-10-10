@@ -292,7 +292,7 @@ function RecentActivityPanel({
           time: new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
             new Date(o.updatedAt),
           ),
-          user: o.assigneeName?.slice(0, 2).toUpperCase() ?? "Unassigned",
+          user: o.assigneeName?.slice(0, 2).toUpperCase() ?? "?",
           userBg: "var(--primary, #4f46e5)",
         }))
       : [];
@@ -318,6 +318,7 @@ function RecentActivityPanel({
             <span
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
               style={{ backgroundColor: row.userBg }}
+              title={row.user === "?" ? "Unassigned" : row.user}
             >
               {row.user}
             </span>

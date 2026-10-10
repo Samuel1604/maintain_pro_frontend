@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { PageError } from "@/components/feedback/PageError";
 import { AppHeader } from "@/components/navigation/Navbar";
-import { PageHeader } from "@/components/ui/page-header";
+import { PageIntro } from "@/components/layout/PageIntro";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -99,10 +99,12 @@ export function VendorApplications() {
     <div className="min-h-full bg-background text-foreground">
       {ActionConfirmDialog}
       <AppHeader title="Applications" hideQuickCreate />
-      <PageHeader
-        title="Applications"
-        subtitle="Track submitted bids, negotiations, and application outcomes."
-      />
+      <div className="border-b border-border bg-card px-8 py-5">
+        <PageIntro
+          title="Applications"
+          description="Track submitted bids, negotiations, and application outcomes."
+        />
+      </div>
       <div className="px-8 py-6 space-y-6">
         {loadError ? (
           <PageError
