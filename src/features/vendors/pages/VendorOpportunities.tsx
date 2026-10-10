@@ -25,10 +25,9 @@ import { workOrdersService } from "@/features/work-orders/services/workOrders.se
 import { PageLoader } from "@/components/feedback/PageLoader";
 import { PageError } from "@/components/feedback/PageError";
 import { apiClient } from "@/api/client";
-import { ENDPOINTS } from "@/api/endpoints";
 import { PageHeader } from "@/components/ui/page-header";
 import { useVendorProfile } from "../hooks/useVendorProfile";
-import { displayReference } from "@/utils/display-ids";
+import { displayLabel, displayReference } from "@/utils/display-ids";
 
 export interface OpportunityRow {
   id: string;
@@ -251,7 +250,9 @@ export function VendorOpportunities() {
                       </td>
                       <td className="py-4 px-5 font-bold text-foreground">{item.organization}</td>
                       <td className="py-4 px-5">
-                        <p className="font-bold text-foreground">{item.serviceCategory}</p>
+                        <p className="font-bold text-foreground">
+                          {displayLabel(item.serviceCategory)}
+                        </p>
                         <p className="text-[11px] text-muted-foreground">{item.categoryDetail}</p>
                       </td>
                       <td className="py-4 px-5">
@@ -309,14 +310,15 @@ export function VendorOpportunities() {
               Submit Proposal Bid
             </DialogTitle>
             <p className="text-[12px] text-muted-foreground">
-              Opportunity: {selectedOpp?.id} - {selectedOpp?.serviceCategory}
+              Opportunity: {selectedOpp ? displayReference("WO", selectedOpp.id) : "—"} -{" "}
+              {displayLabel(selectedOpp?.serviceCategory)}
             </p>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-[12px] font-bold text-foreground">Bid Amount ($)</Label>
+                <Label className="text-[12px] font-bold text-foreground">Bid Amount</Label>
                 <Input
                   type="number"
                   value={bidAmount}
