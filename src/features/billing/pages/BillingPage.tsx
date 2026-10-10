@@ -38,7 +38,7 @@ export function BillingPage() {
     if (subscription?.plan) setPlan(subscription.plan);
   }, [subscription?.plan]);
 
-  const canManage = user.data?.role === "admin" || user.data?.role === "vendor_lead";
+  const canManage = user.data?.role === "admin" || user.data?.role === "facility_manager";
 
   async function beginCheckout() {
     if (!canManage) return;
