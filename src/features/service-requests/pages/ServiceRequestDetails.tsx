@@ -113,8 +113,8 @@ export function ServiceRequestDetails() {
 
   const review = async (decision: "approve" | "reject") => {
     if (!request || saving) return;
-    if (decision === "reject" && !reason.trim()) {
-      toast.error("Add a rejection reason first");
+    if (decision === "reject" && reason.trim().length < 3) {
+      toast.error("Rejection reason must be at least 3 characters");
       return;
     }
     if (decision === "approve" && fulfillmentType === "internal" && !technicianId) {
@@ -308,7 +308,7 @@ export function ServiceRequestDetails() {
                   Approve
                 </Button>
                 <Button
-                  disabled={saving || !reason.trim()}
+                  disabled={saving || reason.trim().length < 3}
                   variant="destructive"
                   onClick={() => void review("reject")}
                   className="gap-2"

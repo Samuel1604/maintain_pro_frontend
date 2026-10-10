@@ -21,6 +21,7 @@ export interface ServiceRequestRecord {
   workOrderId?: string;
   approvalDecision?: "approved" | "rejected";
   rejectionReason?: string;
+  attachmentUploadIds?: string[];
   createdAt: string;
   updatedAt: string;
 }
