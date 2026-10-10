@@ -27,6 +27,7 @@ import { PageError } from "@/components/feedback/PageError";
 import { apiClient } from "@/api/client";
 import { ENDPOINTS } from "@/api/endpoints";
 import { PageHeader } from "@/components/ui/page-header";
+import { useVendorProfile } from "../hooks/useVendorProfile";
 
 export interface OpportunityRow {
   id: string;
@@ -46,6 +47,7 @@ export function VendorOpportunities() {
   const [apiOpportunities, setApiOpportunities] = useState<OpportunityRow[]>([]);
   const [apiLoading, setApiLoading] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
+  const { data: vendorProfile } = useVendorProfile();
   const loadVendorOpportunities = async () => {
     setApiLoading(true);
     setApiError(null);
@@ -99,8 +101,16 @@ export function VendorOpportunities() {
   }, [apiOpportunities, search, categoryFilter, priorityFilter]);
 
   const categoryOptions = useMemo(
-    () => [...new Set(apiOpportunities.map((item) => item.serviceCategory).filter(Boolean))].sort(),
-    [apiOpportunities],
+    () =>
+      [
+        ...new Set(
+          [
+            ...(vendorProfile?.serviceCategories ?? []),
+            ...apiOpportunities.map((item) => item.serviceCategory),
+          ].filter(Boolean),
+        ),
+      ].sort(),
+    [apiOpportunities, vendorProfile?.serviceCategories],
   );
 
   if (apiLoading) return <PageLoader label="Loading opportunities..." />;
