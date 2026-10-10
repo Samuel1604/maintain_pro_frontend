@@ -19,6 +19,8 @@ export function VendorContractDetails() {
     effectiveAt?: string;
     expiresAt?: string;
     notes?: string;
+    quotationId?: string;
+    slaAgreementId?: string;
     organizationName?: string;
     quotation?: { currency: string; totalMinor: number; estimatedDurationHours: number };
     sla?: { responseTimeHours: number; resolutionTimeHours: number; warrantyPeriodDays: number };
@@ -46,6 +48,8 @@ export function VendorContractDetails() {
           effectiveAt?: string;
           expiresAt?: string;
           notes?: string;
+          quotationId?: string;
+          slaAgreementId?: string;
           organizationName?: string;
           quotation?: { currency: string; totalMinor: number; estimatedDurationHours: number };
           sla?: {
@@ -159,7 +163,9 @@ export function VendorContractDetails() {
                       <p className="text-[13px] font-bold text-foreground mt-1">
                         {contract.sla
                           ? `${contract.sla.responseTimeHours}h response · ${contract.sla.resolutionTimeHours}h resolution · ${contract.sla.warrantyPeriodDays}d warranty`
-                          : "No SLA agreement is linked to this contract."}
+                          : contract.slaAgreementId
+                            ? "SLA agreement linked; detailed terms are not included in this response."
+                            : "No SLA agreement is linked to this contract."}
                       </p>
                     </div>
                     <div>
@@ -179,7 +185,9 @@ export function VendorContractDetails() {
                     <p className="text-2xl font-extrabold text-amber-500">
                       {contract.quotation
                         ? `${contract.quotation.currency} ${(contract.quotation.totalMinor / 100).toFixed(2)}`
-                        : "No quotation is linked to this contract."}
+                        : contract.quotationId
+                          ? "Quotation linked; financial terms are not included in this response."
+                          : "No quotation is linked to this contract."}
                     </p>
                     <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground pt-1">
                       <span className="text-muted-foreground">
@@ -256,6 +264,11 @@ export function VendorContractDetails() {
                       {contract.sla.responseTimeHours}h response ·{" "}
                       {contract.sla.resolutionTimeHours}h resolution ·{" "}
                       {contract.sla.warrantyPeriodDays}d warranty
+                    </p>
+                  ) : contract.slaAgreementId ? (
+                    <p className="text-sm text-muted-foreground">
+                      An SLA agreement is linked, but its detailed terms are not included in this
+                      response.
                     </p>
                   ) : (
                     <p className="text-sm text-muted-foreground">
