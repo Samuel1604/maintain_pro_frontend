@@ -186,7 +186,6 @@ const orgPages: RouteObject[] = [
   { path: "vendors", element: page(<Vendors />) },
   { path: "vendors/new", element: page(<Vendors />) },
   { path: "vendors/marketplace", element: page(<VendorMarketplace />) },
-  { path: "vendors/applications", element: page(<VendorApplications />) },
   { path: "vendors/slas", element: page(<VendorSLAs />) },
   { path: "vendors/quotations", element: page(<VendorQuotations />) },
   { path: "vendors/contracts", element: page(<VendorContracts />) },

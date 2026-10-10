@@ -33,7 +33,6 @@ export const ORG_ROUTE_ROLES: Record<string, UserRole[]> = {
   inventory: [ADMIN, FACILITY_MANAGER, FINANCE],
   vendors: [ADMIN, FACILITY_MANAGER, FINANCE],
   "vendors/marketplace": ORG_MANAGERS,
-  "vendors/applications": ORG_MANAGERS,
   "vendors/slas": [ADMIN, FACILITY_MANAGER, FINANCE],
   "vendors/quotations": [ADMIN, FACILITY_MANAGER, FINANCE],
   "vendors/contracts": [ADMIN, FACILITY_MANAGER, FINANCE],
