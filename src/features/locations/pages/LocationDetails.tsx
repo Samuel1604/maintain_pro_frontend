@@ -20,7 +20,8 @@ export function LocationDetails() {
   const { data: locationData, isLoading, isError, refetch } = useLocationApi(id ?? "");
   const { data: facilityData } = useFacility(locationData?.facilityId ?? "");
   const [activeTab, setActiveTab] = useState<"overview" | "assets">("overview");
-  const [openWorkOrderCount, setOpenWorkOrderCount] = useState(0);
+  const [openWorkOrderCount, setOpenWorkOrderCount] = useState<number>();
+  const [assetCount, setAssetCount] = useState<number>();
   const [relationships, setRelationships] = useState<{
     assets: unknown[];
     workOrders: unknown[];
@@ -34,7 +35,8 @@ export function LocationDetails() {
     void locationsApi
       .relationships(id)
       .then((result) => {
-        setOpenWorkOrderCount(result.openWorkOrderCount ?? 0);
+        setOpenWorkOrderCount(result.openWorkOrderCount);
+        setAssetCount(result.assetCount);
         setRelationships({
           assets: Array.isArray(result.assets) ? result.assets : [],
           workOrders: Array.isArray(result.workOrders) ? result.workOrders : [],
@@ -71,7 +73,6 @@ export function LocationDetails() {
   const parentFacility = facilityData?.name || "—";
   const floor = locationData?.floor || "—";
   const description = locationData?.description || "—";
-  const assetCount = relationships.assets.length;
   const { canManageLocations } = useRoleAccess();
   const editableLocation: CommonLocation | null = locationData
     ? {
@@ -203,18 +204,26 @@ export function LocationDetails() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <KPICard
                 title="Tracked Assets"
-                value={assetCount}
-                changeLabel="Assets assigned to this location"
+                value={assetCount ?? "—"}
+                changeLabel={
+                  assetCount === undefined
+                    ? "Count unavailable"
+                    : "Assets assigned to this location"
+                }
                 icon="assets"
                 href={`${assetsPath}?location=${locationData?.id || ""}`}
               />
               <KPICard
                 title="Open Work Orders"
-                value={openWorkOrderCount}
-                changeLabel="Active work requiring attention"
+                value={openWorkOrderCount ?? "—"}
+                changeLabel={
+                  openWorkOrderCount === undefined
+                    ? "Count unavailable"
+                    : "Active work requiring attention"
+                }
                 icon="work-orders"
                 href={workOrdersPath}
-                variant={openWorkOrderCount > 0 ? "warning" : "default"}
+                variant={openWorkOrderCount && openWorkOrderCount > 0 ? "warning" : "default"}
               />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

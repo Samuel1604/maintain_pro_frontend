@@ -17,6 +17,7 @@ export const locationsApi = {
       workOrders?: unknown[];
       serviceRequests?: unknown[];
       preventiveMaintenance?: unknown[];
+      assetCount?: number;
       openWorkOrderCount?: number;
     }>(`/locations/${id}/relationships`),
   create: (payload: CreateLocationPayload) => apiClient.post<Location>("/locations", payload),
