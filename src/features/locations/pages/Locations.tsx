@@ -32,12 +32,14 @@ import type { Facility } from "@/features/facilities/types/facility.types";
 import { Pagination } from "@/components/ui/pagination";
 import { EditLocationDialog } from "@/features/locations/components/EditLocationDialog";
 import type { Location as CommonLocation } from "@/types/common.types";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
 
 export function Locations() {
   const navigate = useNavigate();
   const locationsQuery = useLocationsApi();
   const facilitiesQuery = useFacilities();
   const { create } = useLocationMutations();
+  const { canManageLocations } = useRoleAccess();
   const locationsPath = usePortalPath("locations");
 
   const [search, setSearch] = useState("");
@@ -167,13 +169,15 @@ export function Locations() {
             />
           </div>
 
-          <Button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
-          >
-            <Plus className="h-4 w-4" />
-            Add Location
-          </Button>
+          {canManageLocations && (
+            <Button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4" />
+              Add Location
+            </Button>
+          )}
         </div>
 
         {/* ── Filter Bar ── */}
@@ -286,22 +290,24 @@ export function Locations() {
                           >
                             View
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              const selected =
-                                editableLocations.find((location) => location.id === item.id) ??
-                                null;
-                              setEditingLocation(selected);
-                              setEditLocationOpen(Boolean(selected));
-                            }}
-                            className="h-8 w-8 p-0 text-primary"
-                            title="Edit location"
-                            aria-label={`Edit ${item.name}`}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
+                          {canManageLocations && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const selected =
+                                  editableLocations.find((location) => location.id === item.id) ??
+                                  null;
+                                setEditingLocation(selected);
+                                setEditLocationOpen(Boolean(selected));
+                              }}
+                              className="h-8 w-8 p-0 text-primary"
+                              title="Edit location"
+                              aria-label={`Edit ${item.name}`}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -339,127 +345,131 @@ export function Locations() {
       </div>
 
       {/* ── Add Location Dialog Modal ── */}
-      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-        <DialogContent className="!max-w-4xl w-[calc(100vw-2rem)] !h-[calc(100dvh-2rem)] !max-h-[calc(100dvh-2rem)] overflow-y-auto bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-foreground">
-              Add New Location
-            </DialogTitle>
-            <p className="text-sm text-muted-foreground">
-              Define the facility area, level, and details so work can be assigned accurately.
-            </p>
-          </DialogHeader>
-          <div className="space-y-4 py-2 text-[13px]">
-            <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">Facility *</Label>
-              <Select value={formFacilityId} onValueChange={setFormFacilityId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select facility" />
-                </SelectTrigger>
-                <SelectContent>
-                  {facilities.map((facility: Facility) => (
-                    <SelectItem key={facility.id} value={facility.id}>
-                      {facility.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">Location Name *</Label>
-              <Input
-                placeholder="e.g. Server Room B"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
+      {canManageLocations && (
+        <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+          <DialogContent className="!max-w-4xl w-[calc(100vw-2rem)] !h-[calc(100dvh-2rem)] !max-h-[calc(100dvh-2rem)] overflow-y-auto bg-card border-border">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold text-foreground">
+                Add New Location
+              </DialogTitle>
+              <p className="text-sm text-muted-foreground">
+                Define the facility area, level, and details so work can be assigned accurately.
+              </p>
+            </DialogHeader>
+            <div className="space-y-4 py-2 text-[13px]">
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-foreground">Type</Label>
-                <Select value={formType} onValueChange={setFormType}>
+                <Label className="text-[12px] font-semibold text-foreground">Facility *</Label>
+                <Select value={formFacilityId} onValueChange={setFormFacilityId}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select facility" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ROOM">Room</SelectItem>
-                    <SelectItem value="BUILDING">Building</SelectItem>
-                    <SelectItem value="FLOOR">Floor</SelectItem>
-                    <SelectItem value="AREA">Zone / Area</SelectItem>
+                    {facilities.map((facility: Facility) => (
+                      <SelectItem key={facility.id} value={facility.id}>
+                        {facility.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-foreground">
-                  Floor / Zone Description
-                </Label>
+                <Label className="text-[12px] font-semibold text-foreground">Location Name *</Label>
                 <Input
-                  placeholder="e.g. Floor 4, Suite 410"
-                  value={formFloor}
-                  onChange={(e) => setFormFloor(e.target.value)}
+                  placeholder="e.g. Server Room B"
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-[12px] font-semibold text-foreground">Type</Label>
+                  <Select value={formType} onValueChange={setFormType}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ROOM">Room</SelectItem>
+                      <SelectItem value="BUILDING">Building</SelectItem>
+                      <SelectItem value="FLOOR">Floor</SelectItem>
+                      <SelectItem value="AREA">Zone / Area</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[12px] font-semibold text-foreground">
+                    Floor / Zone Description
+                  </Label>
+                  <Input
+                    placeholder="e.g. Floor 4, Suite 410"
+                    value={formFloor}
+                    onChange={(e) => setFormFloor(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div className="space-y-1.5">
+                  <Label className="text-[12px] font-semibold text-foreground">Location Code</Label>
+                  <Input
+                    placeholder="e.g. SR-B"
+                    value={formCode}
+                    onChange={(e) => setFormCode(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[12px] font-semibold text-foreground">Room Number</Label>
+                  <Input
+                    placeholder="e.g. 410"
+                    value={formRoomNumber}
+                    onChange={(e) => setFormRoomNumber(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[12px] font-semibold text-foreground">
+                    Parent Location
+                  </Label>
+                  <Input
+                    list="parent-location-options"
+                    placeholder="e.g. Main Building (optional)"
+                    value={formParentId}
+                    onChange={(e) => setFormParentId(e.target.value)}
+                  />
+                  <datalist id="parent-location-options">
+                    {editableLocations
+                      .filter((location) => location.facilityId === formFacilityId)
+                      .map((location) => (
+                        <option key={location.id} value={location.name} />
+                      ))}
+                  </datalist>
+                  <p className="text-[11px] text-muted-foreground">
+                    Leave blank for a top-level location.
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[12px] font-semibold text-foreground">Description</Label>
+                <textarea
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  placeholder="Describe this location"
+                  className="min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-foreground">Location Code</Label>
-                <Input
-                  placeholder="e.g. SR-B"
-                  value={formCode}
-                  onChange={(e) => setFormCode(e.target.value)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-foreground">Room Number</Label>
-                <Input
-                  placeholder="e.g. 410"
-                  value={formRoomNumber}
-                  onChange={(e) => setFormRoomNumber(e.target.value)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[12px] font-semibold text-foreground">Parent Location</Label>
-                <Input
-                  list="parent-location-options"
-                  placeholder="e.g. Main Building (optional)"
-                  value={formParentId}
-                  onChange={(e) => setFormParentId(e.target.value)}
-                />
-                <datalist id="parent-location-options">
-                  {editableLocations
-                    .filter((location) => location.facilityId === formFacilityId)
-                    .map((location) => (
-                      <option key={location.id} value={location.name} />
-                    ))}
-                </datalist>
-                <p className="text-[11px] text-muted-foreground">
-                  Leave blank for a top-level location.
-                </p>
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[12px] font-semibold text-foreground">Description</Label>
-              <textarea
-                value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-                placeholder="Describe this location"
-                className="min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddModal(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={handleAddLocation}
-              disabled={!formName.trim() || !formFacilityId}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              Create Location
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowAddModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddLocation}
+                disabled={!formName.trim() || !formFacilityId}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Create Location
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
