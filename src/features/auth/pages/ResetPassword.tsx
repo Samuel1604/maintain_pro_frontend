@@ -73,7 +73,6 @@ export function ResetPassword() {
       {
         onSuccess: () => {
           setDone(true);
-          setTimeout(() => navigate("/login", { replace: true }), 2000);
           navigateTimeoutRef.current = setTimeout(
             () => navigate("/login", { replace: true }),
             2000,
