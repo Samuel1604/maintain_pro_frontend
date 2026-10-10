@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useFacilities, useFacilityMutations } from "@/features/facilities/hooks/useFacilities";
 
 type Priority = "low" | "medium" | "high" | "critical";
 type Policy = {
@@ -22,6 +23,68 @@ export function MarketplacePoliciesPanel() {
   const [distance, setDistance] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const facilitiesQuery = useFacilities();
+  const facilityMutations = useFacilityMutations();
+  const facilities = facilitiesQuery.data?.data ?? [];
+  const [facilityId, setFacilityId] = useState("");
+  const selectedFacility = facilities.find((facility) => facility.id === facilityId);
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+
+  useEffect(() => {
+    if (!facilityId && facilities[0]) setFacilityId(facilities[0].id);
+  }, [facilities, facilityId]);
+
+  useEffect(() => {
+    if (selectedFacility) {
+      setLatitude(String(selectedFacility.coordinates.coordinates[1]));
+      setLongitude(String(selectedFacility.coordinates.coordinates[0]));
+    }
+  }, [selectedFacility]);
+
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) return toast.error("Location services are not available");
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude.toFixed(6));
+        setLongitude(position.coords.longitude.toFixed(6));
+        setLocating(false);
+      },
+      () => {
+        setLocating(false);
+        toast.error("Unable to determine your current location");
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
+    );
+  };
+
+  const saveFacilityLocation = async () => {
+    const lat = Number(latitude);
+    const lng = Number(longitude);
+    if (
+      !facilityId ||
+      !Number.isFinite(lat) ||
+      lat < -90 ||
+      lat > 90 ||
+      !Number.isFinite(lng) ||
+      lng < -180 ||
+      lng > 180
+    ) {
+      toast.error("Enter valid facility coordinates");
+      return;
+    }
+    try {
+      await facilityMutations.update.mutateAsync({
+        id: facilityId,
+        payload: { latitude: lat, longitude: lng },
+      });
+      toast.success("Marketplace facility location saved");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to save facility location");
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -78,6 +141,47 @@ export function MarketplacePoliciesPanel() {
 
   return (
     <div className="space-y-6">
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h3 className="text-base font-bold">Marketplace facility location</h3>
+        <p className="mt-1 text-[13px] text-muted-foreground">
+          Set the facility coordinates used to match vendor opportunities.
+        </p>
+        <div className="mt-5 grid gap-4 sm:grid-cols-3 sm:items-end">
+          <div className="space-y-1.5">
+            <Label>Facility</Label>
+            <select
+              value={facilityId}
+              onChange={(event) => setFacilityId(event.target.value)}
+              className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+            >
+              {facilities.map((facility) => (
+                <option key={facility.id} value={facility.id}>
+                  {facility.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Latitude</Label>
+            <Input value={latitude} onChange={(event) => setLatitude(event.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Longitude</Label>
+            <Input value={longitude} onChange={(event) => setLongitude(event.target.value)} />
+          </div>
+        </div>
+        <div className="mt-4 flex gap-2">
+          <Button variant="outline" onClick={useCurrentLocation} disabled={locating}>
+            {locating ? "Locating…" : "Use my current location"}
+          </Button>
+          <Button
+            onClick={() => void saveFacilityLocation()}
+            disabled={facilityMutations.update.isPending}
+          >
+            Save location
+          </Button>
+        </div>
+      </div>
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h3 className="text-base font-bold">Marketplace geographic policies</h3>
         <p className="mt-1 text-[13px] text-muted-foreground">
