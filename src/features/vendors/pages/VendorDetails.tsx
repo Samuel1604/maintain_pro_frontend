@@ -100,21 +100,23 @@ export function VendorDetails() {
             <dl className="mt-5 grid gap-4 sm:grid-cols-2">
               <div>
                 <dt className="text-xs text-muted-foreground">Email</dt>
-                <dd className="mt-1 font-medium">{vendor.email || "—"}</dd>
+                <dd className="mt-1 font-medium">{vendor.email || "No email provided"}</dd>
               </div>
               <div>
                 <dt className="text-xs text-muted-foreground">Phone</dt>
-                <dd className="mt-1 font-medium">{vendor.phone || "—"}</dd>
+                <dd className="mt-1 font-medium">{vendor.phone || "No phone provided"}</dd>
               </div>
               <div>
                 <dt className="text-xs text-muted-foreground">Service categories</dt>
                 <dd className="mt-1 font-medium">
-                  {vendor.serviceCategories.length ? vendor.serviceCategories.join(", ") : "—"}
+                  {vendor.serviceCategories.length
+                    ? vendor.serviceCategories.join(", ")
+                    : "No service categories configured"}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs text-muted-foreground">Average rating</dt>
-                <dd className="mt-1 font-medium">{vendor.averageRating ?? "—"}</dd>
+                <dd className="mt-1 font-medium">{vendor.averageRating ?? "No rating yet"}</dd>
               </div>
             </dl>
             {canManageVendors && (

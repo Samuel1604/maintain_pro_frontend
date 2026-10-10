@@ -192,7 +192,9 @@ export function ServiceRequests() {
                         {new Date(item.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">
-                        {item.workOrderId ? displayReference("WO", item.workOrderId) : "—"}
+                        {item.workOrderId
+                          ? displayReference("WO", item.workOrderId)
+                          : "No work order linked"}
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         <ChevronRight className="h-4 w-4" />

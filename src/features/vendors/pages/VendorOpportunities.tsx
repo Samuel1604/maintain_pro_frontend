@@ -56,11 +56,13 @@ export function VendorOpportunities() {
       setApiOpportunities(
         result.data.map((item) => ({
           id: item.id,
-          organization: item.organizationName || "—",
+          organization: item.organizationName || "Organization unavailable",
           serviceCategory: item.category,
           categoryDetail: item.description,
           locationProximity:
-            item.distanceKm != null ? `${item.distanceKm.toFixed(1)} km` : item.locationName || "—",
+            item.distanceKm != null
+              ? `${item.distanceKm.toFixed(1)} km`
+              : item.locationName || "Location unavailable",
           priority: item.priority.toUpperCase() as OpportunityRow["priority"],
           slaRequirement: item.dueDate
             ? `Due ${new Date(item.dueDate).toLocaleDateString(undefined, {
@@ -310,7 +312,8 @@ export function VendorOpportunities() {
               Submit Proposal Bid
             </DialogTitle>
             <p className="text-[12px] text-muted-foreground">
-              Opportunity: {selectedOpp ? displayReference("WO", selectedOpp.id) : "—"} -{" "}
+              Opportunity:{" "}
+              {selectedOpp ? displayReference("WO", selectedOpp.id) : "No opportunity selected"} -{" "}
               {displayLabel(selectedOpp?.serviceCategory)}
             </p>
           </DialogHeader>

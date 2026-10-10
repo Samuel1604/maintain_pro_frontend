@@ -33,9 +33,9 @@ export interface VendorWorkOrderRow {
 }
 
 function formatSlaDeadline(dueDate?: string | Date) {
-  if (!dueDate) return "—";
+  if (!dueDate) return "No deadline set";
   const date = new Date(dueDate);
-  if (Number.isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return "Deadline unavailable";
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
@@ -60,8 +60,8 @@ export function VendorWorkOrders() {
       setApiRows(
         result.data.map((item) => ({
           id: item.id,
-          facility: item.facilityName || item.locationName || "—",
-          location: item.locationName || "—",
+          facility: item.facilityName || item.locationName || "Facility unavailable",
+          location: item.locationName || "Location unavailable",
           assetTask: item.title,
           priority: item.priority.toUpperCase() as VendorWorkOrderRow["priority"],
           slaDeadline: formatSlaDeadline(item.dueDate),
@@ -116,7 +116,11 @@ export function VendorWorkOrders() {
 
   const facilityOptions = useMemo(
     () =>
-      [...new Set(apiRows.map((item) => item.facility).filter((value) => value !== "—"))].sort(),
+      [
+        ...new Set(
+          apiRows.map((item) => item.facility).filter((value) => value !== "Facility unavailable"),
+        ),
+      ].sort(),
     [apiRows],
   );
   const techOptions = useMemo(
