@@ -19,7 +19,6 @@ import {
   Search,
   Plus,
   MoreVertical,
-  Check,
   CheckCircle2,
   Lock,
   ExternalLink,
@@ -216,7 +215,6 @@ export function OrganizationSettings() {
   const [contactPhone, setContactPhone] = useState("");
   const [addressLine, setAddressLine] = useState("");
   const [cityStateZip, setCityStateZip] = useState("");
-  const [selectedThemeColor, setSelectedThemeColor] = useState("orange");
   const [logoUrl, setLogoUrl] = useState("");
   const [logoUploading, setLogoUploading] = useState(false);
 
@@ -609,41 +607,6 @@ export function OrganizationSettings() {
                             </p>
                           </div>
                         </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                          PRIMARY THEME COLOR
-                        </Label>
-                        <div className="flex items-center gap-3">
-                          {[
-                            { id: "orange", bg: "bg-orange-500" },
-                            { id: "purple", bg: "bg-indigo-600" },
-                            { id: "cyan", bg: "bg-cyan-500" },
-                            { id: "emerald", bg: "bg-emerald-500" },
-                            { id: "red", bg: "bg-rose-500" },
-                            { id: "blue", bg: "bg-blue-600" },
-                          ].map((color) => (
-                            <button
-                              key={color.id}
-                              onClick={() => setSelectedThemeColor(color.id)}
-                              className={`h-8 w-8 rounded-full ${
-                                color.bg
-                              } flex items-center justify-center transition-transform ${
-                                selectedThemeColor === color.id
-                                  ? "ring-2 ring-offset-2 ring-primary scale-110"
-                                  : ""
-                              }`}
-                            >
-                              {selectedThemeColor === color.id && (
-                                <Check className="h-4 w-4 text-white" />
-                              )}
-                            </button>
-                          ))}
-                        </div>
-                        <p className="text-[11px] text-muted-foreground pt-1">
-                          Orange/Coral Accent (Active)
-                        </p>
                       </div>
                     </div>
                   </div>
@@ -1347,59 +1310,9 @@ export function OrganizationSettings() {
                     </h4>
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-[13px]">
-                      <thead>
-                        <tr className="border-b border-border bg-muted/30 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                          <th className="px-4 py-3">Billing Date</th>
-                          <th className="px-4 py-3">Standard Invoice Description</th>
-                          <th className="px-4 py-3">Amount (USD)</th>
-                          <th className="px-4 py-3">Status</th>
-                          <th className="px-4 py-3 text-right">File Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border/60">
-                        {(
-                          [] as Array<{
-                            date: string;
-                            desc: string;
-                            amount: string;
-                            status: string;
-                          }>
-                        ).map((inv) => (
-                          <tr key={inv.date} className="hover:bg-muted/20">
-                            <td className="px-4 py-3.5 text-muted-foreground font-semibold">
-                              {inv.date}
-                            </td>
-                            <td className="px-4 py-3.5 text-foreground">{inv.desc}</td>
-                            <td className="px-4 py-3.5 font-bold text-foreground">{inv.amount}</td>
-                            <td className="px-4 py-3.5">
-                              <StatusBadge status={inv.status} />
-                            </td>
-                            <td className="px-4 py-3.5 text-right">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  toast.info(
-                                    "Invoice PDF is available from the live invoice record",
-                                  )
-                                }
-                                className="text-primary hover:text-primary/90 text-[12px] font-bold"
-                              >
-                                Download
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
-                        <tr>
-                          <td colSpan={5} className="p-8 text-center text-sm text-muted-foreground">
-                            Subscription invoice history is not available from the live billing API.
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                  <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+                    Subscription invoice history is not available from the live billing API.
+                  </p>
                 </div>
               </div>
             )}
