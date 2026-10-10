@@ -47,7 +47,7 @@ export function AssetDetails() {
   const assetsPath = usePortalPath("assets");
   const workOrdersPath = usePortalPath("work-orders");
   const pmPath = usePortalPath("preventive-maintenance");
-  const { canManageAssets } = useRoleAccess();
+  const { canManageAssets, canCreateWorkOrder, canManagePm } = useRoleAccess();
   const [asset, setAsset] = useState<BackendAsset | null>(null);
   const [history, setHistory] = useState<AssetHistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -207,7 +207,7 @@ export function AssetDetails() {
           />
           <KPICard
             title="Open Work Orders"
-            value={openWorkOrders ?? 0}
+            value={openWorkOrders ?? "—"}
             changeLabel={openWorkOrders === undefined ? "No count available" : "Currently open"}
             icon="work-orders"
             href={workOrdersPath}
@@ -282,10 +282,12 @@ export function AssetDetails() {
           </div>
         </section>
         <div className="flex flex-wrap gap-3">
-          <Button onClick={() => navigate(`${workOrdersPath}/new`)}>
-            <Wrench className="mr-2 h-4 w-4" />
-            Create Work Order
-          </Button>
+          {canCreateWorkOrder && (
+            <Button onClick={() => navigate(`${workOrdersPath}/new`)}>
+              <Wrench className="mr-2 h-4 w-4" />
+              Create Work Order
+            </Button>
+          )}
           <Button variant="outline" onClick={() => void showQr()}>
             <QrCode className="mr-2 h-4 w-4" />
             View QR Code
@@ -294,10 +296,12 @@ export function AssetDetails() {
             <Download className="mr-2 h-4 w-4" />
             Download PDF
           </Button>
-          <Button variant="outline" onClick={() => navigate(pmPath)}>
-            <Wrench className="mr-2 h-4 w-4" />
-            Schedule PM
-          </Button>
+          {canManagePm && (
+            <Button variant="outline" onClick={() => navigate(pmPath)}>
+              <Wrench className="mr-2 h-4 w-4" />
+              Schedule PM
+            </Button>
+          )}
         </div>
       </div>
       <EditAssetDialog
