@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { AppHeader } from "@/components/navigation/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge, StatusBadge } from "@/components/ui/badge";
@@ -11,6 +12,7 @@ export function VendorContractDetails() {
   const navigate = useNavigate();
   const location = useLocation();
   const isOrganizationView = location.pathname.includes("/vendors/contracts");
+  const contractsPath = location.pathname.split("/").slice(0, -1).join("/");
   const [contract, setContract] = useState<{
     _id: string;
     organizationId: string;
@@ -118,6 +120,12 @@ export function VendorContractDetails() {
                 isOrganizationView
                   ? "Review vendor obligations, commercial terms, and operational performance for this awarded contract."
                   : "Manage your vendor obligations, service delivery, and relationship with this organization client."
+              }
+              breadcrumbs={
+                <Button variant="ghost" className="px-0" onClick={() => navigate(contractsPath)}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to contracts
+                </Button>
               }
               actions={
                 <>
