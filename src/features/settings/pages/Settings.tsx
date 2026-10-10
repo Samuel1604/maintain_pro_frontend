@@ -48,6 +48,7 @@ import {
 } from "@/features/billing/hooks/useBilling";
 import type { PaymentMethodData } from "@/services/billingService";
 import type { Facility } from "@/features/facilities/types/facility.types";
+import { MarketplacePoliciesPanel } from "../components/MarketplacePoliciesPanel";
 
 type SettingsFacility = Pick<Facility, "id" | "name" | "status"> & {
   description?: string;
@@ -55,12 +56,14 @@ type SettingsFacility = Pick<Facility, "id" | "name" | "status"> & {
 };
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 
-type TabKey = "organization" | "members" | "facilities" | "notifications" | "billing";
+type TabKey =
+  "organization" | "members" | "facilities" | "marketplace" | "notifications" | "billing";
 
 const NAV_ITEMS: { id: TabKey; label: string; icon: any }[] = [
   { id: "organization", label: "Organization", icon: Building2 },
   { id: "members", label: "Members", icon: Users },
   { id: "facilities", label: "Facilities", icon: Building },
+  { id: "marketplace", label: "Marketplace", icon: Layers },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "billing", label: "Billing", icon: CreditCard },
 ];
@@ -1149,6 +1152,8 @@ export function OrganizationSettings() {
                 </div>
               </div>
             )}
+
+            {activeTab === "marketplace" && <MarketplacePoliciesPanel />}
 
             {/* 5. BILLING TAB */}
             {activeTab === "billing" && (
