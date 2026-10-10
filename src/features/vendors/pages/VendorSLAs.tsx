@@ -32,7 +32,7 @@ export function VendorSLAs() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const vendorBase = location.pathname.split("/").slice(0, 3).join("/");
+  const vendorBase = location.pathname.split("/").slice(0, 2).join("/");
   const loadSlas = async () => {
     setLoading(true);
     setLoadError(null);

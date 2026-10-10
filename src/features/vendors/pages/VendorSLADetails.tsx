@@ -104,7 +104,7 @@ export function VendorSLADetails() {
           toast.error(error instanceof Error ? error.message : "Unable to load SLA"),
         );
   }, [sla, slaId]);
-  const base = location.pathname.split("/").slice(0, 3).join("/");
+  const base = location.pathname.split("/").slice(0, 2).join("/");
   return (
     <div className="min-h-full bg-background text-foreground">
       <AppHeader title={`SLA ${slaId ?? ""}`} subtitle="SLAs" hideQuickCreate />
