@@ -14,7 +14,6 @@ import {
   Shield,
   Clock,
   DollarSign,
-  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,7 +38,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -638,69 +636,23 @@ export function Vendors() {
                   ) : (
                     vendors
                       .filter((v) => v.status === "active")
-                      .map((v) => {
-                        const completionRate = v.completedJobs ? 100 : 0;
-                        const onTimeRate = 0;
-                        const avgResponse = 0;
-                        const qualityScore = v.rating || 0;
-
-                        return (
-                          <Card key={v.id} className="bg-card border-border">
-                            <CardContent className="p-4">
-                              <div className="flex items-center justify-between mb-3">
-                                <div>
-                                  <h3 className="font-medium">{v.name}</h3>
-                                  <p className="text-xs text-muted-foreground">{v.category}</p>
-                                </div>
+                      .map((v) => (
+                        <Card key={v.id} className="bg-card border-border">
+                          <CardContent className="flex items-center justify-between gap-4 p-4">
+                            <div>
+                              <h3 className="font-medium">{v.name}</h3>
+                              <p className="text-xs text-muted-foreground">{v.category}</p>
+                              <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
+                                <span>Completed jobs: {v.completedJobs ?? "—"}</span>
                                 <RatingStars value={v.rating} />
                               </div>
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                {[
-                                  {
-                                    label: "Completion Rate",
-                                    value: completionRate,
-                                    suffix: "%",
-                                  },
-                                  {
-                                    label: "On-Time Rate",
-                                    value: onTimeRate,
-                                    suffix: "%",
-                                  },
-                                  {
-                                    label: "Avg Response",
-                                    value: avgResponse,
-                                    suffix: "h",
-                                  },
-                                  {
-                                    label: "Quality Score",
-                                    value: qualityScore,
-                                    suffix: "/5",
-                                  },
-                                ].map((m) => {
-                                  const pct =
-                                    m.suffix === "%"
-                                      ? m.value
-                                      : (m.value / (m.suffix === "h" ? 24 : 5)) * 100;
-                                  return (
-                                    <div key={m.label}>
-                                      <div className="flex justify-between text-xs mb-1">
-                                        <span className="text-muted-foreground">{m.label}</span>
-                                        <span className="font-medium">
-                                          {m.value === 0
-                                            ? "—"
-                                            : m.value.toFixed(m.label === "Quality Score" ? 1 : 0)}
-                                          {m.suffix}
-                                        </span>
-                                      </div>
-                                      <Progress value={Math.min(100, pct)} className="h-1.5" />
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })
+                            </div>
+                            <Button variant="outline" size="sm" onClick={() => navigate(v.id)}>
+                              View live metrics
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))
                   )}
                 </TabsContent>
               </Tabs>
