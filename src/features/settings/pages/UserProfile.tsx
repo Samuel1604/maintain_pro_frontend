@@ -56,7 +56,6 @@ export function UserProfile() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
-  const [department, setDepartment] = useState("");
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -74,16 +73,6 @@ export function UserProfile() {
     confirmPassword?: string;
   }>({});
   const [photoError, setPhotoError] = useState<string | null>(null);
-  const [jobTitle, setJobTitle] = useState("Organization Admin");
-  const [bioNotes, setBioNotes] = useState(
-    "Managing facilities, vendor dispatch, and maintenance schedules across all regional campuses. Contact for high-level operations clearance.",
-  );
-
-  const [emailWorkOrders, setEmailWorkOrders] = useState(true);
-  const [emailMaintenance, setEmailMaintenance] = useState(true);
-  const [emailApprovals, setEmailApprovals] = useState(true);
-  const [pushEnabled, setPushEnabled] = useState(true);
-  const [weeklyDigest, setWeeklyDigest] = useState(false);
   const [timezone, setTimezone] = useState("UTC");
   const [language, setLanguage] = useState("en");
   const [dateFormat, setDateFormat] = useState<"DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD">(
@@ -101,7 +90,6 @@ export function UserProfile() {
     setFirstName(user.firstName ?? "");
     setLastName(user.lastName ?? "");
     setPhone(user.phone ?? "");
-    setDepartment(user.department ?? "");
   }, [user]);
 
   useEffect(() => {
@@ -159,7 +147,6 @@ export function UserProfile() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         phone: phone.trim() || undefined,
-        department: department.trim() || undefined,
       });
       updateUser(updated);
       toast.success("Profile updated");
@@ -172,7 +159,6 @@ export function UserProfile() {
     setFirstName(user.firstName ?? "");
     setLastName(user.lastName ?? "");
     setPhone(user.phone ?? "");
-    setDepartment(user.department ?? "");
     setProfileErrors({});
   };
 
@@ -418,42 +404,11 @@ export function UserProfile() {
                     <Input
                       id="phone"
                       type="tel"
-                      value={phone || "+1 (555) 019-2834"}
+                      value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className="rounded-xl"
                     />
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="jobTitle"
-                    className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
-                  >
-                    JOB TITLE
-                  </Label>
-                  <Input
-                    id="jobTitle"
-                    value={jobTitle}
-                    onChange={(e) => setJobTitle(e.target.value)}
-                    className="rounded-xl"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="bioNotes"
-                    className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
-                  >
-                    BIO & NOTES
-                  </Label>
-                  <textarea
-                    id="bioNotes"
-                    rows={4}
-                    value={bioNotes}
-                    onChange={(e) => setBioNotes(e.target.value)}
-                    className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  />
                 </div>
 
                 <div className="pt-4 flex justify-end gap-3 border-t border-border/60">
