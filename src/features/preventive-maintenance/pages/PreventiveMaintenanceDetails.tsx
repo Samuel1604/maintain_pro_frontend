@@ -15,6 +15,7 @@ import { displayReference } from "@/utils/display-ids";
 import { facilitiesApi } from "@/features/facilities/api/facilities.api";
 import { locationsApi } from "@/features/locations/api/locations.api";
 import { assetsApi } from "@/features/assets/api/assets.api";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
 import { preventiveMaintenanceApi } from "../api/preventiveMaintenance.api";
 import type {
   PMOccurrenceRecord,
@@ -60,6 +61,7 @@ const durationLabel = (minutes?: number) => {
 export function PreventiveMaintenanceDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { canManagePm } = useRoleAccess();
   const [plan, setPlan] = useState<PreventiveMaintenanceRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -124,6 +126,7 @@ export function PreventiveMaintenanceDetails() {
     void loadOccurrences();
   }, [id]);
   useEffect(() => {
+    if (!canManagePm) return;
     void apiClient
       .get<
         Array<{ id: string; firstName?: string; lastName?: string; name?: string; role: string }>
@@ -142,7 +145,7 @@ export function PreventiveMaintenanceDetails() {
         setTechnicians([]);
         toast.error(cause instanceof Error ? cause.message : "Unable to load technicians");
       });
-  }, []);
+  }, [canManagePm]);
 
   useEffect(() => {
     if (!plan) return;
@@ -219,17 +222,21 @@ export function PreventiveMaintenanceDetails() {
           <div className="flex w-full flex-wrap items-center justify-end gap-2 lg:w-auto">
             <StatusBadge status={plan.status} />
             <div className="flex flex-wrap items-center gap-2">
-              <Button variant="outline" onClick={() => setEditOpen(true)} className="gap-2">
-                <Pencil className="h-4 w-4" />
-                Edit
-              </Button>
-              <Button variant="outline" onClick={() => setSkipOpen(true)}>
-                Skip schedule
-              </Button>
-              <Button variant="outline" onClick={() => setArchiveOpen(true)} className="gap-2">
-                <Archive className="h-4 w-4" />
-                Archive
-              </Button>
+              {canManagePm && (
+                <>
+                  <Button variant="outline" onClick={() => setEditOpen(true)} className="gap-2">
+                    <Pencil className="h-4 w-4" />
+                    Edit
+                  </Button>
+                  <Button variant="outline" onClick={() => setSkipOpen(true)}>
+                    Skip schedule
+                  </Button>
+                  <Button variant="outline" onClick={() => setArchiveOpen(true)} className="gap-2">
+                    <Archive className="h-4 w-4" />
+                    Archive
+                  </Button>
+                </>
+              )}
               <Button
                 variant="outline"
                 onClick={() => {
@@ -412,7 +419,11 @@ export function PreventiveMaintenanceDetails() {
                           <StatusBadge status={occurrence.approvalState} />
                         </td>
                         <td className="px-3 py-3">
-                          {technicians.length === 0 ? (
+                          {!canManagePm ? (
+                            <span className="text-xs text-muted-foreground">
+                              Managed by operations
+                            </span>
+                          ) : technicians.length === 0 ? (
                             <span className="text-xs text-muted-foreground">
                               No technicians available
                             </span>
