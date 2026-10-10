@@ -20,6 +20,14 @@ import { PriorityBadge, StatusBadge } from "@/components/ui/badge";
 import { facilitiesApi } from "@/features/facilities/api/facilities.api";
 import { locationsApi } from "@/features/locations/api/locations.api";
 import { assetsApi } from "@/features/assets/api/assets.api";
+import { apiClient } from "@/api/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function ServiceRequestDetails() {
   const { id = "" } = useParams();
@@ -33,6 +41,9 @@ export function ServiceRequestDetails() {
   const [facilityName, setFacilityName] = useState<string | undefined>();
   const [locationName, setLocationName] = useState<string | undefined>();
   const [assetName, setAssetName] = useState<string | undefined>();
+  const [technicians, setTechnicians] = useState<Array<{ id: string; name: string }>>([]);
+  const [fulfillmentType, setFulfillmentType] = useState<"internal" | "marketplace">("internal");
+  const [technicianId, setTechnicianId] = useState("");
   const { canApproveSR } = useRoleAccess();
 
   const loadRequest = async () => {
@@ -81,17 +92,44 @@ export function ServiceRequestDetails() {
     void loadRequest();
   }, [id]);
 
+  useEffect(() => {
+    if (!canApproveSR) return;
+    void apiClient
+      .get<
+        Array<{ id: string; firstName?: string; lastName?: string; name?: string; role: string }>
+      >("/users")
+      .then((users) =>
+        setTechnicians(
+          users
+            .filter((user) => user.role === "technician")
+            .map((user) => ({
+              id: user.id,
+              name: user.name || `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || user.id,
+            })),
+        ),
+      )
+      .catch(() => setTechnicians([]));
+  }, [canApproveSR]);
+
   const review = async (decision: "approve" | "reject") => {
     if (!request || saving) return;
     if (decision === "reject" && !reason.trim()) {
       toast.error("Add a rejection reason first");
       return;
     }
+    if (decision === "approve" && fulfillmentType === "internal" && !technicianId) {
+      toast.error("Select a technician for internal fulfillment");
+      return;
+    }
     setSaving(true);
     try {
       const updated =
         decision === "approve"
-          ? await serviceRequestsService.approve(request.id, "internal")
+          ? await serviceRequestsService.approve(
+              request.id,
+              fulfillmentType,
+              fulfillmentType === "internal" ? technicianId : undefined,
+            )
           : await serviceRequestsService.reject(request.id, reason.trim());
       setRequest(
         ("serviceRequest" in updated ? updated.serviceRequest : updated) as ServiceRequestRecord,
@@ -203,10 +241,60 @@ export function ServiceRequestDetails() {
             <p className="mt-6 border-t border-border pt-5 text-sm leading-6 text-muted-foreground">
               {request.description}
             </p>
+            {request.attachmentUploadIds && request.attachmentUploadIds.length > 0 && (
+              <div className="mt-5 border-t border-border pt-5">
+                <h3 className="text-sm font-medium">Attachments</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {request.attachmentUploadIds.length} attachment
+                  {request.attachmentUploadIds.length === 1 ? "" : "s"} uploaded with this request.
+                </p>
+              </div>
+            )}
           </section>
           {request.status === "pending" && canApproveSR && (
             <section className="rounded-xl border border-border bg-card p-5">
               <h2 className="text-lg font-semibold">Review request</h2>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="fulfillment-type">
+                    Fulfillment
+                  </label>
+                  <Select
+                    value={fulfillmentType}
+                    onValueChange={(value) => {
+                      setFulfillmentType(value as "internal" | "marketplace");
+                      if (value === "marketplace") setTechnicianId("");
+                    }}
+                  >
+                    <SelectTrigger id="fulfillment-type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="internal">Internal technician</SelectItem>
+                      <SelectItem value="marketplace">Vendor marketplace</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {fulfillmentType === "internal" && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" htmlFor="review-technician">
+                      Technician
+                    </label>
+                    <Select value={technicianId} onValueChange={setTechnicianId}>
+                      <SelectTrigger id="review-technician">
+                        <SelectValue placeholder="Select technician" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {technicians.map((technician) => (
+                          <SelectItem key={technician.id} value={technician.id}>
+                            {technician.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
               <Textarea
                 className="mt-4"
                 value={reason}
