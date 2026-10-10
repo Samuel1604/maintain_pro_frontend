@@ -4,17 +4,6 @@ import { AppHeader } from "@/components/navigation/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge, StatusBadge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
-import { AlertTriangle } from "lucide-react";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { apiClient } from "@/api/client";
 
 export function VendorContractDetails() {
@@ -22,8 +11,6 @@ export function VendorContractDetails() {
   const navigate = useNavigate();
   const location = useLocation();
   const isOrganizationView = location.pathname.includes("/vendors/contracts");
-  const [showSuspend, setShowSuspend] = useState(false);
-  const [suspendReason, setSuspendReason] = useState("");
   const [contract, setContract] = useState<{
     _id: string;
     organizationId: string;
@@ -131,35 +118,6 @@ export function VendorContractDetails() {
               actions={
                 <>
                   <StatusBadge status={contract.status} />
-                  {!isOrganizationView && (
-                    <>
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowSuspend(true)}
-                        className="flex-1 border-destructive/40 text-destructive hover:bg-destructive/10 text-[13px] font-semibold sm:flex-none"
-                      >
-                        Request Suspension
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          toast.info(
-                            "Contract amendments are managed by the organization contract owner.",
-                          )
-                        }
-                        className="flex-1 text-[13px] font-semibold sm:flex-none"
-                      >
-                        Request Amendment
-                      </Button>
-                      <Button
-                        disabled
-                        title="Renewals are initiated by the organization contract owner"
-                        className="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-[13px] font-semibold sm:flex-none"
-                      >
-                        Renewal managed by organization
-                      </Button>
-                    </>
-                  )}
                 </>
               }
             />
@@ -224,10 +182,9 @@ export function VendorContractDetails() {
                         : "No quotation is linked to this contract."}
                     </p>
                     <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground pt-1">
-                      <AlertTriangle className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                      <span>
-                        <strong>Notice:</strong> Contract financial terms are not included in the
-                        current contract response.
+                      <span className="text-muted-foreground">
+                        Payment is authorized through the linked work-order and procurement
+                        workflow.
                       </span>
                     </div>
                   </div>
@@ -294,9 +251,17 @@ export function VendorContractDetails() {
                   <h3 className="text-[15px] font-bold text-card-foreground">
                     Service Level Agreement
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    SLA targets are not included in this contract response.
-                  </p>
+                  {contract.sla ? (
+                    <p className="text-sm text-muted-foreground">
+                      {contract.sla.responseTimeHours}h response ·{" "}
+                      {contract.sla.resolutionTimeHours}h resolution ·{" "}
+                      {contract.sla.warrantyPeriodDays}d warranty
+                    </p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No SLA agreement is linked to this contract.
+                    </p>
+                  )}
                 </div>
                 <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
                   <h3 className="text-[15px] font-bold text-card-foreground">
@@ -347,42 +312,6 @@ export function VendorContractDetails() {
           </>
         )}
       </div>
-
-      {/* Suspend Modal */}
-      <Dialog open={showSuspend} onOpenChange={setShowSuspend}>
-        <DialogContent className="max-w-md bg-card border-border text-card-foreground">
-          <DialogHeader>
-            <DialogTitle>Request Contract Suspension</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2 py-2">
-            <Label className="text-xs">Reason for Contract Suspension</Label>
-            <Textarea
-              rows={4}
-              placeholder="Describe breach of contract or performance reason..."
-              value={suspendReason}
-              onChange={(e) => setSuspendReason(e.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowSuspend(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={!suspendReason.trim()}
-              onClick={() => {
-                toast.info(
-                  "Suspension requests require an organization contract workflow. Please contact the organization owner.",
-                );
-                setShowSuspend(false);
-                setSuspendReason("");
-              }}
-            >
-              Close request
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
