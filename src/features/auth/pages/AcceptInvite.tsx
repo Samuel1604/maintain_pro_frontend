@@ -16,7 +16,7 @@ export function AcceptInvite() {
   const acceptInvitationMutation = useAcceptInvitation();
   const token = searchParams.get("token") ?? "";
 
-  const [form, setForm] = useState({ password: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", password: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +24,8 @@ export function AcceptInvite() {
 
     acceptInvitationMutation.mutate({
       token,
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
       password: form.password,
     });
   };
@@ -69,6 +71,32 @@ export function AcceptInvite() {
           {acceptInvitationMutation.error && <FormBanner error={acceptInvitationMutation.error} />}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First name</Label>
+                <Input
+                  id="firstName"
+                  value={form.firstName}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, firstName: event.target.value }))
+                  }
+                  required
+                  autoComplete="given-name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last name</Label>
+                <Input
+                  id="lastName"
+                  value={form.lastName}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, lastName: event.target.value }))
+                  }
+                  required
+                  autoComplete="family-name"
+                />
+              </div>
+            </div>
             <PasswordField
               id="password"
               value={form.password}
@@ -96,7 +124,12 @@ export function AcceptInvite() {
             <Button
               type="submit"
               className="w-full"
-              disabled={acceptInvitationMutation.isPending || form.password.length < 6}
+              disabled={
+                acceptInvitationMutation.isPending ||
+                !form.firstName.trim() ||
+                !form.lastName.trim() ||
+                form.password.length < 8
+              }
             >
               {acceptInvitationMutation.isPending ? (
                 <>

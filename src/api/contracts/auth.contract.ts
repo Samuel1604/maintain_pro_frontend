@@ -107,8 +107,8 @@ export const resetPasswordRequestSchema = z.object({
 
 export const acceptInvitationRequestSchema = z.object({
   token: z.string().min(1, "Invitation token is required"),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
+  firstName: z.string().trim().min(1, "First name is required"),
+  lastName: z.string().trim().min(1, "Last name is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
