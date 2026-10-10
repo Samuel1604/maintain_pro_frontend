@@ -31,6 +31,10 @@ interface MarketplaceVendor {
   certifications: string[];
   insuranceLimit: string;
   avgDispatchTime: string;
+  coverageRadiusKm: number;
+  completedJobs: number;
+  isVerified: boolean;
+  verificationBadge: string;
   activeContracts: Array<{ id: string; title: string; amount: string }>;
 }
 
@@ -52,6 +56,10 @@ const MARKETPLACE_VENDORS: MarketplaceVendor[] = [
     certifications: ["OSHA-30", "ASME A17.1", "QEI-1"],
     insuranceLimit: "$10,000,000 General Liability",
     avgDispatchTime: "14 mins (Emergency)",
+    coverageRadiusKm: 25,
+    completedJobs: 124,
+    isVerified: true,
+    verificationBadge: "verified",
     activeContracts: [
       {
         id: "CON-4029",
@@ -78,6 +86,10 @@ const MARKETPLACE_VENDORS: MarketplaceVendor[] = [
     certifications: ["ISSA CMM", "CDC Sanitation Certified"],
     insuranceLimit: "$5,000,000 General Liability",
     avgDispatchTime: "45 mins",
+    coverageRadiusKm: 20,
+    completedJobs: 86,
+    isVerified: true,
+    verificationBadge: "verified",
     activeContracts: [],
   },
   {
@@ -93,6 +105,10 @@ const MARKETPLACE_VENDORS: MarketplaceVendor[] = [
     certifications: ["EPA Universal", "NATE Certified"],
     insuranceLimit: "$7,500,000 General Liability",
     avgDispatchTime: "25 mins",
+    coverageRadiusKm: 30,
+    completedJobs: 108,
+    isVerified: true,
+    verificationBadge: "verified",
     activeContracts: [
       {
         id: "CON-8831",
@@ -132,9 +148,19 @@ export function VendorMarketplace() {
                   "—"),
             ),
             description: vendor.description ?? "—",
-            certifications: vendor.certifications ?? [],
+            certifications: (vendor.certifications ?? []).map((certification) =>
+              typeof certification === "string"
+                ? certification
+                : ((certification as unknown as { name?: string; _id?: string }).name ??
+                  (certification as unknown as { _id?: string })._id ??
+                  "—"),
+            ),
             insuranceLimit: "—",
             avgDispatchTime: "—",
+            coverageRadiusKm: vendor.coverageRadiusKm ?? 0,
+            completedJobs: vendor.completedJobs ?? 0,
+            isVerified: vendor.isVerified ?? false,
+            verificationBadge: vendor.verificationBadge ?? "none",
             activeContracts: [],
           })),
         ),
@@ -282,7 +308,8 @@ export function VendorMarketplace() {
                   {selectedVendor.name}
                 </h2>
                 <p className="mt-0.5 text-[13px] text-muted-foreground">
-                  {selectedVendor.description.slice(0, 85)}...
+                  {selectedVendor.location} ·{" "}
+                  {selectedVendor.isVerified ? "Verified vendor" : "Marketplace vendor"}
                 </p>
               </div>
             </div>
@@ -294,35 +321,59 @@ export function VendorMarketplace() {
                   <div>
                     <h3 className="text-[15px] font-bold text-foreground mb-2">Service Overview</h3>
                     <p className="text-[13px] text-muted-foreground leading-relaxed">
-                      {selectedVendor.description}
+                      {selectedVendor.description !== "—"
+                        ? selectedVendor.description
+                        : "This vendor has not published a public service overview yet."}
                     </p>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {selectedVendor.serviceCategories.length > 0 ? (
+                        selectedVendor.serviceCategories.map((service) => (
+                          <Badge key={service} variant="secondary">
+                            {service}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          No service categories published
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border sm:grid-cols-4">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase text-muted-foreground">
+                        Rating
+                      </p>
+                      <p className="mt-1 flex items-center gap-1 text-[13px] font-semibold text-foreground">
+                        <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                        {selectedVendor.rating > 0 ? selectedVendor.rating.toFixed(1) : "Not rated"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold uppercase text-muted-foreground">
+                        Completed jobs
+                      </p>
+                      <p className="mt-1 text-[13px] font-semibold text-foreground">
+                        {selectedVendor.completedJobs}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold uppercase text-muted-foreground">
+                        Coverage radius
+                      </p>
+                      <p className="mt-1 text-[13px] font-semibold text-foreground">
+                        {selectedVendor.coverageRadiusKm > 0
+                          ? `${selectedVendor.coverageRadiusKm} km`
+                          : "Not provided"}
+                      </p>
+                    </div>
                     <div>
                       <p className="text-[11px] font-bold uppercase text-muted-foreground">
                         Certifications
                       </p>
-                      <p className="text-[13px] font-semibold text-foreground mt-1">
-                        {selectedVendor.certifications.length > 0
-                          ? selectedVendor.certifications.join(", ")
-                          : "—"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] font-bold uppercase text-muted-foreground">
-                        Insurance Limit
-                      </p>
-                      <p className="text-[13px] font-semibold text-foreground mt-1">
-                        {selectedVendor.insuranceLimit}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] font-bold uppercase text-muted-foreground">
-                        Avg Dispatch Time
-                      </p>
-                      <p className="text-[13px] font-semibold text-foreground mt-1">
-                        {selectedVendor.avgDispatchTime}
+                      <p className="mt-1 text-[13px] font-semibold text-foreground">
+                        {selectedVendor.certifications.length || "None listed"}
                       </p>
                     </div>
                   </div>
@@ -345,25 +396,18 @@ export function VendorMarketplace() {
                 </div>
 
                 <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
-                  <h4 className="text-[14px] font-bold text-foreground">Active Contracts</h4>
-                  {selectedVendor.activeContracts.length === 0 ? (
-                    <p className="text-xs text-muted-foreground italic">
-                      No active contracts linked.
+                  <h4 className="text-[14px] font-bold text-foreground">Vendor status</h4>
+                  <div className="space-y-3 text-sm">
+                    <p className="flex items-center gap-2 text-muted-foreground">
+                      <ShieldCheck className="h-4 w-4 text-primary" />
+                      {selectedVendor.isVerified ? "Verified vendor" : "Verification not completed"}
                     </p>
-                  ) : (
-                    selectedVendor.activeContracts.map((c) => (
-                      <div
-                        key={c.id}
-                        className="rounded-lg border border-border bg-accent/30 p-3 flex justify-between items-center"
-                      >
-                        <div>
-                          <p className="text-[13px] font-bold text-foreground">{c.title}</p>
-                          <p className="text-[11px] text-muted-foreground font-mono">{c.id}</p>
-                        </div>
-                        <span className="text-[12px] font-bold text-success">{c.amount}</span>
-                      </div>
-                    ))
-                  )}
+                    <p className="text-xs text-muted-foreground">
+                      {selectedVendor.activeContracts.length > 0
+                        ? `${selectedVendor.activeContracts.length} active contract${selectedVendor.activeContracts.length === 1 ? "" : "s"} linked.`
+                        : "No active contracts linked to your organization."}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
