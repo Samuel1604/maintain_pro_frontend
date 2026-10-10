@@ -576,48 +576,6 @@ export function VendorSettings({ initialTab = "profile" }: { initialTab?: TabKey
                     </Button>
                   </div>
                 </div>
-
-                <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-                  <div>
-                    <h3 className="text-base font-bold text-foreground">
-                      Service Areas & Dispatch Radius
-                    </h3>
-                    <p className="text-[13px] text-muted-foreground">
-                      Set up your primary service dispatch base location and define how far your
-                      field technicians are willing to travel.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13px]">
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                        PRIMARY BASE FACILITY LOCATION
-                      </Label>
-                      <Input
-                        value={baseLocation}
-                        onChange={(e) => setBaseLocation(e.target.value)}
-                        className="bg-background border-border"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                        MAXIMUM ALLOWED RADIUS
-                      </Label>
-                      <Input
-                        value={radius}
-                        onChange={(e) => setRadius(e.target.value)}
-                        className="bg-background border-border"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-1">
-                    <p className="text-[12px] font-bold text-foreground">Radius Active</p>
-                    <p className="text-[12px] text-muted-foreground">
-                      Bids outside the configured radius may be filtered by marketplace matching.
-                    </p>
-                  </div>
-                </div>
               </div>
             )}
 
