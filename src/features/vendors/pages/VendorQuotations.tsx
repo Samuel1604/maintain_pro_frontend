@@ -10,6 +10,7 @@ import { apiClient } from "@/api/client";
 import { PageLoader } from "@/components/feedback/PageLoader";
 import { PageError } from "@/components/feedback/PageError";
 import { PageIntro } from "@/components/layout/PageIntro";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
 
 interface QuotationItem {
   id: string;
@@ -123,6 +124,7 @@ const COMPARISON_BIDS: BidOption[] = [
 ];
 
 export function VendorQuotations() {
+  const { canManageVendors } = useRoleAccess();
   const location = useLocation();
   const isVendorPortal = location.pathname.startsWith("/vendor/");
   const [search, setSearch] = useState("");
@@ -254,7 +256,7 @@ export function VendorQuotations() {
                       <StatusBadge status={q.status} />
                     </td>
                     <td className="px-6 py-4 text-muted-foreground">{q.dateSubmitted}</td>
-                    {!isVendorPortal && (
+                    {!isVendorPortal && canManageVendors && (
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
                           {q.status === "submitted" && (
