@@ -15,6 +15,7 @@ import { cn } from "@/utils/helpers";
 import { PageError } from "@/components/feedback/PageError";
 import { SkeletonCard } from "@/components/feedback/Skeletons";
 import { formatMoney } from "@/lib/money";
+import { useRoleAccess } from "@/hooks/useRoleAccess";
 
 import { DisputeInvoiceDialog } from "../components/DisputeInvoiceDialog";
 import { PageIntro } from "@/components/layout/PageIntro";
@@ -29,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function VendorInvoices() {
+  const { canManageInvoices } = useRoleAccess();
   const [apiInvoices, setApiInvoices] = useState<VendorInvoice[]>([]);
   const invoices = apiInvoices;
   const workOrdersPath = usePortalPath("work-orders");
@@ -269,7 +271,7 @@ export function VendorInvoices() {
                       </div>
                     </div>
                   )}
-                  {inv.status === "pending" && (
+                  {canManageInvoices && inv.status === "pending" && (
                     <div className="flex flex-wrap gap-2">
                       <Button size="sm" className="gap-1" onClick={() => approve(inv)}>
                         <CheckCircle2 className="h-3.5 w-3.5" /> Approve
@@ -292,7 +294,7 @@ export function VendorInvoices() {
                       </Button>
                     </div>
                   )}
-                  {inv.status === "approved" && (
+                  {canManageInvoices && inv.status === "approved" && (
                     <Button size="sm" onClick={() => setPaymentInvoice(inv)}>
                       Record payment
                     </Button>
