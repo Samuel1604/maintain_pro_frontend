@@ -14,6 +14,7 @@ import {
   Shield,
   Clock,
   DollarSign,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -206,12 +207,16 @@ export function Vendors() {
         vendor={viewVendor}
         open={!!viewVendor}
         onOpenChange={(o) => !o && setViewVendor(null)}
-        onEdit={() => {
-          if (viewVendor) {
-            setEditVendor(viewVendor);
-            setViewVendor(null);
-          }
-        }}
+        onEdit={
+          canManageVendors
+            ? () => {
+                if (viewVendor) {
+                  setEditVendor(viewVendor);
+                  setViewVendor(null);
+                }
+              }
+            : undefined
+        }
       />
       <ConfirmDialog
         open={!!deactivateVendor}
@@ -390,12 +395,14 @@ export function Vendors() {
                                     <DropdownMenuItem onClick={() => setViewVendor(v)}>
                                       View Details
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      className="text-destructive"
-                                      onClick={() => setDeactivateVendor(v)}
-                                    >
-                                      Deactivate
-                                    </DropdownMenuItem>
+                                    {canManageVendors && (
+                                      <DropdownMenuItem
+                                        className="text-destructive"
+                                        onClick={() => setDeactivateVendor(v)}
+                                      >
+                                        Deactivate
+                                      </DropdownMenuItem>
+                                    )}
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                               </div>
@@ -596,12 +603,14 @@ export function Vendors() {
                                       <DropdownMenuItem onClick={() => setViewVendor(v)}>
                                         View Details
                                       </DropdownMenuItem>
-                                      <DropdownMenuItem
-                                        className="text-destructive"
-                                        onClick={() => setDeactivateVendor(v)}
-                                      >
-                                        Deactivate
-                                      </DropdownMenuItem>
+                                      {canManageVendors && (
+                                        <DropdownMenuItem
+                                          className="text-destructive"
+                                          onClick={() => setDeactivateVendor(v)}
+                                        >
+                                          Deactivate
+                                        </DropdownMenuItem>
+                                      )}
                                     </DropdownMenuContent>
                                   </DropdownMenu>
                                 </TableCell>
