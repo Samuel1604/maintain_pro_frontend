@@ -26,7 +26,7 @@ interface NotificationsStore {
   deleteNotification: (id: string) => void;
 }
 
-function toNotification(item: BackendNotification): Notification {
+function toNotification(item: BackendNotification, role: UserRole): Notification {
   const types: Record<string, Notification["type"]> = {
     work_order: "work_order",
     service_request: "approval",
@@ -37,12 +37,12 @@ function toNotification(item: BackendNotification): Notification {
     system: "system",
     invitation: "invitation",
   };
-  const resourcePaths: Record<string, string> = {
+  const resourcePaths: Record<string, string | undefined> = {
     work_order: "work-orders",
     service_request: "service-requests",
-    vendor_application: "applications",
-    contract_award: "contracts",
-    sla_agreement: "slas",
+    vendor_application: role.startsWith("vendor_") ? "applications" : undefined,
+    contract_award: role.startsWith("vendor_") ? "contracts" : "vendors/contracts",
+    sla_agreement: role.startsWith("vendor_") ? "slas" : "vendors/slas",
     invoice: "invoices",
     preventive_maintenance: "preventive-maintenance",
   };
@@ -55,8 +55,8 @@ function toNotification(item: BackendNotification): Notification {
     priority: item.priority === "high" || item.priority === "critical" ? "high" : "normal",
     createdAt: new Date(item.createdAt),
     actionUrl:
-      item.resourceType && item.resourceId
-        ? `${resourcePaths[item.resourceType] ?? item.resourceType}/${item.resourceId}`
+      item.resourceType && item.resourceId && resourcePaths[item.resourceType]
+        ? `${resourcePaths[item.resourceType]}/${item.resourceId}`
         : undefined,
   };
 }
@@ -76,7 +76,7 @@ const store = create<NotificationsStore>((set, get) => ({
         notificationsApi.unreadCount(),
       ]);
       set({
-        notifications: page.data.map(toNotification),
+        notifications: page.data.map((item) => toNotification(item, role)),
         unreadCount: unread.count,
         isLoading: false,
       });
