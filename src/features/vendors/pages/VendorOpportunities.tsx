@@ -45,6 +45,7 @@ export function VendorOpportunities() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [apiOpportunities, setApiOpportunities] = useState<OpportunityRow[]>([]);
+  const [appliedWorkOrderIds, setAppliedWorkOrderIds] = useState<Set<string>>(new Set());
   const [apiLoading, setApiLoading] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
   const { data: vendorProfile } = useVendorProfile();
@@ -79,8 +80,19 @@ export function VendorOpportunities() {
       setApiLoading(false);
     }
   };
+  const loadAppliedWorkOrders = async () => {
+    try {
+      const applications = await apiClient.get<Array<{ workOrderId: string }>>(
+        "/vendor-applications/mine",
+      );
+      setAppliedWorkOrderIds(new Set(applications.map((application) => application.workOrderId)));
+    } catch {
+      // The backend still prevents duplicates if this auxiliary UX check is unavailable.
+    }
+  };
   useEffect(() => {
     void loadVendorOpportunities();
+    void loadAppliedWorkOrders();
   }, []);
   const [selectedOpp, setSelectedOpp] = useState<OpportunityRow | null>(null);
   const [bidAmount, setBidAmount] = useState("");
@@ -89,6 +101,7 @@ export function VendorOpportunities() {
 
   const filtered = useMemo(() => {
     return apiOpportunities.filter((item) => {
+      if (appliedWorkOrderIds.has(item.id)) return false;
       const matchSearch =
         item.id.toLowerCase().includes(search.toLowerCase()) ||
         item.organization.toLowerCase().includes(search.toLowerCase()) ||
@@ -100,7 +113,7 @@ export function VendorOpportunities() {
         priorityFilter === "all" || item.priority.toLowerCase() === priorityFilter.toLowerCase();
       return matchSearch && matchCategory && matchPriority;
     });
-  }, [apiOpportunities, search, categoryFilter, priorityFilter]);
+  }, [apiOpportunities, appliedWorkOrderIds, search, categoryFilter, priorityFilter]);
 
   const categoryOptions = useMemo(
     () =>
@@ -156,6 +169,7 @@ export function VendorOpportunities() {
         notes: bidNotes || undefined,
       });
       toast.success(`Bid submitted for ${displayReference("WO", selectedOpp.id)}`);
+      setAppliedWorkOrderIds((current) => new Set(current).add(selectedOpp.id));
       await loadVendorOpportunities();
       setSelectedOpp(null);
       setBidNotes("");
