@@ -147,20 +147,33 @@ export function UserProfile() {
       .join("")
       .toUpperCase() || "U";
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     const nextErrors: { firstName?: string; lastName?: string } = {};
     if (!firstName.trim()) nextErrors.firstName = "First name is required";
     if (!lastName.trim()) nextErrors.lastName = "Last name is required";
     setProfileErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
-    updateUser({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      phone: phone.trim() || undefined,
-      department: department.trim() || undefined,
-    });
-    toast.success("Profile updated");
+    try {
+      const updated = await userApi.updateMe({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phone: phone.trim() || undefined,
+        department: department.trim() || undefined,
+      });
+      updateUser(updated);
+      toast.success("Profile updated");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to update profile");
+    }
+  };
+
+  const handleCancelProfile = () => {
+    setFirstName(user.firstName ?? "");
+    setLastName(user.lastName ?? "");
+    setPhone(user.phone ?? "");
+    setDepartment(user.department ?? "");
+    setProfileErrors({});
   };
 
   const handleChangePassword = async () => {
@@ -444,7 +457,12 @@ export function UserProfile() {
                 </div>
 
                 <div className="pt-4 flex justify-end gap-3 border-t border-border/60">
-                  <Button variant="outline" className="rounded-xl text-[13px]">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-xl text-[13px]"
+                    onClick={handleCancelProfile}
+                  >
                     Cancel
                   </Button>
                   <Button
