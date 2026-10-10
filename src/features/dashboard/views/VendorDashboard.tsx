@@ -149,14 +149,14 @@ export function VendorDashboard({ mode = "lead" }: { mode?: VendorDashboardMode 
       meta: contract.meta,
     }),
   );
-  const technicianRows: TechnicianRow[] = (dashboardData?.technicianWorkload ?? []).map(
-    (member) => ({
+  const technicianRows: TechnicianRow[] = (dashboardData?.technicianWorkload ?? [])
+    .filter((member) => member.role === "vendor_technician")
+    .map((member) => ({
       name: member.name,
       status: member.role.replaceAll("_", " "),
       wos: member.workOrders,
       dotColor: "var(--primary)",
-    }),
-  );
+    }));
   return (
     <>
       <Navbar title="Manager Operations" subtitle={vendorCompanyName} hideQuickCreate />
