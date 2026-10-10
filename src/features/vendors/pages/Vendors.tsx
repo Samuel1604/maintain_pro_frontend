@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Star,
@@ -56,7 +57,6 @@ import { ConfirmDialog } from "@/components/feedback/ConfirmDialog";
 import { SkeletonCard, SkeletonTable } from "@/components/feedback/Skeletons";
 import { useActionConfirm } from "@/hooks/useActionConfirm";
 import { AppHeader } from "@/components/navigation/Navbar";
-import { EditVendorDialog } from "@/features/vendors/components/EditVendorDialog";
 import { ViewVendorDialog } from "@/features/vendors/components/ViewVendorDialog";
 import type { Vendor } from "@/types/common.types";
 import { formatDate, getDaysUntil } from "@/utils/formatDate";
@@ -103,6 +103,7 @@ function RatingStars({ value, max = 5 }: { value: number; max?: number }) {
 }
 
 export function Vendors() {
+  const navigate = useNavigate();
   const { requestConfirm, ActionConfirmDialog } = useActionConfirm();
   const { canManageVendors } = useRoleAccess();
   const [showCreate, setShowCreate] = useState(false);
@@ -112,7 +113,6 @@ export function Vendors() {
   const [activeTab, setActiveTab] = useState("grid");
   const [page, setPage] = useState(1);
   const [viewVendor, setViewVendor] = useState<Vendor | null>(null);
-  const [editVendor, setEditVendor] = useState<Vendor | null>(null);
   const [deactivateVendor, setDeactivateVendor] = useState<Vendor | null>(null);
 
   const [form, setForm] = useState({
@@ -213,15 +213,6 @@ export function Vendors() {
           }
         }}
       />
-      <EditVendorDialog
-        vendor={editVendor}
-        open={!!editVendor}
-        onOpenChange={(o) => !o && setEditVendor(null)}
-        onSaved={(updated) => {
-          setAllVendors((prev) => prev.map((v) => (v.id === updated.id ? updated : v)));
-          setEditVendor(null);
-        }}
-      />
       <ConfirmDialog
         open={!!deactivateVendor}
         onOpenChange={(o) => !o && setDeactivateVendor(null)}
@@ -260,11 +251,11 @@ export function Vendors() {
             </div>
             {canManageVendors && (
               <Button
-                onClick={() => setShowCreate(true)}
+                onClick={() => navigate("../vendors/marketplace")}
                 className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
               >
                 <Plus className="h-4 w-4" />
-                Onboard New Vendor
+                Discover Vendors
               </Button>
             )}
           </div>
@@ -399,11 +390,6 @@ export function Vendors() {
                                     <DropdownMenuItem onClick={() => setViewVendor(v)}>
                                       View Details
                                     </DropdownMenuItem>
-                                    {canManageVendors && (
-                                      <DropdownMenuItem onClick={() => setEditVendor(v)}>
-                                        Edit
-                                      </DropdownMenuItem>
-                                    )}
                                     <DropdownMenuItem
                                       className="text-destructive"
                                       onClick={() => setDeactivateVendor(v)}
@@ -610,11 +596,6 @@ export function Vendors() {
                                       <DropdownMenuItem onClick={() => setViewVendor(v)}>
                                         View Details
                                       </DropdownMenuItem>
-                                      {canManageVendors && (
-                                        <DropdownMenuItem onClick={() => setEditVendor(v)}>
-                                          Edit
-                                        </DropdownMenuItem>
-                                      )}
                                       <DropdownMenuItem
                                         className="text-destructive"
                                         onClick={() => setDeactivateVendor(v)}
